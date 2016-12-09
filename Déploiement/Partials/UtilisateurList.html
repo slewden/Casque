@@ -1,0 +1,99 @@
+﻿<div>
+  <!-- Page header -->
+  <data:header-menu data-titre="{{ 'Utilisateur.SousTitre'| translate }}" data-niveau-menu="7"></data:header-menu>
+  <!-- Contenu -->
+  <div class="page-content">
+
+    <table class="admin-list">
+      <thead>
+        <tr>
+          <td colspan="7">
+            <div class="recherche">
+              <input type="text" data-ng-model="searchText" data-my-enter="changePage(1)" placeholder="{{ 'Utilisateur.SearchText' | translate }}" />
+              <span class="btn" data-ng-click="changePage(1)" title="{{ 'Common.TipsLaunchSearch' | translate }}"><i class="fa fa-search"></i></span>
+              <span class="btn" data-ng-show="searchText" data-ng-click="defaultParam()" title="{{ 'Common.TipsInitSearch' | translate }}"><i class="fa fa-eraser green"></i></span>
+            </div>
+          </td>
+        </tr>
+        <!-- waiting ring -->
+        <tr data-ng-show="processing">
+          <td colspan="7" align="center">
+            <i class="fa fa-circle-o-notch fa-spin fa-3x orange"></i>
+          </td>
+        </tr>
+        <!-- en cas d'erreur -->
+        <tr data-ng-show="error">
+          <td colspan="7">
+            <data:display-error></data:display-error>
+          </td>
+        </tr>
+        <tr data-ng-show="nombre > 0">
+          <th colspan="2">
+            #
+            <data-sorter data-column="cle" data-tri="tri" data-tri-asc="triAsc" data-change-method="changeTri('cle')"></data-sorter>
+          </th>
+          <th>
+            {{ 'Utilisateur.LblNom' | translate }}
+            <data-sorter data-column="nom" data-tri="tri" data-tri-asc="triAsc" data-change-method="changeTri('nom')"></data-sorter>
+          </th>
+          <th>
+            {{ 'Utilisateur.LblEmail' | translate }}
+            <data-sorter data-column="email" data-tri="tri" data-tri-asc="triAsc" data-change-method="changeTri('email')"></data-sorter>
+          </th>
+          <th>
+            {{ 'Utilisateur.LblLogin' | translate }}
+            <data-sorter data-column="login" data-tri="tri" data-tri-asc="triAsc" data-change-method="changeTri('login')"></data-sorter>
+          </th>
+          <th>
+            {{ 'Utilisateur.LblActif' | translate }}
+            <data-sorter data-column="actif" data-tri="tri" data-tri-asc="triAsc" data-change-method="changeTri('actif')"></data-sorter>
+          </th>
+          <th>
+            <a data-ng-show="canAdd" class="btn" data-ng-href="#/utilisateurEdit"><i class="fa fa-plus" title="{{ 'Common.CRUDAdd' | translate }}"></i></a>
+          </th>
+        </tr>
+      </thead>
+      <tbody>
+        <tr data-ng-if="nombre == 0">
+          <td colspan="7" class="center no-data">
+            {{ 'Common.NotFound' | translate }}
+            <br /><a class="btn" data-ng-href="#/utilisateurEdit"><i class="fa fa-plus" title="{{ 'Common.CRUDAdd' | translate }}"></i> {{ 'Common.CRUDAdd' | translate }}</a>
+          </td>
+        </tr>
+        <tr data-ng-repeat="x in utilisateurs">
+          <td class="id">{{ ((page-1) * pageSize) + $index + 1 }}</td>
+          <td class="id">{{ x.cle }}</td>
+          <td>{{ x.nom }}</td>
+          <td><a href="mailto:{{ x.mail }}" title="{{ 'Common.TipsMailTo' | translate }}">{{ x.email }}</a></td>
+          <td>{{ x.login }}</td>
+          <td>
+            <i class="fa fa-check green" data-ng-if="x.actif"></i>
+            <i class="fa fa-times red" data-ng-if="!x.actif"></i>
+          </td>
+          <td align="center">
+            <a data-ng-show="canAdd" class="btn" data-ng-if="x.cle > 1" data-ng-href="#/utilisateurEdit?cle={{x.cle}}"><i class="fa fa-pencil" title="{{ 'Common.CRUDEdit' | translate }}"></i></a>
+            <a data-ng-show="canAdd" class="btn" data-ng-if="x.cle > 1" data-ng-href="" data-ng-click="confirmDelete(x)"><i class="fa fa-times" title="{{ 'Common.CRUDDel' | translate }}"></i></a>
+            <a data-ng-show="canAdd" class="btn" data-ng-if="x.cle > 1" data-ng-href="#/utilisateurDroit?cle={{x.cle}}"><i class="fa fa-lock" title="{{ 'UtilisateurDroit.SousTitre' | translate }}"></i></a>
+            <a data-ng-show="!canAdd" class="btn" data-ng-if="x.cle > 1" data-ng-href="#/utilisateurRead?cle={{x.cle}}"><i class="fa fa-eye" title="{{ 'Common.CRUDDetail' | translate }}"></i></a>
+          </td>
+        </tr>
+      </tbody>
+      <tfoot>
+        <tr data-ng-if="nombre > 0">
+          <td colspan="4" class="collapse">
+            {{ 'Common.TitreTotal' | translate }} <strong>{{ nombre }}</strong>
+          </td>
+          <td colspan="3" class="collapse" align="right">
+            <no-paging class="small" page="page" page-size="pageSize" total="nombre" hide-if-empty="true"
+                       title-page="{{ 'Common.PageTitle' | translate }}"
+                       paging-action="changePage(page)">
+            </no-paging>
+          </td>
+        </tr>
+      </tfoot>
+    </table>
+  </div>
+
+  <!-- Page footer -->
+  <data:footer></data:footer>
+</div>

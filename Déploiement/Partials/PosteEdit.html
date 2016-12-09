@@ -1,0 +1,162 @@
+﻿<div>
+  <!-- Page header -->
+  <data:header-menu data-titre="{{ 'Poste.SousTitre'| translate }}" data-niveau-menu="7"></data:header-menu>
+  <!-- Contenu -->
+  <div class="page-content">
+    <form name="saisie" novalidate>
+      <table class="admin-edit">
+        <thead>
+          <tr>
+            <th>
+              <span data-ng-if="cle > 0">{{ 'Poste.TitreEdit' | translate }}</span>
+              <span data-ng-if="!cle || cle < 0">{{ 'Poste.TitreAdd' | translate }}</span>
+            </th>
+          </tr>
+          <tr data-ng-show="error">
+            <td>
+              <!-- en cas d'erreur -->
+              <data:display-error></data:display-error>
+            </td>
+          </tr>
+        </thead>
+        <tbody>
+          <!-- Nom -->
+          <tr>
+            <td>
+              <label for="nom">{{ 'Poste.LblNom' | translate }}</label><br />
+              <input type="text" id="nom" name="nom" style="width:400px;"
+                     data-ng-model="poste.nom" data-ng-maxlength="100" maxlength="101" required />
+              <div data-ng-show="saisie.nom.$dirty && saisie.nom.$invalid">
+                <div class="error-message" data-ng-show="saisie.nom.$error.required">
+                  {{ 'Poste.RequisNom' | translate }}
+                </div>
+                <div class="error-message" data-ng-show="saisie.nom.$error.maxlength">
+                  {{ 'Poste.MaxLenghtNom' | translate }}
+                </div>
+              </div>
+            </td>
+          </tr>
+          <!-- Description -->
+          <tr>
+            <td>
+              <label for="description">{{ 'Poste.LblDescription' | translate }}</label><br />
+              <textarea type="text" id="description" name="description" style="width:400px;height:150px;"
+                        data-ng-model="poste.description"></textarea>
+            </td>
+          </tr>
+          <!-- Type -->
+          <tr>
+            <td>
+              <label for="posteType">{{ 'Poste.LblPosteType' | translate }}</label><br />
+              <select data-ng-model="poste.posteTypeNomCle" style="width:408px;"
+                      data-ng-options="tp.nom for tp in posteTypes track by tp.cle"></select>
+              <div data-ng-show="poste.posteTypeNomCle.cle <= 0">
+                <div class="error-message" data-ng-show="poste.posteTypeNomCle.cle <= 0">
+                  {{ 'Poste.RequisPosteType' | translate }}
+                </div>
+              </div>
+            </td>
+          </tr>
+          <!-- Affectation -->
+          <tr>
+            <td>
+              <label for="affectation">{{ 'Poste.LblAffectation' | translate }}</label><br />
+              <div class="error-message" data-ng-show="poste.posteTypeNomCle.cle <= 0">
+                {{ 'Poste.RequisPosteTypePourAffectation' | translate }}
+              </div>
+              <select data-ng-model="poste.affectation" style="width:408px;" data-ng-show="poste.posteTypeNomCle.cle"
+                      data-ng-options="tp.nom for tp in affectations | filter: {imprimante:poste.posteTypeNomCle.imprimante}   track by tp.code"></select>
+              <div data-ng-show="poste.affectation.code==null && poste.posteTypeNomCle.cle">
+                <div class="error-message" data-ng-show="poste.affectation.code==null">
+                  {{ 'Poste.RequisAffectation' | translate }}
+                </div>
+              </div>
+            </td>
+          </tr>
+          <!-- Configuration -->
+          <tr data-ng-show="debuggOn">
+            <td>
+              <label for="configurationTxt">{{ 'Poste.LblConfigurationTxt' | translate }}</label><br />
+              <textarea type="text" id="configurationTxt" name="configurationTxt" style="width:400px;height:150px;"
+                        data-ng-model="poste.configurationTxt"></textarea>
+            </td>
+          </tr>
+
+          <!-- Adresse IP -->
+          <tr>
+            <td>
+              <label for="adresseIP">{{ 'Poste.LblAdressIp' | translate }}</label><br />
+              <input type="text" id="adresseIP" name="adresseIp" style="width:140px;"
+                     data-ng-model="config.adresseIP" data-ng-maxlength="15" maxlength="16" required data-check-adresse-ip />
+              <div data-ng-show="saisie.adresseIP.$dirty && saisie.adresseIP.$invalid">
+                <div class="error-message" data-ng-show="saisie.adresseIP.$error.required">
+                  {{ 'Poste.RequisAdresseIp' | translate }}
+                </div>
+                <div class="error-message" data-ng-show="saisie.adresseIP.$error.maxlength">
+                  {{ 'Poste.MaxLenghtAdresseIp' | translate }}
+                </div>
+                <div class="error-message" data-ng-show="saisie.adresseIP.$error.checkAdresseIp">
+                  {{ 'Poste.FormatAdresseIp' | translate }}
+                </div>
+              </div>
+            </td>
+          </tr>
+
+          <!-- Antennes -->
+          <tr>
+            <td>
+              <label>{{ 'Poste.LblAntennes' | translate }}</label><br />
+
+              {{ 'Poste.Antenne1' | translate }} <input type="checkbox" id="chkAntenne0" name="chkAntenne0"
+                           data-ng-model="config.antennes[0].active" />
+              <span data-ng-show="config.antennes[0].active">
+                {{ 'Poste.TitreGain' | translate }} <input type="range" id="gainAntenne0" name="gainAntenne0" min="10" max="32"
+                            data-ng-model="config.antennes[0].gainDB"> {{config.antennes[0].gainDB }}{{ 'Poste.UnitGain' | translate }}
+              </span>
+              <br />
+              {{ 'Poste.Antenne2' | translate }}  <input type="checkbox" id="chkAntenne1" name="chkAntenne1"
+                           data-ng-model="config.antennes[1].active" />
+              <span data-ng-show="config.antennes[1].active">
+                {{ 'Poste.TitreGain' | translate }} <input type="range" id="gainAntenne1" name="gainAntenne1" min="10" max="32"
+                            data-ng-model="config.antennes[1].gainDB"> {{config.antennes[1].gainDB }}{{ 'Poste.UnitGain' | translate }}
+              </span>
+              <br />
+              {{ 'Poste.Antenne3' | translate }}  <input type="checkbox" id="chkAntenne2" name="chkAntenne2"
+                           data-ng-model="config.antennes[2].active" />
+              <span data-ng-show="config.antennes[2].active">
+                {{ 'Poste.TitreGain' | translate }} <input type="range" id="gainAntenne2" name="gainAntenne2" min="10" max="32"
+                            data-ng-model="config.antennes[2].gainDB"> {{config.antennes[2].gainDB }}{{ 'Poste.UnitGain' | translate }}
+              </span>
+              <br />
+              {{ 'Poste.Antenne4' | translate }}  <input type="checkbox" id="chkAntenne3" name="chkAntenne3"
+                           data-ng-model="config.antennes[3].active" />
+              <span data-ng-show="config.antennes[3].active">
+                {{ 'Poste.TitreGain' | translate }} <input type="range" id="gainAntenne3" name="gainAntenne3" min="10" max="32"
+                            data-ng-model="config.antennes[3].gainDB"> {{config.antennes[3].gainDB }}{{ 'Poste.UnitGain' | translate }}
+              </span>
+            </td>
+          </tr>
+
+          <!-- Seuil de répétition -->
+          <tr>
+            <td title="{{ 'Poste.TipsSeuil' | translate }}">
+              <label for="seuil">{{ 'Poste.LblSeuil' | translate }}</label><br />
+              <input type="range" id="seuil" name="seuil" min="1" max="50" data-ng-model="config.seuil"> {{ config.seuil }}
+            </td>
+          </tr>
+        </tbody>
+        <tfoot>
+          <tr>
+            <td class="button">
+              <span class="btn btn-submit" data-ng-click="saveModif()" data-ng-show="saisie.$valid && !processing">{{ 'Common.BoutonEnregistrer' | translate }}&nbsp;<i class="fa fa-check"></i></span>
+              <i class="fa fa-circle-o-notch fa-spin gray" data-ng-show="processing"></i>
+              &nbsp;&nbsp;<a href="#/poste">{{ 'Common.BoutonAnuller' | translate }}</a>
+            </td>
+          </tr>
+        </tfoot>
+      </table>
+    </form>
+  </div>
+  <!-- Page footer -->
+  <data:footer></data:footer>
+</div>

@@ -1,0 +1,276 @@
+﻿<div>
+
+  <style>
+    .color-modal {
+      position: fixed;
+      left: 0;
+      top: 0;
+      right: 0;
+      bottom: 0;
+      background: rgba(0, 0, 0, 0);
+      z-index: 1000;
+    }
+
+    .color-piker {
+      border: 1px solid #000000;
+      background-color: #f2f2f2;
+      width: 221px;
+      height: 254px;
+      padding: 0;
+      position: absolute;
+      -webkit-touch-callout: none;
+      -webkit-user-select: none;
+      -moz-user-select: none;
+      -ms-user-select: none;
+      user-select: none;
+    }
+
+    .palette-title {
+      background-color: #dddddd;
+      height: 20px;
+      padding-bottom: 3px;
+    }
+
+    .palette-title-text {
+      float: left;
+      margin-right: 4px;
+      padding-left: 3px;
+    }
+
+    .palette-case-sel {
+      height: 18px;
+      width: 18px;
+      float: left;
+      margin-right: 0;
+      padding: 0;
+      margin-top: 3px;
+    }
+
+    .palette-degrade {
+      float: left;
+      height: 150px;
+      width: 201px;
+      margin: 0;
+      border: 0;
+      cursor: crosshair;
+    }
+
+    .palette-chooser {
+      float: left;
+      height: 150px;
+      width: 19px;
+      margin: 0;
+      border-left: 1px solid #666666;
+      cursor: row-resize;
+    }
+
+    .palette {
+      float: left;
+      margin-top: 5px;
+    }
+
+    .palette-row {
+      clear: both;
+    }
+
+    .palette-case {
+      height: 19px;
+      width: 19px;
+      float: left;
+      cursor: pointer;
+      margin: 2px;
+    }
+
+    .palette-case-empty2 {
+      height: 19px;
+      width: 19px;
+      float: left;
+      background-color: #dddddd;
+      margin: 2px;
+    }
+
+    .palette-empty {
+      background-color: white;
+      background-image: linear-gradient(45deg, #CCCCCC 25%, transparent 25%, transparent 75%, #CCCCCC 75%), linear-gradient(45deg, #CCCCCC 25%, transparent 25%, transparent 75%, #CCCCCC 75%);
+      background-size: 10px 10px;
+      background-position: 0 0, 5px 5px;
+    }
+
+    .palette-text {
+      float: left;
+      width: 88px;
+      height: 22px;
+      border: 0;
+      text-align: center;
+      padding-left: 3px;
+      margin: 0;
+      padding: 0 1px 0 2px;
+    }
+
+    .palette-rgb {
+      float: left;
+      border-width: 1px;
+      border-style: solid;
+      width: 60px;
+      height: 23px;
+      margin-left: 5px;
+      margin-right: 5px;
+    }
+
+    .palette-rgb-letter {
+      float: left;
+      width: 10px;
+      text-align: right;
+      padding-right: 3px;
+      font-size: 12px;
+      color: white;
+    }
+
+    .palette-rgb input {
+      float: left;
+      width: 38px;
+      height: 15px;
+      border-style: hidden;
+      border-width: 0px;
+      padding-left: 3px;
+      margin-left: 1px;
+    }
+
+    .palette-scroller {
+      float: left;
+      position: relative;
+      top: 0;
+      left: -5px;
+      width: 55px;
+      height: 6px;
+      border-style: hidden;
+      border-width: 0;
+      cursor: pointer;
+      margin-top: 0;
+      margin-right: 0;
+      margin-left: 5px;
+      background-color: #f2f2f2;
+    }
+
+    .palette-validation {
+      float: right;
+      margin-right: 5px;
+    }
+
+    .palette-btn-plus {
+      cursor: pointer;
+      float: left;
+      margin-left: 5px;
+    }
+
+    .palette-sup {
+      border: 1px solid #000000;
+      margin-left: -1px;
+      margin-right: -1px;
+      padding-left: 5px;
+    }
+
+    .palette-number {
+      margin: 0;
+      padding: 0;
+      font-size: 0.6em;
+    }
+  </style>
+
+  <div id="overlay" class="color-modal" data-ng-click="cancel()">
+    <div class="color-piker"
+         data-ng-style="{'left':position.left + 'px', 'top':position.top + 'px'}"
+         data-ng-click="$event.stopPropagation();">
+
+      <!-- Titre et couleur sélectionné -->
+      <div class="palette-title">
+        <div class="palette-title-text">Couleur : </div>
+        <div class="palette-case-sel" data-ng-style="{'background-color': currentColor }" data-ng-class="{'palette-empty' : colorEmpty == true}" title="Couleur sélectionnée"></div>
+        <div class="palette-title-text">{{ currentColor }}</div>
+      </div>
+      <!-- zone dégradée -->
+      <canvas id="zChoice" class="palette-degrade" data-ng-mousemove="onMouseMoveZChoice($event)" data-ng-click="onClickZChoice($event)"></canvas>
+      <canvas id="vChoice" class="palette-chooser" data-ng-mousemove="onMouseMoveVChoice($event)" data-ng-mouseup="onClickVChoice($event)"></canvas> <!--x-->
+
+      <div class="palette-row"></div>
+      <div>
+        <!-- Texte de la couleur-->
+        <div class="center">
+          <input type="text" data-ng-model="currentColor" class="palette-text" />
+        </div>
+        <!-- Couleur MRU-->
+        <!--<div class="palette-case" style="background-color: blue" data-ng-click="setColor('#0000FF')" title="Bleu"></div>-->
+        <div class="palette-case" style="background-color: red" data-ng-click="setColor('#FF0000')" title="Rouge"></div>
+        <div class="palette-case" style="background-color: black" data-ng-click="setColor('#000000')" title="Noir"></div>
+        <div class="palette-case" style="background-color: white" data-ng-click="setColor('#FFFFFF')" title="Blanc"></div>
+        <div class="palette-case palette-empty" data-ng-click="setColor('')" title="Effacer la couleur"></div>
+        <div class="palette-case" data-ng-style="{'background-color': colorOrigine}" data-ng-click="setColor(colorOrigine)" title="Couleur d'origine" data-ng-class="{'palette-empty' : colorOrigineEmpty == true}"></div>
+      </div>
+
+      <!-- saisie du RGB -->
+      <div class="palette">
+        <div class="palette-rgb" style="color:red;background-color:red;border-color:red;">
+          <div class="palette-rgb-letter">R</div>
+          <input type="number" class="palette-number" min="0" max="255" pattern="[1-2]?[0-9]?[0-9]?" data-ng-model="currentR" style="border-color:red" />
+          <div id="rChoice" class="palette-scroller" style="border-color:red"
+               data-ng-mousemove="onMouseMoveR($event)"
+               data-ng-click="onClickR($event)">
+            <div data-ng-style="{'background-color':'red', 'width':((currentR/255*100)%255) + '%', 'height':'6px'}"></div>
+          </div>
+        </div>
+
+        <div class="palette-rgb" style="color:green;background-color:green;border-color:green;">
+          <div class="palette-rgb-letter">G</div>
+          <input type="number" class="palette-number" min="0" max="255" pattern="[1-2]?[0-9]?[0-9]?" data-ng-model="currentG" style="border-color:green" />
+          <div id="gChoice" class="palette-scroller" style="border-color:green"
+               data-ng-mousemove="onMouseMoveG($event)"
+               data-ng-click="onClickG($event)">
+            <div data-ng-style="{'background-color':'green', 'width':((currentG/255*100)%255) + '%', 'height':'6px'}"></div>
+          </div>
+        </div>
+
+        <div class="palette-rgb" style="color:blue;background-color:blue;border-color:blue;">
+          <div class="palette-rgb-letter">B</div>
+          <input type="number" class="palette-number" min="0" max="255" pattern="[1-2]?[0-9]?[0-9]?" data-ng-model="currentB" style="border-color:blue" />
+          <div id="bChoice" class="palette-scroller" style="border-color:blue"
+               data-ng-mousemove="onMouseMoveB($event)"
+               data-ng-click="onClickB($event)">
+            <div data-ng-style="{'background-color':'blue', 'width':((currentB/255*100)%255) + '%', 'height':'6px'}"></div>
+          </div>
+        </div>
+      </div>
+
+      <div class="palette-row"></div>
+
+      <!-- Les boutons -->
+      <div class="palette-row palette-title" style="margin-top: 5px;">
+        <div class="palette-btn-plus" data-ng-click="displayPal = !displayPal" data-ng_show="!displayPal"><i class="fa fa-plus"></i></div>
+        <div class="palette-btn-plus" data-ng-click="displayPal = !displayPal" data-ng_show="displayPal"><i class="fa fa-minus"></i></div>
+        <div class="palette-validation">
+          <span class="btn" data-ng-click="confirm()" style="margin-right:5px;" title="Valider le choix"><i class="fa fa-check"></i></span>
+          <span class="btn" data-ng-click="cancel()"><i class="fa fa-times" title="Annuler"></i></span>
+        </div>
+      </div>
+      <div class="palette-row"></div>
+
+      <div data-ng-show="displayPal" class="palette-sup">
+        <!-- palette de couleurs prédéfinies -->
+        <div class="palette-row" data-ng-repeat="row in colors track by $index">
+          <div data-ng-repeat="col in row track by $index" class="palette-case"
+               data-ng-style="{'background-color': col}"
+               data-ng-click="setColor(col)"></div>
+        </div>
+
+        <div class="palette-row">
+          <div data-ng-repeat="col in customColors track by $index" class="palette-case"
+               data-ng-style="{'background-color': col}"
+               data-ng-click="setColor(col)"></div>
+          <div data-ng-repeat="c in [] | range : 9 | skip : customColors.length " class="palette-case-empty2"></div>
+        </div>
+        <div class="palette-row"></div>
+      </div>
+
+
+    </div>
+  </div>
+</div>

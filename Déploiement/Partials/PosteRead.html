@@ -1,0 +1,100 @@
+﻿<div>
+  <!-- Page header -->
+  <data:header-menu data-titre="{{ 'Poste.SousTitre'| translate }}" data-niveau-menu="7"></data:header-menu>
+  <!-- Contenu -->
+  <div class="page-content">
+    <form name="saisie" novalidate>
+      <table class="admin-edit">
+        <thead>
+          <tr>
+            <th>
+              <span>{{ 'Poste.TitreRead' | translate }}</span>
+            </th>
+          </tr>
+          <tr data-ng-show="error">
+            <td>
+              <!-- en cas d'erreur -->
+              <data:display-error></data:display-error>
+            </td>
+          </tr>
+        </thead>
+        <tbody>
+          <!-- Nom -->
+          <tr>
+            <td>
+              <label for="nom">{{ 'Poste.LblNom' | translate }}</label><br />
+              <span class="info-readonly">{{ poste.nom }}</span>
+            </td>
+          </tr>
+          <!-- Description -->
+          <tr>
+            <td>
+              <label for="description">{{ 'Poste.LblDescription' | translate }}</label><br />
+              <span class="info-readonly" data-ng-show="poste.description">{{ poste.description }}</span>
+              <span class="info-readonly" data-ng-show="!poste.description">{{ 'Common.Aucune' | translate  }}</span>
+            </td>
+          </tr>
+          <!-- Type -->
+          <tr>
+            <td>
+              <label for="posteType">{{ 'Poste.LblPosteType' | translate }}</label><br />
+              <span class="info-readonly">{{ poste.posteTypeNomCle.nom }}</span>
+            </td>
+          </tr>
+          <!-- Affectation -->
+          <tr>
+            <td>
+              <label for="affectation">{{ 'Poste.LblAffectation' | translate }}</label><br />
+              <span class="info-readonly">{{ poste.affectation.nom }}</span>
+            </td>
+          </tr>
+          <!-- Configuration -->
+          <tr data-ng-show="debuggOn">
+            <td>
+              <label for="configurationTxt">{{ 'Poste.LblConfigurationTxt' | translate }}</label><br />
+              <span class="info-readonly">{{ poste.configurationTxt }}</span>
+            </td>
+          </tr>
+
+          <!-- Adresse IP -->
+          <tr>
+            <td>
+              <label for="adresseIP">{{ 'Poste.LblAdressIp' | translate }}</label><br />
+              <span class="info-readonly">{{ config.adresseIP }}</span>
+            </td>
+          </tr>
+
+          <!-- Antennes -->
+          <tr>
+            <td>
+              <label>{{ 'Poste.LblAntennes' | translate }}</label><br />
+
+              <div data-ng-show="config.antennes[0].active">
+                {{ 'Poste.Antenne1' | translate }} <i class="fa fa-check green"></i> {{config.antennes[0].gainDB }}{{ 'Poste.UnitGain' | translate }}
+              </div>
+              <div data-ng-show="config.antennes[1].active">
+                {{ 'Poste.Antenne2' | translate }} <i class="fa fa-check green"></i> {{config.antennes[1].gainDB }}{{ 'Poste.UnitGain' | translate }}
+              </div>
+              <div data-ng-show="config.antennes[2].active">
+                {{ 'Poste.Antenne3' | translate }} <i class="fa fa-check green"></i> {{config.antennes[2].gainDB }}{{ 'Poste.UnitGain' | translate }}
+              </div>
+              <div data-ng-show="config.antennes[3].active">
+                {{ 'Poste.Antenne4' | translate }} <i class="fa fa-check green"></i> {{config.antennes[3].gainDB }}{{ 'Poste.UnitGain' | translate }}
+              </div>
+            </td>
+          </tr>
+        </tbody>
+        <tfoot>
+          <tr>
+            <td class="button">
+              <i class="fa fa-circle-o-notch fa-spin gray" data-ng-show="processing"></i>
+             <a href="#/poste">{{ 'Common.BoutonRetour' | translate }}</a>
+            </td>
+          </tr>
+        </tfoot>
+      </table>
+    </form>
+  </div>
+  <!-- Page footer -->
+  <data:footer></data:footer>
+</div>

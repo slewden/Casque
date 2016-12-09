@@ -1,0 +1,188 @@
+﻿<div>
+  <!-- Page header -->
+  <data:header-menu data-titre="{{ 'Commande.SousTitre'| translate }}" data-niveau-menu="1" data-roothub="roothub"></data:header-menu>
+  <!-- Contenu -->
+  <div class="page-content">
+    <form name="saisie" novalidate>
+
+      <!-- table pour l'impression de la commande -->
+      <table class="admin-edit">
+        <thead>
+          <tr>
+            <th>
+              {{ 'Commande.TitrePrint' | translate }}
+            </th>
+          </tr>
+        </thead>
+        <tbody>
+          <!-- Numéro -->
+          <tr>
+            <td>
+              <label for="numero">{{ 'Commande.LblNumero' | translate }}</label><br />
+              <span class="info-readonly">{{ commande.numero }}</span>
+
+            </td>
+          </tr>
+
+          <!-- Pièces -->
+          <tr>
+            <td>
+              <table class="admin-edit">
+                <thead>
+                  <tr>
+                    <th style="width:60px;" title="{{ 'Commande.TipsQuantite' | translate }}">{{ 'Commande.LblQuantite' | translate }}</th>
+                    <th colspan="2">{{ 'FournisseurPiece.LblTypePiece' | translate }}</th>
+                    <th style="width:100px;">{{ 'CasqueConstitue.LblCouleur' | translate }}</th>
+                    <th style="width:130px;">{{ 'CasqueConstitue.LblTaille' | translate }}</th>
+                  </tr>
+                </thead>
+                <tbody>
+                  <tr data-ng-repeat="p in commande.pieces track by p.guid" data-ng-show="p.typePieceAvecTag && p.quantite">
+                    <td>
+                      <span class="info-readonly">{{ p.quantite }}</span>
+                    </td>
+                    <td title="{{ p.typePieceDescription }}" align="center">
+                      <i class="fa fa-tags green" title="{{ 'CasqueConstitue.TipsPieceEtiquette' | translate }}"></i>
+                    </td>
+                    <td title="{{ p.typePieceDescription }}">
+                      <span class="info-readonly">{{ p.typePieceNom }}</span>
+                    </td>
+                    <td>
+                      <span class="info-readonly">{{ p.couleurNom }}</span>
+                    </td>
+                    <td>
+                      <span class="info-readonly">{{ p.tailleNom }}</span>
+                    </td>
+                  </tr>
+                  <tr><td colspan="5"></td></tr>
+                </tbody>
+                <tfoot>
+                  <tr>
+                    <td>&nbsp;</td>
+                    <td>
+                      <span data-ng-show="commande.nombreProduitEtiquette">
+                        <i class="fa fa-tags green" title="{{ 'CasqueConstitue.TipsPieceEtiquette' | translate }}"></i> x {{ commande.nombreProduitEtiquette | masquezero }}
+                      </span>
+                    </td>
+                    <td colspan="3">{{ 'Commande.TipsNombreEtiquette' | translate }}</td>
+                  </tr>
+                </tfoot>
+              </table>
+            </td>
+          </tr>
+
+
+          <!-- Impression -->
+          <tr data-ng-show="commande.validation" data-ng-show="progession">
+            <td>
+              <label for="LblImpression" data-ng-show="progression < 8">{{ 'Commande.progressing' | translate }}</label><br />
+              <label for="LblImpression" data-ng-show="progression == 8">{{ 'Commande.progression8' | translate }}</label><br />
+
+              <!-- connexion au hub -->
+              <span data-ng-show="progression == 1" class="info-readonly">
+                <i class="fa fa-circle-o-notch fa-spin orange"></i> {{ 'HubLecteur.progression1' | translate }}<br />
+              </span>
+
+              <!-- connecté au hub -->
+              <span data-ng-show="progression > 1" class="info-readonly">
+                <i class="fa fa-check green"></i> {{ 'HubLecteur.progressionOk1' | translate }}<br />
+              </span>
+              <!--  Recherche des imprimantes -->
+              <span data-ng-show="progression == 2" class="info-readonly">
+                <i class="fa fa-circle-o-notch fa-spin orange"></i> {{ 'HubLecteur.progression2p' | translate }}<br />
+              </span>
+
+              <!-- drivers imprimante non trouvé -->
+              <span data-ng-show="progression == 3">
+                <span class="red"><i class="fa fa-times red"></i> {{ 'HubLecteur.progression4'| translate }}</span><br />
+                {{ 'HubLecteur.progression42'| translate }} <button data-ng-click="sayHello()">{{ 'Common.BoutonRetry'| translate }}</button>
+                <button data-ng-click="goList()">{{ 'Common.BoutonAnuller'| translate }}</button><br /><br />
+              </span>
+              <!-- drivers ok -->
+              <span data-ng-show="progression >= 4" class="info-readonly">
+                <i class="fa fa-check green"></i> {{ 'HubLecteur.progression5'| translate }}<br />
+              </span>
+
+              <!-- choix des imprimantes -->
+              <div data-ng-show="progression == 4 && postes && postes.length">
+                {{ 'HubLecteur.LblSelWriter'| translate }}<br />
+                <select data-ng-model="poste" style="width:400px;" data-ng-show="postes"
+                        data-ng-options="p.nom for p in postes track by p.cle"></select><br />
+                <button data-ng-show="poste" data-ng-click="startPrint()">{{ 'HubLecteur.BtStartPrinting'| translate }}</button>
+              </div>
+              <!-- imprimante choisie -->
+              <span data-ng-show="progression == 5 || progression == 6" class="info-readonly">
+                <i class="fa fa-check green"></i> {{ 'HubLecteur.progression8p'| translate: {poste:poste.nom } }}<br />
+              </span>
+              <!-- impression en cours -->
+              <span data-ng-show="progression == 5 || progression == 6 || progression == 7" class="info-readonly">
+                <i class="fa fa-circle-o-notch fa-spin orange"></i> {{ 'HubLecteur.progression11'| translate }}
+                <!-- progression de l'impression -->
+                <div data-ng-show="progression == 7 && progressTotal && progressIndex && progressIndex <= progressTotal">
+                  <div class="print-progress">
+                    <div class="bar-ok" style="width:{{ progressIndex / progressTotal * 100 }}%;"></div>
+                    <div class="bar-ko" style="width:{{ 100 - (progressIndex / progressTotal * 100) }}%;"></div>
+                  </div>
+                  {{ progressIndex }} sur {{ progressTotal }}<br />
+                </div>
+              </span>
+              <span data-ng-show="progression == 8" class="info-readonly">
+                <i class="fa fa-check green"></i> {{ 'HubLecteur.progressionFinie'| translate }}<br />
+              </span>
+
+              <!-- en cas d'erreur -->
+              <div class="error" data-ng-show="error">
+                <div class="notify-message">
+                  <div class="notify-message-left">
+                    {{ error }}
+                  </div>
+                  <div class="notify-message-right">
+                    <div class="btn" data-ng-click="clearError()" title="{{ 'Common.TipsHide' | translate }}"><i class="fa fa-times"></i></div>
+                  </div>
+                </div>
+              </div>
+
+            </td>
+          </tr>
+
+          <tr><td></td></tr>
+        </tbody>
+        <tfoot>
+          <tr>
+            <td class="button">
+              <i class="fa fa-circle-o-notch fa-spin gray" data-ng-show="processing"></i>
+              &nbsp;&nbsp;<a href="#/commandeList">{{ 'Common.BoutonRetour' | translate }}</a>
+            </td>
+          </tr>
+        </tfoot>
+      </table>
+    </form>
+
+    <!-- Debug panel -->
+    <div style="display:none;">
+      Commande cle: ##{{ cle }}##<br />
+      Progression ##{{ progression }}##<br />
+      Identifiant Hub : ##{{ connectionId }}##<br />
+      Utilisation cle : ##{{ utilisationPosteCle }}##<br />
+      User : ##{{ user.nom }}## <br />
+      Poste : ##{{ poste.nom }}##<br />
+      Error : ## {{ error }}##<br />
+      ProgressBar ##{{ progressIndex }}## sur ##{{ progressTotal }}##<br />
+      Etat du lecteur :
+      <span data-ng-show="hubOpen">
+        <i class="fa fa-stop red" data-ng-show="!reader.statut" title="{{ 'HubLecteur.Statut0' | translate }}"></i>
+        <i class="fa fa-ellipsis-h orange" data-ng-show="reader.statut == 1" title="{{ 'HubLecteur.Statut1' | translate }}"></i><i class="fa fa-play orange" data-ng-show="reader.statut == 1" title="{{ 'HubLecteur.Statut1' | translate }}"></i>
+        <i class="fa fa-play green" data-ng-show="reader.statut == 2" title="{{ 'HubLecteur.Statut2' | translate }}"></i>
+        <i class="fa fa-ellipsis-h orange" data-ng-show="reader.statut == 3" title="{{ 'HubLecteur.Statut3' | translate }}"></i><i class="fa fa-stop orange" data-ng-show="reader.statut == 3" title="{{ 'HubLecteur.Statut3' | translate }}"></i>
+      </span><br />
+      <span data-ng-show="!hubOpen">
+        <i class="fa fa-question-circle orange" title="{{ 'HubLecteur.StatutUnknow' | translate }}"></i>
+      </span>
+    </div>
+
+
+  </div>
+  <!-- Page footer -->
+  <data:footer></data:footer>
+</div>
+

@@ -1,0 +1,109 @@
+﻿<div>
+  <!-- Page header -->
+  <data:header-menu data-titre="{{ 'CasqueConstitue.SousTitre'| translate }}" data-niveau-menu="6"></data:header-menu>
+  <!-- Contenu -->
+  <div class="page-content">
+    <form name="saisie" novalidate>
+      <table>
+        <tr>
+          <td valign="top">
+
+            <table class="admin-edit">
+              <thead>
+                <tr>
+                  <th colspan="5">
+                    <img data-ng-src="{{ casque.photoUrl }}" width="50" />
+
+                    <input type="text" id="nom" name="nom" style="width:400px;"
+                           data-ng-model="nom" data-ng-maxlength="100" maxlength="101" required />
+                    <div data-ng-show="saisie.nom.$dirty && saisie.nom.$invalid">
+                      <div class="error-message" data-ng-show="saisie.nom.$error.required">
+                        {{ 'Casque.RequisNom' | translate }}
+                      </div>
+                      <div class="error-message" data-ng-show="saisie.nom.$error.maxlength">
+                        {{ 'Casque.MaxLenghtNom' | translate }}
+                      </div>
+                    </div>
+                    <br /><small>{{ 'CasqueConstitue.Titre' | translate }}</small>
+                  </th>
+                </tr>
+                <tr data-ng-show="error">
+                  <td colspan="5">
+                    <!-- en cas d'erreur -->
+                    <data:display-error></data:display-error>
+                  </td>
+                </tr>
+              </thead>
+              <tbody>
+                <tr>
+                  <td colspan="5"><span class="orange" data-ng-if="!canEdit">{{ 'CasqueConstitue.CannotEditDesc' | translate }}<br /></span>&nbsp;</td>
+                </tr>
+                <tr>
+                  <th colspan="2">{{ 'CasqueConstitue.LblTypePiece' | translate }}</th>
+                  <th style="width:100px;">{{ 'CasqueConstitue.LblCouleur' | translate }}</th>
+                  <th colspan="2" style="width:120px;">{{ 'CasqueConstitue.LblTaille' | translate }}</th>
+                </tr>
+                <tr data-ng-repeat="p in pieces" data-ng-show="p.casqueCle == casque.cle">
+                  <td title="{{ p.description }}">
+                    {{ p.nom }}
+                  </td>
+                  <td title="{{ p.description }}" align="center">
+                    <i class="fa fa-tags green" title="{{ 'CasqueConstitue.TipsPieceEtiquette' | translate }}"
+                       data-ng-show="p.avecTag" />
+                  </td>
+                  <td>
+                    <span data-ng-if="!canEdit">{{ p.couleur.nom }}</span>
+                    <select data-ng-model="p.couleur" style="width:100px;" data-ng-show="p.nombreCouleur"
+                            data-ng-options="c.nom for c in p.couleurs track by c.cle" data-ng-if="canEdit"></select>
+                  </td>
+                  <td>
+                    <span data-ng-if="!canEdit">{{ p.taille.nom }}</span>
+                    <select data-ng-model="p.taille" style="width:100px;" data-ng-show="p.nombreTaille"
+                            data-ng-options="t.nom for t in p.tailles track by t.cle" data-ng-if="canEdit"></select>
+                  </td>
+                  <td title="{{ p.description }}" align="center">
+                    <i class="btn fa fa-minus-circle" data-ng-click="removePiece(p)" title="{{ 'Common.CRUDRemove' | translate }}" data-ng-if="canEdit" />
+                  </td>
+                </tr>
+                <tr><td colspan="5">&nbsp;</td></tr>
+              </tbody>
+              <tfoot>
+                <tr>
+                  <td colspan="5" class="button">
+                    <span class="btn btn-submit" data-ng-click="saveModif()" data-ng-show="canEdit && saisie.$valid && !processing">{{ 'Common.BoutonEnregistrer' | translate }}&nbsp;<i class="fa fa-check"></i></span>
+                    <i class="fa fa-circle-o-notch fa-spin gray" data-ng-show="processing"></i>
+                    &nbsp;&nbsp;<a href="#/casque" data-ng-show="canEdit">{{ 'Common.BoutonAnuller' | translate }}</a>
+                    <a href="#/casque" data-ng-show="! canEdit">{{ 'Common.BoutonRetour' | translate }}</a>
+                  </td>
+                </tr>
+              </tfoot>
+            </table>
+          </td>
+          <td valign="top">
+            <table class="admin-list" data-ng-if="canEdit">
+              <tbody>
+                <tr>
+                  <td align="center">{{ 'CasqueConstitue.LblTypePieceAdd' | translate }}</td>
+                </tr>
+                <tr>
+                  <td>
+                    <ul class="vert-choose">
+                      <li data-ng-repeat="p in pieces" data-ng-show="p.casqueCle != casque.cle">
+                        <div class="btn" data-ng-click="addPiece(p)">{{ p.nom }}</div>
+                      </li>
+                    </ul>
+                  </td>
+                </tr>
+              </tbody>
+            </table>
+          </td>
+        </tr>
+      </table>
+
+
+    </form>
+  </div>
+  <!-- Page footer -->
+  <data:footer></data:footer>
+</div>
+

@@ -1,0 +1,109 @@
+﻿<div>
+  <!-- Page header -->
+  <data:header-menu data-titre="{{ 'Client.SousTitre'| translate }}" data-niveau-menu="6" data-roothub="roothub"></data:header-menu>
+  <!-- Contenu -->
+  <div class="page-content">
+    <form name="saisie" novalidate>
+      <table>
+        <tr>
+          <td valign="top">
+
+
+            <table class="admin-edit">
+              <thead>
+                <tr>
+                  <th>
+                    <span data-ng-if="cle > 0">{{ 'Client.TitreEdit' | translate }}</span>
+                    <span data-ng-if="!cle || cle < 0">{{ 'Client.TitreAdd' | translate }}</span>
+                  </th>
+                </tr>
+                <tr data-ng-show="error">
+                  <td>
+                    <!-- en cas d'erreur -->
+                    <data:display-error></data:display-error>
+                  </td>
+                </tr>
+              </thead>
+              <tbody>
+                <!-- Nom -->
+                <tr>
+                  <td>
+                    <label for="nom">{{ 'Client.LblNom' | translate }}</label><br />
+                    <input type="text" id="nom" name="nom" style="width:400px;"
+                           data-ng-model="client.nom" data-ng-maxlength="200" maxlength="201" required />
+                    <div data-ng-show="saisie.nom.$dirty && saisie.nom.$invalid">
+                      <div class="error-message" data-ng-show="saisie.nom.$error.required">
+                        {{ 'Client.RequisNom' | translate }}
+                      </div>
+                      <div class="error-message" data-ng-show="saisie.nom.$error.maxlength">
+                        {{ 'Client.MaxLenghtNom' | translate }}
+                      </div>
+                    </div>
+                  </td>
+                </tr>
+                <!-- email -->
+                <tr>
+                  <td>
+                    <label for="email">{{ 'Client.LblEmail' | translate }}</label><br />
+                    <input type="email" id="email" name="email" style="width:400px;"
+                           data-ng-model="client.email" data-ng-maxlength="100" maxlength="101" />
+                    <div data-ng-show="saisie.email.$dirty && saisie.email.$invalid">
+                      <div class="error-message" data-ng-show="saisie.email.$error.maxlength">
+                        {{ 'Client.MaxLenghtEmail' | translate }}
+                      </div>
+                      <div class="error-message" data-ng-show="saisie.email.$error.email">
+                        {{ 'Client.FormatEmail' | translate }}
+                      </div>
+                    </div>
+                  </td>
+                </tr>
+                <!-- Adresse Commande -->
+                <tr>
+                  <td>
+                    <label for="adresseCommande">{{ 'Client.LblAdresseCommande' | translate }}</label><br />
+                    <textarea type="text" id="adresseCommande" name="adresseCommande" style="width:400px;height:150px;"
+                              data-ng-model="client.adresseCommande"></textarea>
+                  </td>
+                </tr>
+                <!-- Adresse livraison -->
+                <tr>
+                  <td>
+                    <label for="adresseLivraison">{{ 'Client.LblAdresseLivraison' | translate }}</label><br />
+                    <textarea type="text" id="adresseLivraison" name="adresseLivraison" style="width:400px;height:150px;"
+                              data-ng-model="client.adresseLivraison"></textarea>
+                  </td>
+                </tr>
+
+                <!-- Sujet des emails -->
+                <tr>
+                  <td>
+                    <label for="sujetEmail">{{ 'MailConfig.LblSubjetClient' | translate }}</label><br />
+                    <input type="text" id="sujetEmail" name="sujetEmail" style="width:400px;"
+                           data-ng-model="client.sujetEmail" />
+                    <i class="fa fa-question-circle btn" data-ng-click="subjectClientFocus = !subjectClientFocus"></i>
+                  </td>
+                </tr>
+              </tbody>
+              <tfoot>
+                <tr>
+                  <td class="button">
+                    <span class="btn btn-submit" data-ng-click="saveModif()" data-ng-show="saisie.$valid && !processing">{{ 'Common.BoutonEnregistrer' | translate }}&nbsp;<i class="fa fa-check"></i></span>
+                    <i class="fa fa-circle-o-notch fa-spin gray" data-ng-show="processing"></i>
+                    &nbsp;&nbsp;<a href="#/client">{{ 'Common.BoutonAnuller' | translate }}</a>
+                  </td>
+                </tr>
+              </tfoot>
+            </table>
+
+
+          </td>
+          <td valign="bottom">
+            <data-help-subject-client></data-help-subject-client>
+          </td>
+        </tr>
+      </table>
+    </form>
+  </div>
+  <!-- Page footer -->
+  <data:footer></data:footer>
+</div>

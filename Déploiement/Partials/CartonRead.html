@@ -1,0 +1,58 @@
+﻿<div>
+  <!-- Page header -->
+  <data:header-menu data-titre="{{ 'Carton.SousTitre'| translate }}" data-niveau-menu="7"></data:header-menu>
+  <!-- Contenu -->
+  <div class="page-content">
+    <form name="saisie" novalidate>
+      <table class="admin-edit">
+        <thead>
+          <tr>
+            <th>
+              <span>{{ 'Carton.TitreDetail' | translate }}</span>
+            </th>
+          </tr>
+          <tr data-ng-show="error">
+            <td>
+              <!-- en cas d'erreur -->
+              <data:display-error></data:display-error>
+            </td>
+          </tr>
+        </thead>
+        <tbody>
+          <!-- Nom -->
+          <tr>
+            <td>
+              <label for="nom">{{ 'Carton.LblNom' | translate }}</label><br />
+              <span class="info-readonly">{{ carton.nom }}</span>
+            </td>
+          </tr>
+          <!-- Code -->
+          <tr>
+            <td>
+              <label for="code">{{ 'Carton.LblCode' | translate }}</label><br />
+              <span class="info-readonly">{{ carton.code }}</span>
+            </td>
+          </tr>
+          <!-- Description -->
+          <tr>
+            <td>
+              <label for="description">{{ 'Carton.LblDescription' | translate }}</label><br />
+              <span class="info-readonly" data-ng-show="carton.description">{{ carton.description }}</span>
+              <span class="info-readonly" data-ng-show="!carton.description">{{ 'Common.Aucune' | translate  }}</span>
+           </td>
+          </tr>
+        </tbody>
+        <tfoot>
+          <tr>
+            <td class="button">
+              <i class="fa fa-circle-o-notch fa-spin gray" data-ng-show="processing"></i>
+              <a href="#/carton">{{ 'Common.BoutonRetour' | translate }}</a>
+            </td>
+          </tr>
+        </tfoot>
+      </table>
+    </form>
+  </div>
+  <!-- Page footer -->
+  <data:footer></data:footer>
+</div>

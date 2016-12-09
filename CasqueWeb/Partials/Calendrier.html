@@ -1,0 +1,185 @@
+﻿<div>
+  <style>
+    .calendar-modal {
+      position: fixed;
+      left: 0;
+      top: 0;
+      right: 0;
+      bottom: 0;
+      background: rgba(0, 0, 0, 0);
+      z-index: 1000;
+      /*-webkit-transition: opacity 2s ease-in;
+      -moz-transition: opacity 2s ease-in;
+      transition: opacity 2s ease-in;
+      text-align: center;*/
+    }
+
+    .calendar-content {
+      width: 230px;
+      height: 200px;
+      background-color: #F2F2F2; /* gris clair @cl_fond; */
+      border: 1px solid #000000; /* @cl_texte; */
+      /*transition: all 2s ease-in-out;
+      -moz-transition: all 2s ease-in-out;
+      -webkit-transition: all 2s ease-in-out;*/
+      position: absolute;
+    }
+
+    .calendrier-with-hours {
+      height: 238px !important;
+    }
+
+    .calendar-table {
+      width: 100%;
+      height: 200px;
+      border-collapse: collapse;
+    }
+
+    .calendar-heure {
+      width: 100%;
+      background-color: #ddd;
+      margin-top: 5px;
+    }
+
+    .calendar-arrow {
+      float: right;
+      width: 35px;
+    }
+
+    .calendar-table thead {
+      background-color: #ddd;
+    }
+
+    .calendar-grayed {
+      color: #D0D0D0;
+    }
+
+    .calendar-btn {
+      cursor: pointer;
+    }
+
+      .calendar-btn:hover {
+        color: red;
+      }
+
+      .calendar-btn:disabled {
+        color: #c9c9c9;
+        cursor: default;
+      }
+
+    .calendar-btn-disabled {
+      color: #c9c9c9;
+      cursor: default;
+    }
+
+      .calendar-btn-disabled:hover {
+        color: #c9c9c9 !important;
+        cursor: default !important;
+      }
+
+    .calendar-center {
+      text-align: center;
+    }
+
+    .calendar-jour-entete {
+      font-size: 10px;
+      font-weight: 700;
+      text-align: center;
+    }
+
+    .calendar-the-date {
+      background-color: #FF8080;
+      cursor: pointer;
+    }
+
+    .calendar-today {
+      color: #076dba;
+      cursor: pointer;
+    }
+
+    thead tr:first-child td {
+      padding-left:5px;
+    }
+  </style>
+
+  <div id="overlay" class="calendar-modal" data-ng-click="close()">
+    <div class="calendar-content"
+         data-ng-class="{'calendrier-with-hours' : withHours}"
+         data-ng-style="{'left':position.left + 'px', 'top':position.top + 'px'}"
+         data-ng-click="$event.stopPropagation();">
+      <table class="calendar-table" data-ng-show="calendar.mode==0">
+        <thead>
+          <tr>
+            <td colspan="7">
+              <span class="calendar-btn" data-ng-click="calendar.mode=1">{{ calendar.dateRef | datews : 'MMMM yyyy'}}</span>
+              <span class="calendar-arrow calendar-btn" data-ng-click="displayDate(calendar.moisP1, 0)"><i class="fa fa-chevron-down"></i></span>
+              <span class="calendar-arrow calendar-btn" data-ng-click="displayDate(calendar.moisM1, 0)"><i class="fa fa-chevron-up"></i></span>
+            </td>
+          </tr>
+          <tr>
+            <td class="calendar-jour-entete" data-ng-repeat="c in calendar.cols">{{ c.date | datews : 'EEE'  }}</td>
+          </tr>
+        </thead>
+        <tbody>
+          <tr data-ng-repeat="r in calendar.jRows">
+            <td class="calendar-center"
+                data-ng-class="{'calendar-the-date' : c.dateGT == calendar.theDateGT, 'calendar-btn' : c.dateGT != calendar.theDateGT, 'calendar-grayed' : !c.inMonth, 'calendar-today' : c.dateGT == calendar.todayGT }"
+                data-ng-click="selectTheDate(c.date)"
+                title="{{ c.dateTxt }}"
+                data-ng-repeat="c in r.cols">
+              {{ c.date | datews : 'dd'  }}
+            </td>
+          </tr>
+        </tbody>
+      </table>
+      <table class="calendar-table" data-ng-show="calendar.mode==1">
+        <thead>
+          <tr>
+            <td colspan="4">
+              <span>{{ calendar.dateMRef | datews : 'yyyy'}}</span>
+              <span class="calendar-arrow calendar-btn" data-ng-click="displayDate(calendar.anP1, 1)"><i class="fa fa-chevron-down"></i></span>
+              <span class="calendar-arrow calendar-btn" data-ng-click="displayDate(calendar.anM1, 1)"><i class="fa fa-chevron-up"></i></span>
+            </td>
+          </tr>
+        </thead>
+        <tbody>
+          <tr data-ng-repeat="r in calendar.mRows">
+            <td class="calendar-center calendar-btn"
+                data-ng-click="displayDate(c.date)"
+                data-ng-class="{'calendar-the-date' : c.dateGT == calendar.theDate1GT, 'calendar-grayed' : !c.inYear && c.dateGT != calendar.theDate1GT}"
+                data-ng-repeat="c in r.cols">
+              {{ c.date | datews : 'MMM'  }}
+            </td>
+          </tr>
+        </tbody>
+      </table>
+      <table class="calendar-heure" data-ng-show="withHours">
+        <thead>
+          <tr>
+            <td>
+              <select data-ng-model="calendar.hours">
+                <option data-ng-repeat="x in [] | range : 24" data-ng-value="x" data-ng-checked="calendar.hours == x">{{ x < 10 ? '0' : '' }}{{ x }}</option>
+              </select>
+              <span class="calendar-jour-entete">H</span>
+              <select data-ng-model="calendar.minutes">
+                <option data-ng-repeat="x in [] | range : 60" data-ng-value="x" data-ng-checked="calendar.minutes == x">{{ x < 10 ? '0' : '' }}{{ x }}</option>
+              </select>
+              <span class="calendar-jour-entete">
+                mn
+              </span>
+              <i class="calendar-btn fa fa-check"
+                 data-ng-show="calendar.theDate"
+                 data-ng-click="validCurrent()" title="Valider l'heure"></i>
+            </td>
+            <td>
+              <i class="calendar-btn fa fa-clock-o" data-ng-click="setNow()" title="Maintenant"></i>
+            </td>
+            <td>
+              <i class="calendar-btn fa fa-times" data-ng-click="setEmpty()" title="Effacer la date"></i>
+            </td>
+          </tr>
+        </thead>
+      </table>
+    </div>
+  </div>
+</div>

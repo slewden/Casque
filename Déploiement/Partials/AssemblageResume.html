@@ -1,0 +1,75 @@
+﻿<div>
+  <!-- Page header -->
+  <data:header-menu data-titre="{{ 'AssemblageResume.SousTitre'| translate }}" data-niveau-menu="3"></data:header-menu>
+  <!-- Contenu -->
+  <div class="page-content">
+
+    <div class="columnsContainer50">
+      <div class="leftColumn">
+
+        <table class="admin-list">
+          <thead>
+            <tr>
+              <td colspan="4">
+                {{ 'AssemblageList.Titre' | translate }}
+              </td>
+            </tr>
+            <!-- waiting ring -->
+            <tr data-ng-show="processing">
+              <td colspan="4" align="center">
+                <i class="fa fa-circle-o-notch fa-spin fa-3x orange"></i>
+              </td>
+            </tr>
+            <!-- en cas d'erreur -->
+            <tr data-ng-show="error">
+              <td colspan="4">
+                <data:display-error></data:display-error>
+              </td>
+            </tr>
+          </thead>
+          <tbody>
+            <tr data-ng-show="!assemblages || !assemblages.length">
+              <td colspan="4" class="center no-data">
+                {{ 'AssemblageList.NotFound' | translate }}
+              </td>
+            </tr>
+            <tr data-ng-repeat="x in assemblages">
+              <td><img data-ng-show="x.photoUrl" data-ng-src="{{ x.photoUrl }}" width="50" /></td>
+              <td>
+                <a class="btn" data-ng-href="#/assemblageList?statut={{ x.statutInt }}&casque={{ x.cle }}" title="{{ 'AssemblageList.CRUDList' | translate }}">
+                  {{ x.nom }}
+                </a>
+              </td>
+              <td>{{ x.statutNom }}</td>
+              <td align="right">x <b>{{ x.nombre }}</b></td>
+            </tr>
+          </tbody>
+          <tfoot>
+            <tr data-ng-show="assemblages && assemblages.length">
+              <td colspan="3" class="collapse" align="right">
+                {{ 'Common.LblTotal' | translate }}
+              </td>
+              <td class="collapse" align="center">
+                <b>{{ total }}</b>
+              </td>
+            </tr>
+          </tfoot>
+        </table>
+
+      </div>
+      <div class="rightColumn">
+        <!-- menus -->
+        <ul class="menu-inter">
+          <li data-ng-repeat="m in user.menus" title="{{ m.description}}" data-ng-if="m.niveau == 3">
+            <a href="{{ m.url }}" data-ng-class="{'sel' : path == m.url}"><i class="fa {{ m.image}}"></i> {{ m.description }}</a>
+          </li>
+        </ul>
+
+      </div>
+    </div>
+
+  </div>
+
+  <!-- Page footer -->
+  <data:footer></data:footer>
+</div>

@@ -1,0 +1,134 @@
+﻿<div>
+  <!-- Page header -->
+  <data:header-menu data-titre="{{ 'Utilisateur.SousTitre'| translate }}" data-niveau-menu="7" data-roothub="roothub"></data:header-menu>
+  <!-- Contenu -->
+  <div class="page-content">
+    <form name="saisie" novalidate>
+      <table class="admin-edit">
+        <thead>
+          <tr>
+            <th>
+              <span data-ng-if="cle > 0">{{ 'Utilisateur.TitreEdit' | translate }}</span>
+              <span data-ng-if="!cle || cle < 0">{{ 'Utilisateur.TitreAdd' | translate }}</span>
+            </th>
+          </tr>
+          <tr data-ng-show="error">
+            <td>
+              <!-- en cas d'erreur -->
+              <data:display-error></data:display-error>
+            </td>
+          </tr>
+        </thead>
+        <tbody>
+          <!-- Nom -->
+          <tr>
+            <td>
+              <label for="nom">{{ 'Utilisateur.LblNom' | translate }}</label><br />
+              <input type="text" id="nom" name="nom" style="width:400px;"
+                     data-ng-model="utilisateur.nom" data-ng-maxlength="100" maxlength="101" required />
+              <div data-ng-show="saisie.nom.$dirty && saisie.nom.$invalid">
+                <div class="error-message" data-ng-show="saisie.nom.$error.required">
+                  {{ 'Utilisateur.RequisNom' | translate }}
+                </div>
+                <div class="error-message" data-ng-show="saisie.nom.$error.maxlength">
+                  {{ 'Utilisateur.MaxLenghtNom' | translate }}
+                </div>
+              </div>
+            </td>
+          </tr>
+          <!-- email -->
+          <tr>
+            <td>
+              <label for="email">{{ 'Utilisateur.LblEmail' | translate }}</label><br />
+              <input type="email" id="email" name="email" style="width:400px;"
+                     data-ng-model="utilisateur.email" data-ng-maxlength="100" maxlength="101" />
+              <div data-ng-show="saisie.email.$dirty && saisie.email.$invalid">
+                <div class="error-message" data-ng-show="saisie.email.$error.maxlength">
+                  {{ 'Utilisateur.MaxLenghtEmail' | translate }}
+                </div>
+                <div class="error-message" data-ng-show="saisie.email.$error.email">
+                  {{ 'Utilisateur.FormatEmail' | translate }}
+                </div>
+              </div>
+            </td>
+          </tr>
+          <!-- actif -->
+          <tr>
+            <td>
+              <label for="actif">{{ 'Utilisateur.LblActif' | translate }}</label><br />
+              <input type="checkbox" id="actif" name="actif"
+                     data-ng-model="utilisateur.actif" />
+              <label data-ng-show="utilisateur.actif" data-ng-click="utilisateur.actif = false">{{ 'Utilisateur.TipsActif' | translate }}</label>
+              <label data-ng-show="!utilisateur.actif" data-ng-click="utilisateur.actif = true">{{ 'Utilisateur.TipsNotActif' | translate }}</label>
+            </td>
+          </tr>
+          <!-- Login -->
+          <tr>
+            <td>
+              <label for="login">{{ 'Utilisateur.LblLogin' | translate }}</label><br />
+              <input type="text" id="login" name="login" style="width:400px;"
+                     data-ng-model="utilisateur.login" data-ng-maxlength="20" data-ng-minlength="5" maxlength="21" required />
+              <div data-ng-show="saisie.login.$dirty && saisie.login.$invalid">
+                <div class="error-message" data-ng-show="saisie.login.$error.required">
+                  {{ 'Utilisateur.RequisLogin' | translate }}
+                </div>
+                <div class="error-message" data-ng-show="saisie.login.$error.maxlength">
+                  {{ 'Utilisateur.MaxLenghtLogin' | translate }}
+                </div>
+                <div class="error-message" data-ng-show="saisie.login.$error.minlength">
+                  {{ 'Utilisateur.MinLenghtLogin' | translate }}
+                </div>
+              </div>
+            </td>
+          </tr>
+          <!-- Password -->
+          <tr>
+            <td>
+              <label for="password">{{ 'Utilisateur.LblPassword' | translate }}</label><br />
+              <input type="password" id="password" name="password" style="width:400px;"
+                     data-ng-model="utilisateur.password" data-ng-maxlength="20" data-ng-minlength="5" maxlength="21" required />
+              <div data-ng-show="saisie.password.$dirty && saisie.password.$invalid">
+                <div class="error-message" data-ng-show="saisie.password.$error.required">
+                  {{ 'Utilisateur.RequisPassword' | translate }}
+                </div>
+                <div class="error-message" data-ng-show="saisie.password.$error.maxlength">
+                  {{ 'Utilisateur.MaxLenghtPassword' | translate }}
+                </div>
+                <div class="error-message" data-ng-show="saisie.password.$error.minlength">
+                  {{ 'Utilisateur.MinLenghtPassword' | translate }}
+                </div>
+              </div>
+            </td>
+          </tr>
+          <!-- Confirm password -->
+          <tr>
+            <td>
+              <label for="cpassword">{{ 'Utilisateur.LblConfirm' | translate }}</label><br />
+              <input type="password" id="cpassword" name="cpassword" style="width:400px;"
+                     data-ng-model="cpassword" required compare-to="utilisateur.password" />
+              <div data-ng-show="saisie.cpassword.$dirty && saisie.cpassword.$invalid">
+                <div class="error-message" data-ng-show="saisie.cpassword.$error.required">
+                  {{ 'Utilisateur.RequisConfirm' | translate }}
+                </div>
+                <div class="error-message" data-ng-show="saisie.cpassword.$error">
+                  {{ 'Utilisateur.ErrorConfirm' | translate }}
+                </div>
+              </div>
+            </td>
+          </tr>
+        </tbody>
+        <tfoot>
+          <tr>
+            <td class="button">
+              <span class="btn btn-submit" data-ng-click="saveModif()" data-ng-show="saisie.$valid && !processing">{{ 'Common.BoutonEnregistrer' | translate }}&nbsp;<i class="fa fa-check"></i></span>
+              <i class="fa fa-circle-o-notch fa-spin gray" data-ng-show="processing"></i>
+              &nbsp;&nbsp;<a href="#/utilisateur">{{ 'Common.BoutonAnuller' | translate }}</a>
+            </td>
+          </tr>
+        </tfoot>
+      </table>
+    </form>
+  </div>
+  <!-- Page footer -->
+  <data:footer></data:footer>
+</div>

@@ -1,0 +1,68 @@
+﻿.print-page {
+  position: relative;
+}
+.print-page .print-titre {
+  font-size: 32px;
+  margin: auto;
+  position: absolute;
+  top: 80px;
+  left: 200px;
+}
+.print-page .print-date {
+  font-size: 12px;
+  font-weight: 400;
+  position: absolute;
+  top: 150px;
+  left: 40px;
+}
+.print-page .print-commande {
+  font-size: 20px;
+  font-weight: 600;
+  position: absolute;
+  top: 170px;
+  left: 40px;
+}
+.print-page .print-client-lib {
+  position: absolute;
+  top: 194px;
+  left: 375px;
+}
+.print-page .print-client {
+  font-size: 20px;
+  font-weight: 600;
+  position: absolute;
+  top: 190px;
+  left: 500px;
+}
+.print-page .print-adresse-lib {
+  position: absolute;
+  top: 230px;
+  left: 375px;
+}
+.print-page .print-adresse {
+  position: absolute;
+  top: 230px;
+  left: 490px;
+  width: 400px;
+  border: 1px solid #9c9c9c;
+  background-color: #ffffff;
+  padding-left: 10px;
+}
+.print-page table.print-list {
+  position: absolute;
+  top: 310px;
+  left: 40px;
+  width: 860px;
+  border-collapse: collapse;
+  border: 1px solid black;
+  padding: 0 4px;
+}
+.print-page table.print-list th {
+  border: 1px solid black;
+  padding: 10px 15px;
+}
+.print-page table.print-list td {
+  border: 1px solid black;
+  padding: 5px 10px;
+}
+/*# sourceMappingURL=Print.css.map */

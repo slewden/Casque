@@ -1,0 +1,60 @@
+﻿<div>
+  <div class="menu-content">
+    <div class="menu-top-left">
+      <h1>
+        {{ 'Common.TitreApplication' | translate }}
+      </h1>
+    </div>
+    <div class="menu-top-right">
+      {{ 'Header.TipUser' | translate: user }}
+    </div>
+    <div class="burger-menu">
+      <i class="fa fa-bars" id="burgerMenu" data-ng-click="showMenuPop()"></i>
+    </div>
+    <div class="menu-bottom-left" id="menuPop">
+      <ul class="menu">
+        <!-- Accueil -->
+        <li>
+          <a href="#/" class="menu-sel" data-ng-show="niveauMenu == 0"><i class="fa fa-home"></i> {{ 'Header.Home' | translate }}</a>
+          <a href="#/" class="menu-sel" data-ng-show="niveauMenu > 0"><i class="fa fa-home" title="{{ 'Header.Home' | translate }}"></i><span class="menu-petit"> {{ 'Header.Home' | translate }}</span></a>
+        </li>
+        <!-- Menu principal -->
+        <li data-ng-repeat="m in user.menus" title="{{ m.description}}" data-ng-if="niveauMenu > 0 && m.niveau == 0 && m.ordre == niveauMenu">
+          <a href="{{ m.url }}" class="menu-sel">
+            <i class="fa {{ m.image}}"></i> {{ m.nom }}
+          </a>
+        </li>
+
+        <!-- sous menus -->
+        <li data-ng-repeat="m in user.menus" title="{{ m.description}}" data-ng-if="m.niveau == niveauMenu">
+          <a href="{{ m.url }}" data-ng-class="{'menu-sel' : path.indexOf(m.url.replace('#', '')) == 0 }">
+            <i class="fa {{ m.image}}"></i> {{ m.nom }}
+          </a>
+        </li>
+
+        <!-- retour -->
+        <li data-ng-if=" niveauMenu > 0">
+          <a href="#/"><i class="fa fa-level-up" title="{{ 'Header.Retour' | translate }}"></i><span class="menu-petit"> {{ 'Header.Retour' | translate }}</span></a>
+        </li>
+        <!-- quitter -->
+        <li data-ng-if=" niveauMenu == 0">
+          <a href="" data-ng-click="logOff()" title="{{ 'Header.Quit' | translate }}"><i class="fa fa-sign-out"></i><span class="menu-petit"> {{ 'Header.Quit' | translate }}</span></a>
+        </li>
+      </ul>
+    </div>
+    <div class="menu-bottom-right">
+      <i class="fa fa-2x fa-mixcloud lecteurOn" data-ng-show="roothub.actifLecteur == 2" title="{{ 'Header.readerOn' | translate }}"></i>
+      <i class="fa fa-2x fa-mixcloud lecteurOff" data-ng-show="roothub.actifLecteur == 1" title="{{ 'Header.readerOff' | translate }}"></i>
+      <i class="fa fa-2x fa-mixcloud lecteurAbsent" data-ng-show="!roothub.actifLecteur" title="{{ 'Header.readerAbsent' | translate }}"></i>
+      &nbsp;
+      <i class="fa fa-2x fa-print lecteurOn" data-ng-show="roothub.actifEncodeur == 2" title="{{ 'Header.writerOn' | translate }}"></i>
+      <i class="fa fa-2x fa-print lecteurOff" data-ng-show="roothub.actifEncodeur == 1" title="{{ 'Header.writerOff' | translate }}"></i>
+      <i class="fa fa-2x fa-print lecteurAbsent" data-ng-show="!roothub.actifEncodeur" title="{{ 'Header.writerAbsent' | translate }}"></i>
+      <br/>
+      {{ roothub.date | datews : 'short' }}
+    </div>
+  </div>
+  <div class="menu-titre">
+    <h4>{{ titre }}</h4>
+  </div>
+</div>

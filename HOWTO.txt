@@ -1,0 +1,28 @@
+
+------------------------------
+--- HOW TO...              ---
+------------------------------
+
+
+
+Changer un menu de place :
+--------------------------
+1) Mise à jour du menu en BDD
+    le nouveau niveau
+    Le nouveau code du parent
+    Le nouvel ordre
+
+  UPDATE page SET page_niveau = 7, pere_page_code= 'Administration', page_ordre = 5 where page_code = 'cartonList'
+
+2) Dans les pages XXXList, XXXEdit et XXXREad ==> mettre le nouveau niveau dans le haeder 
+
+<data:header-menu data-titre="{{ 'Couleur.SousTitre'| translate }}" data-niveau-menu="7" data-roothub="roothub"></data:header-menu>
+
+3) Log out / log in pour que ce soit pris en compte 
+4) Enjoy !!
+
+
+
+Rennomer un terme :
+1) Recherche & Remplace dans WeB / JS / trad-fr.js
+2) en BDD : liste des pages

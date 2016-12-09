@@ -1,0 +1,51 @@
+﻿<div>
+  <div class="menu-content">
+    <div class="menu-top-left">
+      <h1>
+        {{ 'Common.TitreApplication' | translate }}
+      </h1>
+    </div>
+    <div class="menu-top-right">
+      {{ 'Header.TipUser' | translate: user }}
+    </div>
+    <div class="burger-menu">
+      <i class="fa fa-bars" id="burgerMenu" data-ng-click="showMenuPop()"></i>
+    </div>
+    <div class="menu-bottom-left" id="menuPop">
+      <ul class="menu">
+        <!-- Accueil -->
+        <li>
+          <a href="#/" data-ng-class="{'menu-sel' : path == '/' || niveauMenu > 0 }"><i class="fa fa-home"></i> {{ 'Header.Home' | translate }}</a>
+        </li>
+        <!-- Menu principal -->
+        <li data-ng-repeat="m in user.menus" title="{{ m.description}}" data-ng-if="niveauMenu > 0 && m.niveau == 0 && m.ordre == niveauMenu">
+          <a href="{{ m.url }}" class="menu-sel">
+            <i class="fa {{ m.image}}"></i> {{ m.nom }}
+          </a>
+        </li>
+
+        <!-- sous menus -->
+        <li data-ng-repeat="m in user.menus" title="{{ m.description}}" data-ng-if="m.niveau == niveauMenu">
+          <a href="{{ m.url }}" data-ng-class="{'menu-sel' : path.indexOf(m.url.replace('#', '')) == 0 }">
+            <i class="fa {{ m.image}}"></i> {{ m.nom }}
+          </a>
+        </li>
+
+        <!-- retour -->
+        <li data-ng-if=" niveauMenu > 0">
+          <a href="#/"><i class="fa fa-level-up"></i> {{ 'Header.Retour' | translate }}</a>
+        </li>
+        <!-- quitter -->
+        <li data-ng-if=" niveauMenu == 0">
+          <a href="" data-ng-click="logOff()"><i class="fa fa-sign-out"></i> {{ 'Header.Quit' | translate }}</a>
+        </li>
+      </ul>
+    </div>
+    <div class="menu-bottom-right">
+      {{ date | datews : 'short' }}
+    </div>
+  </div>
+  <div class="menu-titre">
+    <h4>{{ titre }}</h4>
+  </div>
+</div>

@@ -1,0 +1,57 @@
+﻿<div class="page-content">
+  <h2>{{ 'Common.TitreApplication' | translate }}</h2>
+  <form name="saisie" novalidate data-ng-submit="logMe()">
+    <table class="admin-edit" data-ng-init="check()">
+      <thead>
+        <tr><th>{{ 'Login.Titre' | translate }}</th></tr>
+        <tr data-ng-show="error && saisie.$pristine">
+          <td>
+            <!-- en cas d'erreur -->
+            <data:display-error></data:display-error>
+          </td>
+        </tr>
+      </thead>
+      <tbody>
+        <tr>
+          <td>
+            {{ 'Login.Login' | translate }}
+          </td>
+        </tr>
+        <tr>
+          <td>
+            <input type="text" id="login" name="login" data-ng-model="login" required />
+            <div data-ng-show="saisie.login.$dirty && saisie.login.$invalid">
+              <span class="error-message" data-ng-show="saisie.login.$error.required">
+                {{ 'Validation.Requis' | translate }}
+              </span>
+            </div>
+          </td>
+        </tr>
+        <tr>
+          <td>
+            {{ 'Login.Password' | translate }}
+          </td>
+        </tr>
+        <tr>
+          <td>
+            <input type="password" id="pass" name="pass" data-ng-model="pass" required data-focus-me="logFocus" />
+            <div data-ng-show="saisie.pass.$dirty && saisie.pass.$invalid">
+              <span class="error-message" data-ng-show="saisie.pass.$error.required">
+                {{ 'Validation.Requis' | translate }}
+              </span>
+            </div>
+          </td>
+        </tr>
+      </tbody>
+      <tfoot>
+        <tr>
+          <td class="button">
+            <input type="submit" style="position:absolute;left:-9999px;width:1px;height:1px;" />
+            <span class="btn-submit" data-ng-click="logMe()" data-ng-show="saisie.$valid && !processing">{{ 'Login.BtValid' | translate }}&nbsp;<i class="fa fa-arrow-circle-o-right"></i></span>
+            <i class="fa fa-circle-o-notch fa-spin gray" data-ng-show="processing"></i>
+          </td>
+        </tr>
+      </tfoot>
+    </table>
+  </form>
+</div>

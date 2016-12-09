@@ -1,0 +1,495 @@
+﻿<!DOCTYPE html>
+<html xmlns="http://www.w3.org/1999/xhtml">
+<head>
+  <meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
+  <title>Page de tests</title>
+
+  <script src="/Js/Lib/angular.min.js"></script>
+  <script src="/Js/TestApp.js"></script>
+
+  <!-- signalR needs -->
+  <script src="/Scripts/jquery-1.6.4.min.js"></script>
+  <script src="/Scripts/jquery.signalR-2.2.0.min.js"></script>
+  <script src="/signalr/hubs"></script>
+
+
+  <link rel="stylesheet" href="/Css/font-awesome.min.css" />
+  <link rel="stylesheet" href="/Css/Global.min.css" />
+  <style>
+    .page-test {
+      margin-left: 10px;
+      margin-right: 10px;
+    }
+
+    h4 {
+      margin: 0;
+    }
+
+    .act-bloc {
+      border: 1px solid black;
+      padding: 5px;
+      margin: 5px 0;
+    }
+
+    .into {
+      font-style: italic;
+      color: #D88E30;
+      margin-bottom: 10px;
+    }
+
+    .documentation {
+      font-size: 10px;
+      background-color: #D88E30;
+      margin: -5px -5px 5px -5px;
+      padding: 5px;
+    }
+
+    .documentation2 {
+      font-size: 12px;
+      background-color: #bdd830;
+      margin: -5px -5px 5px -5px;
+      padding: 5px;
+    }
+
+      .documentation h2, .documentation2 h2 {
+        display: inline;
+        margin-right: 5px;
+      }
+
+    table .onglet {
+      margin: 0;
+      padding: 0;
+      border-collapse: collapse;
+      width: 100%;
+    }
+
+      table.onglet td {
+        border: 1px solid black;
+        padding-left: 3px;
+        padding-right: 3px;
+      }
+
+        table.onglet td.selected {
+          border-left: 1px solid black;
+          border-top: 3px solid black;
+          border-right: 1px solid black;
+          border-bottom: 0;
+        }
+  </style>
+
+</head>
+<body data-ng-app="testApp">
+  <div data-ng-controller="testController" class="page-test">
+
+    <h2>Test du hub Drivers / clients</h2>
+    <div class="into">Cette page permet de simuler les commandes échangées entre les <b>clients web</b> et les <b>drivers de matériels</b> (Lecteurs ou imprimantes de Tags)</div>
+    <table>
+      <tr>
+        <td valign="top" align="left" data-ng-show="hubOpen">
+          <!-- Partie client -->
+          <div data-ng-show="onglet == 'client'">
+            <table class="onglet">
+              <tr>
+                <td class="selected">
+                  <h4>Actions client web</h4>
+                </td>
+                <td>
+                  <span class="btn" data-ng-click="changeOnglet('lecteur')">Actions driver</span>
+                </td>
+                <td>
+                  <span class="btn" data-ng-click="changeOnglet('admin')">Actions hub</span>
+                </td>
+              </tr>
+            </table>
+
+            <!-- Hello  -->
+            <div class="act-bloc">
+              <div class="documentation"><h2>hello</h2>Cette commande permet savoir quels fonctions sont disponibles sur le hub (lecture tag, impression &amp; encodage)</div>
+              <button data-ng-click="processHello(true)">Envoyer Hello</button><br />
+              <div data-ng-show="typeLecteurs.done">
+                <i class="fa fa-times gray btn" data-ng-click="typeLecteurs.done = false" title="Masquer la réponse"></i>
+                <span data-ng-show="typeLecteurs.actifLecteur" style="font-weight:700;color:darkgreen;">Lecteur Présent</span>
+                <span data-ng-show="typeLecteurs.actifEncodeur" style="font-weight:700;color:#30afd8;">Encodeur Présent</span>
+                <span data-ng-show="typeLecteurs.actifRien" style="font-weight:700; color:red;">Rien dispo</span>
+              </div>
+            </div>
+
+            <!-- pilote reader : start, stop, reset, statut -->
+            <div class="act-bloc">
+              <div class="documentation"><h2>piloteReader</h2>Cette commande permet actionner les lecteurs</div>
+              <table>
+                <tr>
+                  <td>ClientId</td>
+                  <td>
+                    <i>{{ simulCommande.clientId }}</i> <small>(ID pour recevoir les notifications)</small>
+                  </td>
+                </tr>
+                <tr>
+                  <td valign="top">Paramètres</td>
+                  <td><textarea data-ng-model="simulCommande.paramXml" style="width:350px;" rows="7"></textarea></td>
+                </tr>
+                <tr>
+                  <td colspan="2">
+                    <button data-ng-click="start()" data-ng-disabled="!simulCommande.paramXml">Démarrer le lecteur</button>
+                    <button data-ng-click="stop()" data-ng-disabled="!simulCommande.paramXml">Stoper le lecteur</button>
+                    <button data-ng-click="resetLectures()" data-ng-disabled="!simulCommande.paramXml">Reset des lectures</button>
+                    <button data-ng-click="queryStatut()" data-ng-disabled="!simulCommande.paramXml">Etat du lecteur</button>
+                  </td>
+                </tr>
+                <tr>
+                  <td colspan="2">
+                    <span style="font-size:10px;">La commande sera reçue par le drivers qui a déclaré un lecteur</span>
+                  </td>
+                </tr>
+              </table>
+            </div>
+
+            <!-- pilote writer -->
+            <div class="act-bloc">
+              <div class="documentation"><h2>piloteWriter</h2>Cette commande permet d'actionner les encodeurs/imprimantes</div>
+              <table>
+                <tr>
+                  <td>Action</td>
+                  <td>
+                    <select data-ng-model="simulEncode.action" style="width:358px;">
+                      <option value="1" data-ng-selected="simulEncode.action == 1">Encoder et imprimer les tags d'une commande</option>
+                      <option value="2" data-ng-selected="simulEncode.action == 2">Encoder le tag d'un assemblage</option>
+                    </select>
+                  </td>
+                </tr>
+                <tr>
+                  <td>
+                    <span data-ng-show="simulEncode.action == 1">Clé Commande</span>
+                    <span data-ng-show="simulEncode.action == 2">Clé Assemblage</span>
+                  </td>
+                  <td><input type="text" data-ng-model="simulEncode.cle" style="width:50px;" /></td>
+                </tr>
+                <tr>
+                  <td>ClientId</td>
+                  <td>
+                    <i>{{ simulEncode.clientId }}</i> <small>(ID pour recevoir les notifications)</small>
+                  </td>
+                </tr>
+                <tr>
+                  <td valign="top">Paramètres</td>
+                  <td><textarea data-ng-model="simulEncode.paramXml" style="width:350px;" rows="7"></textarea></td>
+                </tr>
+                <tr>
+                  <td colspan="2">
+                    <button data-ng-click="encodeTag()" data-ng-disabled="!simulEncode.action || !simulEncode.cle || !simulEncode.paramXml">Encoder</button>
+                    <button data-ng-click="encodeCancel()" data-ng-disabled="!simulEncode.cle || !simulEncode.paramXml">Annuler l'encodage en cours</button>
+                    <button data-ng-click="encodeQuery()" data-ng-disabled="!simulEncode.paramXml">Etat de l'encodeur</button>
+                  </td>
+                </tr>
+                <tr>
+                  <td colspan="2">
+                    <span style="font-size:10px;">La commande sera reçue par le drivers qui a déclaré un encodeur/imprimante</span>
+                  </td>
+                </tr>
+              </table>
+            </div>
+          </div>
+
+          <!-- Partie Driver de lecteurs ou encodeurs -->
+          <div data-ng-show="onglet == 'lecteur'">
+            <table class="onglet">
+              <tr>
+                <td>
+                  <span class="btn" data-ng-click="changeOnglet('client')">Actions client web</span>
+                </td>
+                <td class="selected">
+                  <h4>Actions driver</h4>
+                </td>
+                <td>
+                  <span class="btn" data-ng-click="changeOnglet('admin')">Actions hub</span>
+                </td>
+              </tr>
+            </table>
+
+            <!-- Hello / Bye -->
+            <div class="act-bloc">
+              <div class="documentation"><h2>hello / bye</h2>Le clientID <i>{{ connectionId}}</i> signale au hub qu'il démarre ou stoppe les matériels sélectionnés</div>
+              <table>
+                <tr>
+                  <td>Type de matériel</td>
+                  <td>
+                    <input type="checkbox" id="lec" name="lec" data-ng-model="typeLecteurs.lecteurRead" /><label for="lec">Lecteur</label>
+                    <input type="checkbox" id="enc" name="enc" data-ng-model="typeLecteurs.lecteurEncode" /><label for="enc">Encodeur/Imprimante</label>
+                  </td>
+                </tr>
+                <tr>
+                  <td>
+                    <button data-ng-click="processHello()" data-ng-disabled="!typeLecteurs.total">Envoyer Hello</button>
+                  </td>
+                  <td>
+                    <span style="font-size:10px;">Les matériels disponibles (lorsqu'un driver démarre)</span>
+                  </td>
+                </tr>
+                <tr>
+                  <td>
+                    <button data-ng-click="processBye()" data-ng-disabled="!typeLecteurs.total">Envoyer Bye</button>
+                  </td>
+                  <td>
+                    <span style="font-size:10px;">Les matériels qui disparaissent (lorsqu'un driver s'arrête)</span>
+                  </td>
+                </tr>
+                <tr data-ng-show="typeLecteurs.done">
+                  <td colspan="2">
+                    <span><i class="fa fa-times btn" data-ng-click="typeLecteurs.done = false" title="Masquer la réponse"></i></span>
+                    <span data-ng-show="typeLecteurs.actifLecteur" style="font-weight:700;color:darkgreen;">Lecteur Présent</span>
+                    <span data-ng-show="typeLecteurs.actifEncodeur" style="font-weight:700;color:#30afd8;">Encodeur Présent</span>
+                    <span data-ng-show="typeLecteurs.actifRien" style="font-weight:700; color:red;">Rien dispo</span>
+
+                  </td>
+                </tr>
+              </table>
+            </div>
+
+            <!-- lecture d'un tag -->
+            <div class="act-bloc">
+              <div class="documentation"><h2>newTag</h2>Cette commande pousse un N° d'étiquette sur le hub pour un client après une lecture</div>
+              <table>
+                <tr>
+                  <td>ClientId</td>
+                  <td>
+                    <input type="text" data-ng-model="simulTag.clientId" style="width:300px;" />
+                    <button data-ng-click="simulTag.clientId = connectionId" data-ng-show="simulTag.clientId != connectionId">Moi même</button>
+                  </td>
+                </tr>
+                <tr>
+                  <td>Tag</td>
+                  <td><input type="text" data-ng-model="simulTag.tag" style="width:300px;" /></td>
+                </tr>
+                <tr>
+                  <td colspan="2">
+                    <button data-ng-click="processSimulTag()">Signaler un tag lu</button>
+                  </td>
+                </tr>
+              </table>
+            </div>
+
+            <!-- Message d'un lecteur au hub-->
+            <div class="act-bloc">
+              <div class="documentation"><h2>notity</h2>Cette commande pousse un message sur le hub pour un client</div>
+              <table>
+                <tr>
+                  <td>ClientId</td>
+                  <td>
+                    <input type="text" data-ng-model="simulMessage.clientId" style="width:300px;" />
+                    <button data-ng-click="simulMessage.clientId = connectionId" data-ng-show="simulMessage.clientId != connectionId">Moi même</button>
+                  </td>
+                </tr>
+                <tr>
+                  <td>Erreur</td>
+                  <td>
+                    <input type="checkbox" id="err" name="err" data-ng-model="simulMessage.erreur" />
+                    <label for="err">
+                      <span data-ng-show="simulMessage.erreur">C'est une erreur</span>
+                      <span data-ng-show="!simulMessage.erreur">C'est un message</span>
+                    </label>
+                  </td>
+                </tr>
+                <tr>
+                  <td>Action</td>
+                  <td>
+                    <select data-ng-model="simulMessage.action" style="width:308px;">
+                      <option value="1" data-ng-selected="simulMessage.action == 1">Démarre (1)</option>
+                      <option value="2" data-ng-selected="simulMessage.action == 2">Stoppe (2)</option>
+                      <option value="3" data-ng-selected="simulMessage.action == 3">Reset lecture (3)</option>
+                      <option value="4" data-ng-selected="simulMessage.action == 4">Quel est le statut (4)</option>
+                    </select>
+                  </td>
+                </tr>
+                <tr>
+                  <td>Message</td>
+                  <td><input type="text" data-ng-model="simulMessage.message" style="width:300px;" /></td>
+                </tr>
+                <tr>
+                  <td colspan="2">
+                    <button data-ng-click="processSimulMessage()">Envoyer un message</button>
+                  </td>
+                </tr>
+              </table>
+            </div>
+
+            <!-- Rapporte -->
+            <div class="act-bloc">
+              <div class="documentation"><h2>rapporte</h2>Cette commande permet à l'imprimante d'indiquer la fin d'un encodage/impression</div>
+              <table>
+                <tr>
+                  <td>ClientId</td>
+                  <td>
+                    <input type="text" data-ng-model="simulRapport.clientId" style="width:350px;" />
+                    <button data-ng-click="simulRapport.clientId = connectionId" data-ng-show="simulRapport.clientId != connectionId">Moi même</button>
+                  </td>
+                </tr>
+                <tr>
+                  <td>Erreur</td>
+                  <td>
+                    <input type="checkbox" id="err" name="err" data-ng-model="simulRapport.erreur" />
+                    <label for="err">
+                      <span data-ng-show="simulRapport.erreur">C'est une fin ko</span>
+                      <span data-ng-show="!simulRapport.erreur">C'est une fin ok</span>
+                    </label>
+                  </td>
+                </tr>
+                <tr>
+                  <td>Action</td>
+                  <td>
+                    <select data-ng-model="simulRapport.action" style="width:358px;">
+                      <option value="1" data-ng-selected="simulRapport.action == 1">Encoder et imprimer les tags d'une commande (1)</option>
+                      <option value="2" data-ng-selected="simulRapport.action == 2">Encoder le tag d'un assemblage (2)</option>
+                      <option value="3" data-ng-selected="simulRapport.action == 3">Cancel encodage (3)</option>
+                    </select>
+                  </td>
+                </tr>
+                <tr>
+                  <td>
+                    <span data-ng-show="simulRapport.action == 1">Clé Commande</span>
+                    <span data-ng-show="simulRapport.action == 2">Clé Assemblage</span>
+                    <span data-ng-show="simulRapport.action == 3">Clé</span>
+                  </td>
+                  <td><input type="text" data-ng-model="simulRapport.cle" style="width:50px;" /></td>
+                </tr>
+                <tr>
+                  <td>Message</td>
+                  <td><input type="text" data-ng-model="simulRapport.message" style="width:350px;" /></td>
+                </tr>
+                <tr>
+                  <td colspan="2"><button data-ng-click="processRapport()" data-ng-disabled="!simulRapport.cle">Rapporter</button></td>
+                </tr>
+              </table>
+
+            </div>
+
+            <!-- Progresse -->
+            <div class="act-bloc">
+              <div class="documentation"><h2>progresse</h2>Cette commande permet à l'imprimante d'indiquer sa progression lors d'un encodage</div>
+              <table>
+                <tr>
+                  <td>ClientId</td>
+                  <td>
+                    <input type="text" data-ng-model="simulprogresse.clientId" style="width:350px;" />
+                    <button data-ng-click="simulprogresse.clientId = connectionId" data-ng-show="simulprogresse.clientId != connectionId">Moi même</button>
+                  </td>
+                </tr>
+                <tr>
+                  <td>Action</td>
+                  <td>
+                    <select data-ng-model="simulprogresse.action" style="width:358px;">
+                      <option value="0" data-ng-selected="simulprogresse.action == 0">Attente d'encodage (0)</option>
+                      <option value="1" data-ng-selected="simulprogresse.action == 1">Encoder et imprimer les tags d'une commande (1)</option>
+                      <option value="2" data-ng-selected="simulprogresse.action == 2">Encoder le tag d'un assemblage (2)</option>
+                    </select>
+                  </td>
+                </tr>
+                <tr>
+                  <td>
+                    <span data-ng-show="simulprogresse.action == 0">Clé</span>
+                    <span data-ng-show="simulprogresse.action == 1">Clé Commande</span>
+                    <span data-ng-show="simulprogresse.action == 2">Clé Assemblage</span>
+                  </td>
+                  <td><input type="text" data-ng-model="simulprogresse.cle" style="width:50px;" /></td>
+                </tr>
+                <tr>
+                  <td>Progression</td>
+                  <td><input type="text" data-ng-model="simulprogresse.index" style="width:40px;" /> sur <input type="text" data-ng-model="simulprogresse.total" style="width:40px;" /></td>
+                </tr>
+                <tr>
+                  <td colspan="2"><button data-ng-click="processProgresse()" data-ng-disabled="!simulprogresse.cle || !simulprogresse.index || !simulprogresse.total">Signaler la progression</button></td>
+                </tr>
+              </table>
+
+            </div>
+          </div>
+
+          <!-- partie admin -->
+          <div data-ng-show="onglet == 'admin'">
+            <table class="onglet">
+              <tr>
+                <td>
+                  <span class="btn" data-ng-click="changeOnglet('client')">Actions client web</span>
+                </td>
+                <td>
+                  <span class="btn" data-ng-click="changeOnglet('lecteur')">Actions driver</span>
+                </td>
+                <td class="selected">
+                  <h4>Actions hub</h4>
+                </td>
+              </tr>
+            </table>
+
+            <!-- Reset Hub  -->
+            <div class="act-bloc">
+              <div class="documentation"><h2>Reset Hub</h2>Cette commande permet d'initialiser le cache des matériels sur le réseau. Après utilisation, il faudra redémarrer les drivers des matériels correspondant</div>
+              <table>
+                <tr>
+                  <td>Type de matériels a initialiser</td>
+                  <td>
+                    <input type="checkbox" id="lec" name="lec" data-ng-model="typeReset.lecteurRead" /><label for="lec">Lecteur</label>
+                    <input type="checkbox" id="enc" name="enc" data-ng-model="typeReset.lecteurEncode" /><label for="enc">Encodeur/Imprimante</label>
+                  </td>
+                </tr>
+                <tr>
+                  <td colspan="2">
+                    <button data-ng-click="processResetHub()" data-ng-disabled="!typeReset.total">Reset Hub</button>
+                    <div data-ng-show="typeLecteurs.done">
+                      <i class="fa fa-times gray btn" data-ng-click="typeLecteurs.done = false" title="Masquer la réponse"></i>
+                      <span data-ng-show="typeLecteurs.actifLecteur" style="font-weight:700;color:darkgreen;">Lecteur Présent</span>
+                      <span data-ng-show="typeLecteurs.actifEncodeur" style="font-weight:700;color:#30afd8;">Encodeur Présent</span>
+                      <span data-ng-show="typeLecteurs.actifRien" style="font-weight:700; color:red;">Rien dispo</span>
+                    </div>
+                  </td>
+                </tr>
+              </table>
+            </div>
+          </div>
+        </td>
+        <td valign="top">
+          <div class="act-bloc">
+            <div class="documentation2">
+              <h2>
+                Etat du hub
+
+                <i class="fa fa-frown-o red" data-ng-if="!hubOpen" title="Pas connecté"></i>
+                <i class="fa fa-smile-o green" data-ng-if="hubOpen" title="Connecté"></i>
+              </h2>  <span data-ng-show="hubOpen" title="Mode de connexion">
+                &nbsp;&nbsp;{{ modeConnexion }}
+              </span>
+
+            </div>
+            <div title="Connexion Id">{{ connectionId}}</div>
+            <div data-ng-show="!hubOpen">
+              <button data-ng-click="Connect()">Démarrer la connexion</button>
+            </div>
+            <div data-ng-show="hubOpen">
+              <button data-ng-click="Disconnect()">Stopper la connexion</button>
+            </div>
+          </div>
+          <br />
+          <div data-ng-show="message">
+            Message<br /><b class="green">{{ message }}</b>
+          </div>
+
+          <br />
+          <div class="act-bloc" data-ng-show="hubOpen && tags && tags.length">
+            <div class="documentation2">
+              <h2>Réception <spa data-ng-click="clearTags()" data-ng-show="tags && tags.length" title="Effacer la liste" class="right"><i class="fa fa-times btn"></i></spa></h2>
+            </div>
+            <table>
+              <tr>
+                <td>
+                  <ul data-ng-repeat="t in tags track by $index" style="margin-bottom:0;margin-top:0;">
+                    <li>{{ t }}</li>
+                  </ul>
+                </td>
+              </tr>
+            </table>
+          </div>
+
+        </td>
+      </tr>
+    </table>
+  </div>
+</body>
+</html>

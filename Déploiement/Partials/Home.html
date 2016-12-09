@@ -1,0 +1,43 @@
+﻿<div>
+  <!-- Page header -->
+  <data:header-menu data-titre="Accueil de l'administration du site" data-niveau-menu="0"></data:header-menu>
+  <!-- Contenu -->
+  <div class="page-content">
+
+    <!-- bienvenu -->
+    <data-notify-zone data-ng-model="bienvenu"></data-notify-zone>
+
+    <div class="columnsContainer50">
+      <div class="leftColumn">
+
+        <!-- En cas d'erreur -->
+        <data:display-error></data:display-error>
+
+        <!-- statistiques -->
+        <div class="home-stat" data-ng-show="statistiques">
+          <i class="fa fa-circle-o-notch fa-spin fa-3x gray" data-ng-show="processing"></i>
+          <div data-ng-repeat="s in statistiques" data-ng-show="statistiques">
+            <div class="{{ s.couleur }}" title="{{ s.nom }}">
+              {{ s.nombre }}
+              <i class="{{ s.picto }}"></i>
+            </div>
+          </div>
+        </div>
+
+      </div>
+      <div class="rightColumn">
+        <!-- menus -->
+        <ul class="menu-inter">
+          <li data-ng-repeat="m in user.menus" title="{{ m.description}}" data-ng-if="m.niveau == 0">
+            <a href="{{ m.url }}" data-ng-class="{'sel' : path == m.url}"><i class="fa {{ m.image}}"></i> {{ m.description }}</a>
+          </li>
+        </ul>
+      </div>
+    </div>
+
+
+
+  </div>
+  <!-- Page footer -->
+  <data:footer></data:footer>
+</div>

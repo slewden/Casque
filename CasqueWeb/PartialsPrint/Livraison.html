@@ -1,0 +1,85 @@
+﻿<!-- Contenu -->
+<div class="page-content">
+
+  <div class="print-page">
+    <!-- Référence -->
+    <div class="print-titre">
+      {{ 'LivraisonPrint.Titre' | translate }}
+    </div>
+    <!-- Création -->
+    <div class="print-date">
+      {{ 'LivraisonPrint.LblCreation' | translate : { date : livraison.creation } }}
+    </div>
+
+    <!-- Référence BL -->
+    <div class="print-commande">{{ 'LivraisonPrint.lblReference' | translate : {numero : livraison.reference } }}</div>
+
+    <!-- client -->
+    <div class="print-client-lib">
+      {{ 'LivraisonPrint.LblClient' | translate }}
+    </div>
+    <div class="print-client">{{ livraison.clientNom }}</div>
+    <!-- client adresse livraison -->
+    <div class="print-adresse-lib">
+      {{ 'LivraisonPrint.LblAdresse' | translate }}
+    </div>
+    <div class="print-adresse">
+      <span class="info-readonly" data-ng-bind-html="encode(livraison.clientAdresseLivraisonHtml)"></span>
+    </div>
+    <!-- détail des pièces -->
+    <table class="print-list">
+      <thead>
+        <tr>
+          <th colspan="2">{{ 'LivraisonDetail.ColCarton' | translate }}</th>
+          <th>{{ 'LivraisonPrint.ColQuantite' | translate }}</th>
+          <th colspan="2">{{ 'LivraisonDetail.ColCasque' | translate }}</th>
+          <th>{{ 'LivraisonPrint.ColEtiquette' | translate }}</th>
+        </tr>
+      </thead>
+      <tbody data-ng-repeat="c in cartons">
+        <tr data-ng-repeat="k in c.casques">
+          <td valign="top" rowspan="{{c.casques.length}}" data-ng-if="$index == 0">
+            N° {{ c.cartonIndex + 1 }}
+          </td>
+          <td valign="top" rowspan="{{c.casques.length}}" data-ng-if="$index == 0">
+            <b>{{ c.nom }}</b> <br />
+            <span data-ng-bind-html="encode(c.descriptionHtml)"></span>
+          </td>
+          <td valign="top" align="center">
+            x <b>{{ k.etiquettes.length }}</b>
+          </td>
+          <td valign="top">
+            <b>{{ k.casqueNom }}</b>
+            <br />
+            {{ k.casqueCode }}
+          </td>
+          <td align="center">
+            <img data-ng-src="{{ k.casquePhotoUrl }}" width="50" />
+          </td>
+          <td valign="top">
+            <span data-ng-repeat="e in k.etiquettes">
+              <span data-ng-if="$index > 0"><br /></span>
+              <span class="txt-small">{{ 'LivraisonPrint.EtiquetteTitre' | translate : { index : e.indexCommande } }} : </span>
+              <span class="green">{{ e.numero }}</span>
+            </span>
+          </td>
+        </tr>
+      </tbody>
+      <tfoot>
+        <tr>
+          <td colspan="2" align="right">
+            {{ 'LivraisonPrint.LblTotal' | translate }}
+          </td>
+          <td align="center">
+            <b>{{ livraison.nombrePiece }}</b>
+          </td>
+          <td colspan="3">
+            &nbsp;
+          </td>
+        </tr>
+      </tfoot>
+    </table>
+
+  </div>
+
+</div>

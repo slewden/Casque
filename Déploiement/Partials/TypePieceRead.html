@@ -1,0 +1,98 @@
+﻿<div>
+  <!-- Page header -->
+  <data:header-menu data-titre="{{ 'TypePiece.SousTitre'| translate }}" data-niveau-menu="6"></data:header-menu>
+  <!-- Contenu -->
+  <div class="page-content">
+    <form name="saisie" novalidate>
+      <table class="admin-edit">
+        <thead>
+          <tr>
+            <th colspan="2">
+              <span>{{ 'TypePiece.TitreDetail' | translate }}</span>
+            </th>
+          </tr>
+          <tr data-ng-show="error">
+            <td colspan="2">
+              <!-- en cas d'erreur -->
+              <data:display-error></data:display-error>
+            </td>
+          </tr>
+        </thead>
+        <tbody>
+          <!-- Nom -->
+          <tr>
+            <td>
+              <label for="nom">{{ 'TypePiece.LblNom' | translate }}</label><br />
+              <span class="info-readonly">{{ typePiece.nom }}</span>
+            </td>
+            <!-- Photo -->
+            <td rowspan="3">
+              <label for="photo">{{ 'TypePiece.LblPhoto' | translate }}</label><br />
+              <img data-ng-show="typePiece.photoUrl" data-ng-src="{{ typePiece.photoUrl }}" height="75" />
+            </td>
+          </tr>
+          <!-- Code -->
+          <tr>
+            <td>
+              <label for="code">{{ 'TypePiece.LblCode' | translate }}</label><br />
+              <span class="info-readonly">{{ typePiece.code }}</span>
+            </td>
+          </tr>
+
+          <!-- Avec Tag -->
+          <tr>
+            <td>
+              <label for="avecTag">{{ 'TypePiece.LblAvecTag' | translate }}</label><br />
+              <span data-ng-show="typePiece.avecTag"><i class="fa fa-check green"></i> {{ 'TypePiece.TipsAvecTag' | translate }}</span>
+              <span data-ng-show="!typePiece.avecTag"><i class="fa fa-times red"></i> {{ 'TypePiece.TipsSansTag' | translate }}</span>
+            </td>
+          </tr>
+
+          <!-- Description -->
+          <tr>
+            <td colspan="2">
+              <label for="description">{{ 'TypePiece.LblDescription' | translate }}</label><br />
+              <span class="info-readonly" data-ng-show="typePiece.description">{{ typePiece.description }}</span>
+              <span class="info-readonly" data-ng-show="!typePiece.description">{{ 'Common.Aucune' | translate  }}</span>
+            </td>
+          </tr>
+
+          <!-- Les tailles possibles -->
+          <tr>
+            <td colspan="2">
+              <label for="tailles">{{ 'TypePiece.LblTailles' | translate }}</label><br />
+              <ul class="choose-list">
+                <li data-ng-repeat="t in tailles" title="{{ t.nom }}" data-ng-show="typePiece.cleTailles.indexOf(t.cle) > -1">
+                  <span class="info-readonly">{{ t.code }}</span>
+                </li>
+              </ul>
+            </td>
+          </tr>
+
+          <!-- Les couleurs -->
+          <tr>
+            <td colspan="2">
+              <label for="couleurs">{{ 'TypePiece.LblCouleurs' | translate }}</label><br />
+              <ul class="choose-list">
+                <li data-ng-repeat="c in couleurs" title="{{ c.nom }}" data-ng-show="typePiece.cleCouleurs.indexOf(c.cle) > -1">
+                  <span class="info-readonly">{{ c.nom }}</span>
+                </li>
+              </ul>
+            </td>
+          </tr>
+
+        </tbody>
+        <tfoot>
+          <tr>
+            <td class="button" colspan="2">
+              <i class="fa fa-circle-o-notch fa-spin gray" data-ng-show="processing"></i>
+              <a href="#/typePiece">{{ 'Common.BoutonRetour' | translate }}</a>
+            </td>
+          </tr>
+        </tfoot>
+      </table>
+    </form>
+  </div>
+  <!-- Page footer -->
+  <data:footer></data:footer>
+</div>

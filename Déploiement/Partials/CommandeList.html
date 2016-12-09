@@ -1,0 +1,136 @@
+﻿<div>
+  <!-- Page header -->
+  <data:header-menu data-titre="{{ 'Commande.SousTitre'| translate }}" data-niveau-menu="1"></data:header-menu>
+  <!-- Contenu -->
+  <div class="page-content">
+
+    <table class="admin-list">
+      <thead>
+        <tr>
+          <td colspan="8">
+            <select name="statut" data-ng-model="statut" data-ng-change="getInfos();">
+              <option value="0" data-ng-checked="statut == 0">{{ 'CommandeResume.All' |translate }}</option>
+              <option value="1" data-ng-checked="statut == 1">{{ 'CommandeResume.Statut1' |translate }}</option>
+              <option value="2" data-ng-checked="statut == 2">{{ 'CommandeResume.Statut2' |translate }}</option>
+              <option value="3" data-ng-checked="statut == 3">{{ 'CommandeResume.Statut3' |translate }}</option>
+              <option value="4" data-ng-checked="statut == 4">{{ 'CommandeResume.Statut4' |translate }}</option>
+              <option value="5" data-ng-checked="statut == 5">{{ 'CommandeResume.Statut5' |translate }}</option>
+              <option value="6" data-ng-checked="statut == 6">{{ 'CommandeResume.Statut6' |translate }}</option>
+              <option value="7" data-ng-checked="statut == 7">{{ 'CommandeResume.Statut7' |translate }}</option>
+            </select>
+            <div class="recherche">
+              <input type="text" data-ng-model="searchText" data-my-enter="changePage(1)" placeholder="{{ 'Commande.SearchText' | translate }}" />
+              <span class="btn" data-ng-click="changePage(1)" title="{{ 'Common.TipsLaunchSearch' | translate }}"><i class="fa fa-search"></i></span>
+              <span class="btn" data-ng-show="searchText" data-ng-click="defaultParam()" title="{{ 'Common.TipsInitSearch' | translate }}"><i class="fa fa-eraser green"></i></span>
+            </div>
+          </td>
+        </tr>
+        <!-- waiting ring -->
+        <tr data-ng-show="processing">
+          <td colspan="8" align="center">
+            <i class="fa fa-circle-o-notch fa-spin fa-3x orange"></i>
+          </td>
+        </tr>
+        <!-- en cas d'erreur -->
+        <tr data-ng-show="error">
+          <td colspan="8">
+            <data:display-error></data:display-error>
+          </td>
+        </tr>
+        <tr data-ng-show="nombre > 0">
+          <th colspan="3">
+            #
+            <data-sorter data-column="cle" data-tri="tri" data-tri-asc="triAsc" data-change-method="changeTri('cle')"></data-sorter>
+          </th>
+          <th>
+            {{ 'Commande.LblNumero' | translate }}
+            <data-sorter data-column="numero" data-tri="tri" data-tri-asc="triAsc" data-change-method="changeTri('numero')"></data-sorter>
+          </th>
+          <th>
+            {{ 'Commande.LblFournisseur' | translate }}
+            <data-sorter data-column="fournisseur" data-tri="tri" data-tri-asc="triAsc" data-change-method="changeTri('fournisseur')"></data-sorter>
+          </th>
+          <th>
+            {{ 'Commande.LblCreation' | translate }}
+            <data-sorter data-column="saisie" data-tri="tri" data-tri-asc="triAsc" data-change-method="changeTri('saisie')"></data-sorter>
+          </th>
+          <th>
+            {{ 'Commande.LblStatut' | translate }}
+            <data-sorter data-column="statut" data-tri="tri" data-tri-asc="triAsc" data-change-method="changeTri('statut')"></data-sorter>
+          </th>
+          <th>
+            <a data-ng-show="canAdd" class="btn" data-ng-href="#/commandeEdit"><i class="fa fa-plus" title="{{ 'Common.CRUDAdd' | translate }}"></i></a>
+          </th>
+        </tr>
+      </thead>
+      <tbody>
+        <tr data-ng-if="nombre == 0">
+          <td colspan="8" class="center no-data">
+            {{ 'Common.NotFound' | translate }}
+            <br /><a class="btn" data-ng-href="#/commandeEdit"><i class="fa fa-plus" title="{{ 'Common.CRUDAdd' | translate }}"></i> {{ 'Common.CRUDAdd' | translate }}</a>
+          </td>
+        </tr>
+        <tr data-ng-repeat="x in commandes">
+          <td class="id">{{ ((page-1) * pageSize) + $index + 1 }}</td>
+          <td class="id">{{ x.cle }}</td>
+          <td data-ng-class=" {'bg-red' : x.statutInt == 1 || x.statutInt == 3,
+                               'bg-orange': x.statutInt == 2 || x.statutInt == 4 || x.statutInt == 5,
+                               'bg-green' : x.statutInt == 6 || x.statutInt == 7}" title="{{ x.statutNom }}"></td>
+          <td><span class="txt-commande green">{{ x.numero }}</span><br/><small>{{ x.utilisateurNom }}</small></td>
+          <td>{{ x.fournisseurNom }} <br /> <small><a href="mailto:{{x.fournisseurEmail}}" title="{{ 'Common.TipsMailTo' | translate }}">{{ x.fournisseurEmail }}</a></small></td>
+          <td>{{ x.saisie | datews : 'shortDate' }}</td>
+          <td>
+            <span data-ng-class="{'red': x.statutInt == 1 || x.statutInt == 3, 'orange': x.statutInt == 2, 'green': x.statutInt == 4}">
+              {{ x.statutNom }}
+            </span>
+
+            <span data-ng-show="x.statutInt == 4">
+              <br />
+              <span data-ng-show="x.retardEcheance > 0"
+                    title="{{ 'Commande.LivraisonAttendueDans' | translate : {jour : x.retardEcheance} }}">
+                {{ 'Commande.LivraisonAttendueLeOk' | translate : {date : x.echeance, jour : x.retardEcheance } }}
+                <i class="fa fa-clock-o"></i>
+              </span>
+              <span data-ng-show="x.retardEcheance == 0" title="{{ 'Commande.LivraisonAttendueToday' | translate }}">
+                {{ 'Commande.LivraisonAttendueToday' | translate }}
+                <i class="fa fa-calendar-check-o orange"></i>
+              </span>
+              <span data-ng-show="x.retardEcheance < 0" title="{{ 'Commande.LivraisonAttendueDepuis' | translate : {jour : x.retardEcheance} }}" class="red">
+                {{ 'Commande.LivraisonAttendueLeKo' | translate : {date : x.echeance, jour : x.retardEcheance} }}
+                <i class="fa fa-warning red"></i>
+              </span>
+            </span>
+            <span data-ng-show="x.statutInt >= 4 && x.pieceRecues > 0 && x.pieceTotal > 0"><br />{{ x.pieceRecues }} sur {{ x.pieceTotal }}</span>
+            <span data-ng-show="x.statutInt >= 4 && x.pieceRecues > 0 && x.pieceAttendues > 0 && !x.acquittee">soit <strong>{{ x.pieceRecues / x.pieceTotal | percentage : 1 }}</strong></span>
+            <span data-ng-show="x.statutInt >= 4 && x.pieceAttendues > 0 && x.acquittee"><i class="fa fa-check green" title="{{ 'Commande.CommandeAcquittee' | translate: {date: x.acquittee} }}"></i></span>
+          </td>
+          <td align="center">
+            <a class="btn" data-ng-href="#/commandeEdit?cle={{x.cle}}&r=1"><i class="fa fa-search" title="{{ 'Common.CRUDDetail' | translate }}"></i></a>
+            <br />
+            <a class="btn" data-ng-show="canAdd && x.validation && !x.impressionFinie" data-ng-href="#/commandePrint?cle={{x.cle}}"><i class="fa fa-pencil" title="{{ 'Common.CRUDEdit' | translate }}"></i></a>
+            <a class="btn" data-ng-show="canAdd && (!x.validation || x.impressionFinie) && x.statutInt != 7" data-ng-href="#/commandeEdit?cle={{x.cle}}"><i class="fa fa-pencil" title="{{ 'Common.CRUDEdit' | translate }}"></i></a>
+            <a class="btn" data-ng-show="canAdd && x.statutInt < 2" data-ng-href="" data-ng-click="confirmDelete(x)"><i class="fa fa-times" title="{{ 'Common.CRUDDel' | translate }}"></i></a>
+            <a class="btn" data-ng-show="canAdd && x.statutInt >= 4 && x.pieceAttendues > 0 && !x.acquittee" data-ng-href="" data-ng-click="confirmAcquitte(x)"><i class="fa fa-check" title="{{ 'CommandeResume.BtAcquitte' | translate }}"></i></a>
+
+          </td>
+        </tr>
+      </tbody>
+      <tfoot>
+        <tr data-ng-if="nombre > 0">
+          <td colspan="5" class="collapse">
+            {{ 'Common.TitreTotal' | translate }} <strong>{{ nombre }}</strong>
+          </td>
+          <td colspan="3" class="collapse" align="right">
+            <no-paging class="small" page="page" page-size="pageSize" total="nombre" hide-if-empty="true"
+                       title-page="{{ 'Common.PageTitle' | translate }}"
+                       paging-action="changePage(page)">
+            </no-paging>
+          </td>
+        </tr>
+      </tfoot>
+    </table>
+  </div>
+
+  <!-- Page footer -->
+  <data:footer></data:footer>
+</div>

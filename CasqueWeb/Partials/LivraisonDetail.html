@@ -1,0 +1,175 @@
+﻿<div>
+  <!-- Page header -->
+  <data:header-menu data-titre="{{ 'LivraisonDetail.SousTitre'| translate }}" data-niveau-menu="4" data-roothub="roothub"></data:header-menu>
+
+  <!-- Contenu -->
+  <div class="page-content">
+    <form name="saisie" novalidate>
+      <table class="admin-edit">
+        <thead>
+          <tr>
+            <th>
+              {{ 'LivraisonDetail.Titre' | translate }}
+            </th>
+            <th class="right">
+              <span data-ng-show="livraison.clientNom && !readOnly">
+                <i class="fa fa-print btn" data-ng-click="printBl()" title="{{ 'LivraisonDetail.PrintBL' | translate }}"></i>
+                <i class="fa fa-envelope btn" data-ng-click="showEmailplus = !showEmailplus" title="{{ 'LivraisonDetail.MailBL' | translate }}"></i>
+              </span>
+              &nbsp;
+            </th>
+          </tr>
+
+          <tr>
+            <td align="right" colspan="2" data-ng-show="showEmailplus" title="{{ 'LivraisonDetail.MailBL' | translate }}" style="border:1px solid;padding-bottom:5px;padding-right:10px;">
+              <div style="position:relative">
+                <i class="fa fa-caret-up" style="position:absolute;right:7px;top:-14px;"></i>
+
+                <span data-ng-show="saisie.emailSuplementaire.$dirty && saisie.emailSuplementaire.$invalid">
+                  <span class="error-message" data-ng-show="saisie.emailSuplementaire.$error.email">
+                    {{ 'Client.FormatEmail' | translate }}
+                  </span>
+                </span><input type="email" id="emailSuplementaire" name="emailSuplementaire" data-ng-show="!processing" data-ng-model="emailSuplementaire" style="width:200px;" placeholder="{{ 'Commande.EmailAutre' | translate }}" />
+
+                <i class="fa fa-circle-o-notch fa-spin gray" data-ng-show="processing"></i>
+                <span class="btn" data-ng-click="sendEmail()" data-ng-show="!processing && saisie.$valid">{{ 'Commande.BtSendAutreEmail' | translate }}</span>
+                <i class="fa fa-times btn" data-ng-click="showEmailplus = false" title="{{ 'Common.TipsHide' | translate }}"></i>
+
+              </div>
+            </td>
+          </tr>
+
+
+
+          <tr data-ng-show="error">
+            <td colspan="2">
+              <!-- en cas d'erreur -->
+              <data:display-error></data:display-error>
+            </td>
+          </tr>
+        </thead>
+        <tbody>
+          <!-- Référence -->
+          <tr>
+            <td colspan="2">
+              <label for="nom">{{ 'LivraisonDetail.LblReference' | translate }}</label><br />
+              <span class="txt-commande green">{{ livraison.reference }}</span>
+            </td>
+          </tr>
+
+          <!-- Création -->
+          <tr>
+            <td colspan="2">
+              <label for="nom">{{ 'LivraisonDetail.LblCreation' | translate }}</label><br />
+              <span class="info-readonly">{{ livraison.creation | datews: 'short' }}</span>
+              {{ 'LivraisonDetail.LblCreationBy' | translate }}
+              <span class="info-readonly">{{ livraison.utilisateurNom }}</span>
+            </td>
+          </tr>
+
+          <!-- client -->
+          <tr>
+            <td colspan="2">
+              <label for="nom">{{ 'LivraisonDetail.LblClient' | translate }}</label><br />
+
+              <span class="info-readonly" data-ng-show="livraison.clientNom">{{ livraison.clientNom }} (<a href="mailto:{{livraison.clientEmail}}" title="{{ 'Common.TipsMailTo' | translate }}">{{ livraison.clientEmail }}</a>)</span>
+
+              <select data-ng-model="client" style="width:90%;" data-ng-show="!livraison.clientNom && clients"
+                      data-ng-options="c.nom for c in clients track by c.cle"></select>
+            </td>
+          </tr>
+          <!-- client adresse livraison -->
+          <tr data-ng-show="livraison.clientNom">
+            <td colspan="2" class="bloc-adresse" title="{{ 'LivraisonDetail.TipsAdresse' | translate }}">
+              <span class="info-readonly" data-ng-bind-html="encode(livraison.clientAdresseLivraisonHtml)"></span>
+            </td>
+          </tr>
+
+          <!-- Validation -->
+          <tr>
+            <td colspan="2">
+              <label for="nom">{{ 'LivraisonDetail.LblValidation' | translate }}</label><br />
+              <span data-ng-show="livraison.validation" class="info-readonly">{{ livraison.validation | datews: 'short' }}</span>
+              <span data-ng-show="!livraison.validation" class="info-readonly red">{{ 'LivraisonDetail.NoValidation' | translate }}</span>
+            </td>
+          </tr>
+
+          <!-- les cartons -->
+          <tr>
+            <td colspan="2">
+
+              <table class="admin-list">
+                <thead>
+                  <tr>
+                    <th colspan="2">{{ 'LivraisonDetail.ColCarton' | translate }}</th>
+                    <th>{{ 'LivraisonPrint.ColQuantite' | translate }}</th>
+                    <th colspan="2">{{ 'LivraisonDetail.ColCasque' | translate }}</th>
+                    <th>{{ 'LivraisonPrint.ColEtiquette' | translate }}</th>
+                  </tr>
+                </thead>
+                <tbody data-ng-repeat="c in cartons">
+                  <tr data-ng-repeat="k in c.casques">
+                    <td valign="top" rowspan="{{c.casques.length}}" data-ng-if="$index == 0">
+                      N° {{ c.cartonIndex + 1 }}
+                    </td>
+                    <td valign="top" rowspan="{{c.casques.length}}" data-ng-if="$index == 0">
+                      <b>{{ c.nom }}</b> <br />
+                      <span data-ng-bind-html="encode(c.descriptionHtml)"></span>
+                    </td>
+                    <td valign="top" align="center">
+                      x <b>{{ k.etiquettes.length }}</b>
+                    </td>
+                    <td valign="top">
+                      <b>{{ k.casqueNom }}</b>
+                      <br />
+                      {{ k.casqueCode }}
+                    </td>
+                    <td align="center">
+                      <img data-ng-src="{{ k.casquePhotoUrl }}" width="50" />
+                    </td>
+                    <td valign="top">
+                      <span data-ng-repeat="e in k.etiquettes">
+                        <span data-ng-if="$index > 0"><br /></span>
+                        <span class="txt-small">{{ 'LivraisonPrint.EtiquetteTitre' | translate : { index : e.indexCommande } }} : </span>
+                        <span class="green">{{ e.numero }}</span>
+                      </span>
+                  </tr>
+                </tbody>
+                <tfoot>
+                  <tr>
+                    <td colspan="2" align="right">
+                      {{ 'LivraisonDetail.LblTotal' | translate }}
+                    </td>
+                    <td align="center">
+                      x <b>{{ livraison.nombrePiece }}</b>
+                    </td>
+                    <td colspan="3">
+                      &nbsp;
+                    </td>
+                  </tr>
+                </tfoot>
+              </table>
+
+            </td>
+          </tr>
+
+        </tbody>
+        <tfoot>
+          <tr>
+            <td colspan="2" class="button">
+              <span class="btn btn-submit" data-ng-click="saveModif()" data-ng-show="!livraison.clientNom && client && !processing">{{ 'Common.BoutonEnregistrer' | translate }}&nbsp;<i class="fa fa-check"></i></span>
+              <i class="fa fa-circle-o-notch fa-spin gray" data-ng-show="processing"></i>
+              &nbsp;&nbsp;<a href="#/livraisonList" data-ng-show="!livraison.clientNom">{{ 'Common.BoutonAnuller' | translate }}</a>
+              <a href="#/livraisonList" data-ng-show="livraison.clientNom">{{ 'Common.BoutonRetour' | translate }}</a>
+            </td>
+          </tr>
+        </tfoot>
+      </table>
+    </form>
+  </div>
+
+  <!-- Page footer -->
+  <data:footer></data:footer>
+
+
+</div>

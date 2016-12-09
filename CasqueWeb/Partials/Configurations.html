@@ -1,0 +1,68 @@
+﻿<div>
+  <!-- Page header -->
+  <data:header-menu data-titre="{{ 'Configurations.SousTitre'| translate }}" data-niveau-menu="7" data-roothub="roothub"></data:header-menu>
+
+  <!-- Contenu -->
+  <div class="page-content">
+    <form name="saisie" novalidate>
+      <table>
+        <tr>
+          <td valign="top">
+
+            <table class="admin-edit">
+              <thead>
+                <tr>
+                  <th colspan="2">
+                    {{ 'Configurations.Titre' | translate }}
+                  </th>
+                </tr>
+                <tr data-ng-show="error">
+                  <td colspan="2">
+                    <!-- en cas d'erreur -->
+                    <data:display-error></data:display-error>
+                  </td>
+                </tr>
+              </thead>
+              <tbody>
+                <tr data-ng-repeat="c in configurations">
+                  <td>
+                    <label for="v_{{ c.typeConfig }}">{{ c.nom }}</label><br />
+                    <input type="number" id="v_{{ c.typeConfig }}" name="v_{{ c.typeConfig }}" style="width:80px;" data-ng-model="c.theIntValue" data-ng-if="c.typeDonnee=='int'" required />
+                    <input type="text" id="t_{{ c.typeConfig }}" name="t_{{ c.typeConfig }}" style="width:80px;" data-ng-model="c.valeur" data-ng-if="c.typeDonnee != 'int'" required />
+
+                    <i class="fa fa-question-circle btn" data-ng-click="c.visibleHelp = !c.visibleHelp"></i>
+                    
+                    
+                    <div data-ng-show="saisie.v_{{ c.typeConfig }}.$dirty && saisie.v_{{ c.typeConfig }}.$invalid">
+                      <div class="error-message" data-ng-show="saisie.v_{{ c.typeConfig }}.$error.required">
+                        {{ c.requisMessage }}
+                      </div>
+                      <div class="error-message" data-ng-show="saisie.v_{{ c.typeConfig }}.$error.number">
+                        {{ c.formatMessage }}
+                      </div>
+                    </div>
+                  </td>
+                  <td>
+                    <div data-ng-show="c.visibleHelp" class="bloc-doc">{{ c.description }}</div>
+                  </td>
+                </tr>
+              </tbody>
+              <tfoot>
+                <tr>
+                  <td class="button" colspan="2">
+                    <span class="btn btn-submit" data-ng-click="saveModif()" data-ng-show="saisie.$valid && !processing">{{ 'Common.BoutonEnregistrer' | translate }}&nbsp;<i class="fa fa-check"></i></span>
+                    <i class="fa fa-circle-o-notch fa-spin gray" data-ng-show="processing"></i>
+                    &nbsp;&nbsp;<a href="#/administration">{{ 'Common.BoutonRetour' | translate }}</a>
+                  </td>
+                </tr>
+              </tfoot>
+            </table>
+
+          </td>
+          <td valign="bottom">
+         </td>
+        </tr>
+      </table>
+    </form>
+  </div>
+</div>

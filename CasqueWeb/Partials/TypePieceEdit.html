@@ -1,0 +1,129 @@
+﻿<div>
+  <!-- Page header -->
+  <data:header-menu data-titre="{{ 'TypePiece.SousTitre'| translate }}" data-niveau-menu="6" data-roothub="roothub"></data:header-menu>
+  <!-- Contenu -->
+  <div class="page-content">
+    <form name="saisie" novalidate>
+      <table class="admin-edit">
+        <thead>
+          <tr>
+            <th>
+              <span data-ng-if="cle > 0">{{ 'TypePiece.TitreEdit' | translate }}</span>
+              <span data-ng-if="!cle || cle < 0">{{ 'TypePiece.TitreAdd' | translate }}</span>
+            </th>
+          </tr>
+          <tr data-ng-show="error">
+            <td>
+              <!-- en cas d'erreur -->
+              <data:display-error></data:display-error>
+            </td>
+          </tr>
+        </thead>
+        <tbody>
+          <!-- Nom -->
+          <tr>
+            <td>
+              <label for="nom">{{ 'TypePiece.LblNom' | translate }}</label><br />
+              <input type="text" id="nom" name="nom" style="width:400px;"
+                     data-ng-model="typePiece.nom" data-ng-maxlength="100" maxlength="101" required />
+              <div data-ng-show="saisie.nom.$dirty && saisie.nom.$invalid">
+                <div class="error-message" data-ng-show="saisie.nom.$error.required">
+                  {{ 'TypePiece.RequisNom' | translate }}
+                </div>
+                <div class="error-message" data-ng-show="saisie.nom.$error.maxlength">
+                  {{ 'TypePiece.MaxLenghtNom' | translate }}
+                </div>
+              </div>
+            </td>
+          </tr>
+          <!-- Code -->
+          <tr>
+            <td>
+              <label for="code">{{ 'TypePiece.LblCode' | translate }}</label><br />
+              <input type="text" id="code" name="code" style="width:400px;"
+                     data-ng-model="typePiece.code" data-ng-maxlength="20" maxlength="21" required />
+              <div data-ng-show="saisie.code.$dirty && saisie.code.$invalid">
+                <div class="error-message" data-ng-show="saisie.code.$error.required">
+                  {{ 'TypePiece.RequisCode' | translate }}
+                </div>
+                <div class="error-message" data-ng-show="saisie.code.$error.maxlength">
+                  {{ 'TypePiece.MaxLenghtCode' | translate }}
+                </div>
+              </div>
+            </td>
+          </tr>
+
+          <!-- Avec Tag -->
+          <tr>
+            <td>
+              <label for="avecTag">{{ 'TypePiece.LblAvecTag' | translate }}</label><br />
+              <input type="checkbox" id="avecTag" name="avecTag"
+                     data-ng-model="typePiece.avecTag" />
+              <label data-ng-show="typePiece.avecTag" data-ng-click="typePiece.avecTag = false">{{ 'TypePiece.TipsAvecTag' | translate }}</label>
+              <label data-ng-show="!typePiece.avecTag" data-ng-click="typePiece.avecTag = true">{{ 'TypePiece.TipsSansTag' | translate }}</label>
+            </td>
+          </tr>
+
+          <!-- Description -->
+          <tr>
+            <td>
+              <label for="description">{{ 'TypePiece.LblDescription' | translate }}</label><br />
+              <textarea type="text" id="description" name="description" style="width:400px;height:150px;"
+                        data-ng-model="typePiece.description"></textarea>
+            </td>
+          </tr>
+
+          <!-- Photo -->
+          <tr>
+            <td>
+              <label for="photo">{{ 'TypePiece.LblPhoto' | translate }}</label><br />
+              <div data-ng-show="typePiece.photoUrl">
+                <img data-ng-src="{{ typePiece.photoUrl }}" height="180" /><br />
+              </div>
+              <input type="file" file_model="leFichier" style="width:400px;" />
+            </td>
+          </tr>
+
+          <!-- Les tailles possibles -->
+          <tr data-ng-if="tailles && tailles.length">
+            <td>
+              <label for="tailles">{{ 'TypePiece.LblTailles' | translate }}</label><br />
+              <ul class="choose-list">
+                <li data-ng-repeat="t in tailles" title="{{ t.nom }}">
+                  <input type="checkbox" name="seltailles[]" value="{{ t }}" data-ng-click="toggleTaille(t.cle)" data-ng-checked="typePiece.cleTailles.indexOf(t.cle) > -1" />{{ t.code }}
+                </li>
+              </ul>
+            </td>
+          </tr>
+
+          <!-- Les couleurs -->
+          <tr data-ng-if="couleurs && couleurs.length">
+            <td>
+              <label for="couleurs">{{ 'TypePiece.LblCouleurs' | translate }}</label><br />
+              <ul class="choose-list">
+                <li data-ng-repeat="c in couleurs" title="{{ c.nom }}">
+                  <span style="padding: 0 10px 0 0;background-color:{{ c.code }};color:{{ c.codeeOppose }}">
+                    <input type="checkbox" name="selCouleurs[]" value="{{ c }}" data-ng-click="toggleCouleur(c.cle)" data-ng-checked="typePiece.cleCouleurs.indexOf(c.cle) > -1" />
+                    {{ c.nom }}
+                  </span>
+                </li>
+              </ul>
+            </td>
+          </tr>
+
+        </tbody>
+        <tfoot>
+          <tr>
+            <td class="button">
+              <span class="btn btn-submit" data-ng-click="saveModif()" data-ng-show="saisie.$valid && !processing">{{ 'Common.BoutonEnregistrer' | translate }}&nbsp;<i class="fa fa-check"></i></span>
+              <i class="fa fa-circle-o-notch fa-spin gray" data-ng-show="processing"></i>
+              &nbsp;&nbsp;<a href="#/typePiece">{{ 'Common.BoutonAnuller' | translate }}</a>
+            </td>
+          </tr>
+        </tfoot>
+      </table>
+    </form>
+  </div>
+  <!-- Page footer -->
+  <data:footer></data:footer>
+</div>

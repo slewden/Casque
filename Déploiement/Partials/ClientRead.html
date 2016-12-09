@@ -1,0 +1,75 @@
+﻿<div>
+  <!-- Page header -->
+  <data:header-menu data-titre="{{ 'Client.SousTitre'| translate }}" data-niveau-menu="6"></data:header-menu>
+  <!-- Contenu -->
+  <div class="page-content">
+    <form name="saisie" novalidate>
+      <table class="admin-edit">
+        <thead>
+          <tr>
+            <th>
+              <span>{{ 'Client.TitreDetail' | translate }}</span>
+            </th>
+          </tr>
+          <tr data-ng-show="error">
+            <td>
+              <!-- en cas d'erreur -->
+              <data:display-error></data:display-error>
+            </td>
+          </tr>
+        </thead>
+        <tbody>
+          <!-- Nom -->
+          <tr>
+            <td>
+              <label for="nom">{{ 'Client.LblNom' | translate }}</label><br />
+              <span class="info-readonly">{{ client.nom }}</span>
+            </td>
+          </tr>
+          <!-- email -->
+          <tr>
+            <td>
+              <label for="email">{{ 'Client.LblEmail' | translate }}</label><br />
+              <a hreh="mailto:{{ client.email }}" clas class="info-readonly" data-ng-show="client.email">{{ client.email }}</a>
+              <span class="info-readonly" data-ng-show="!client.email">{{ 'Common.NoEmail' | translate }}</span>
+            </td>
+          </tr>
+          <!-- Adresse Commande -->
+          <tr>
+            <td>
+              <label for="adresseCommande">{{ 'Client.LblAdresseCommande' | translate }}</label><br />
+              <span class="info-readonly" data-ng-show="client.adresseCommande" data-ng-bind-html="encode(client.adresseCommandeHtml)"></span>
+              <span class="info-readonly" data-ng-show="!client.adresseCommande">{{ 'Common.NoAdresse' | translate }}</span>
+            </td>
+          </tr>
+          <!-- Adresse livraison -->
+          <tr>
+            <td>
+              <label for="adresseLivraison">{{ 'Client.LblAdresseLivraison' | translate }}</label><br />
+              <span class="info-readonly" data-ng-show="client.adresseLivraison" data-ng-bind-html="encode(client.adresseLivraisonHtml)"></span>
+              <span class="info-readonly" data-ng-show="!client.adresseLivraison">{{ 'Common.NoAdresse' | translate }}</span>
+            </td>
+          </tr>
+          <!-- Sujet des emails -->
+          <tr>
+            <td>
+              <label for="sujetEmail">{{ 'MailConfig.LblSubjetClient' | translate }}</label><br />
+              <span class="info-readonly" data-ng-show="client.sujetEmail">{{ client.sujetEmail }}</span>
+            </td>
+          </tr>
+
+        </tbody>
+        <tfoot>
+          <tr>
+            <td class="button">
+              <i class="fa fa-circle-o-notch fa-spin gray" data-ng-show="processing"></i>
+              <a href="#/client">{{ 'Common.BoutonRetour' | translate }}</a>
+            </td>
+          </tr>
+        </tfoot>
+      </table>
+    </form>
+  </div>
+  <!-- Page footer -->
+  <data:footer></data:footer>
+</div>

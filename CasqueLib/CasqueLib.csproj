@@ -1,0 +1,400 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<Project ToolsVersion="12.0" DefaultTargets="Build" xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
+  <Import Project="$(MSBuildExtensionsPath)\$(MSBuildToolsVersion)\Microsoft.Common.props" Condition="Exists('$(MSBuildExtensionsPath)\$(MSBuildToolsVersion)\Microsoft.Common.props')" />
+  <PropertyGroup>
+    <Configuration Condition=" '$(Configuration)' == '' ">Debug</Configuration>
+    <Platform Condition=" '$(Platform)' == '' ">AnyCPU</Platform>
+    <ProjectGuid>{D52559DB-B798-4059-BD86-FC28F1647421}</ProjectGuid>
+    <OutputType>Library</OutputType>
+    <AppDesignerFolder>Properties</AppDesignerFolder>
+    <RootNamespace>CasqueLib</RootNamespace>
+    <AssemblyName>CasqueLib</AssemblyName>
+    <TargetFrameworkVersion>v4.5.1</TargetFrameworkVersion>
+    <FileAlignment>512</FileAlignment>
+  </PropertyGroup>
+  <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Debug|AnyCPU' ">
+    <DebugSymbols>true</DebugSymbols>
+    <DebugType>full</DebugType>
+    <Optimize>false</Optimize>
+    <OutputPath>bin\Debug\</OutputPath>
+    <DefineConstants>DEBUG;TRACE</DefineConstants>
+    <ErrorReport>prompt</ErrorReport>
+    <WarningLevel>4</WarningLevel>
+  </PropertyGroup>
+  <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Release|AnyCPU' ">
+    <DebugType>pdbonly</DebugType>
+    <Optimize>true</Optimize>
+    <OutputPath>bin\Release\</OutputPath>
+    <DefineConstants>TRACE</DefineConstants>
+    <ErrorReport>prompt</ErrorReport>
+    <WarningLevel>4</WarningLevel>
+  </PropertyGroup>
+  <ItemGroup>
+    <Reference Include="EPPlus, Version=4.0.5.0, Culture=neutral, PublicKeyToken=ea159fdaa78159a1, processorArchitecture=MSIL">
+      <SpecificVersion>False</SpecificVersion>
+      <HintPath>Assembly\EPPlus.dll</HintPath>
+    </Reference>
+    <Reference Include="Microsoft.AspNet.SignalR.Client, Version=2.2.0.0, Culture=neutral, PublicKeyToken=31bf3856ad364e35, processorArchitecture=MSIL">
+      <HintPath>..\packages\Microsoft.AspNet.SignalR.Client.2.2.0\lib\net45\Microsoft.AspNet.SignalR.Client.dll</HintPath>
+      <Private>True</Private>
+    </Reference>
+    <Reference Include="Microsoft.AspNet.SignalR.Core, Version=2.2.0.0, Culture=neutral, PublicKeyToken=31bf3856ad364e35, processorArchitecture=MSIL">
+      <HintPath>..\packages\Microsoft.AspNet.SignalR.Core.2.2.0\lib\net45\Microsoft.AspNet.SignalR.Core.dll</HintPath>
+      <Private>True</Private>
+    </Reference>
+    <Reference Include="Microsoft.AspNet.SignalR.Owin, Version=1.2.2.0, Culture=neutral, PublicKeyToken=31bf3856ad364e35, processorArchitecture=MSIL">
+      <HintPath>..\packages\Microsoft.AspNet.SignalR.Owin.1.2.2\lib\net45\Microsoft.AspNet.SignalR.Owin.dll</HintPath>
+      <Private>True</Private>
+    </Reference>
+    <Reference Include="Microsoft.AspNet.SignalR.SystemWeb, Version=2.2.0.0, Culture=neutral, PublicKeyToken=31bf3856ad364e35, processorArchitecture=MSIL">
+      <HintPath>..\packages\Microsoft.AspNet.SignalR.SystemWeb.2.2.0\lib\net45\Microsoft.AspNet.SignalR.SystemWeb.dll</HintPath>
+      <Private>True</Private>
+    </Reference>
+    <Reference Include="Microsoft.Owin, Version=3.0.1.0, Culture=neutral, PublicKeyToken=31bf3856ad364e35, processorArchitecture=MSIL">
+      <HintPath>..\packages\Microsoft.Owin.3.0.1\lib\net45\Microsoft.Owin.dll</HintPath>
+      <Private>True</Private>
+    </Reference>
+    <Reference Include="Microsoft.Owin.Cors, Version=3.0.1.0, Culture=neutral, PublicKeyToken=31bf3856ad364e35, processorArchitecture=MSIL">
+      <HintPath>..\packages\Microsoft.Owin.Cors.3.0.1\lib\net45\Microsoft.Owin.Cors.dll</HintPath>
+      <Private>True</Private>
+    </Reference>
+    <Reference Include="Microsoft.Owin.Host.SystemWeb, Version=2.1.0.0, Culture=neutral, PublicKeyToken=31bf3856ad364e35, processorArchitecture=MSIL">
+      <HintPath>..\packages\Microsoft.Owin.Host.SystemWeb.2.1.0\lib\net45\Microsoft.Owin.Host.SystemWeb.dll</HintPath>
+      <Private>True</Private>
+    </Reference>
+    <Reference Include="Microsoft.Owin.Security, Version=2.1.0.0, Culture=neutral, PublicKeyToken=31bf3856ad364e35, processorArchitecture=MSIL">
+      <HintPath>..\packages\Microsoft.Owin.Security.2.1.0\lib\net45\Microsoft.Owin.Security.dll</HintPath>
+      <Private>True</Private>
+    </Reference>
+    <Reference Include="Newtonsoft.Json, Version=6.0.0.0, Culture=neutral, PublicKeyToken=30ad4fe6b2a6aeed, processorArchitecture=MSIL">
+      <HintPath>..\packages\Newtonsoft.Json.6.0.4\lib\net45\Newtonsoft.Json.dll</HintPath>
+      <Private>True</Private>
+    </Reference>
+    <Reference Include="Owin, Version=1.0.0.0, Culture=neutral, PublicKeyToken=f0ebd12fd5e55cc5, processorArchitecture=MSIL">
+      <HintPath>..\packages\Owin.1.0\lib\net40\Owin.dll</HintPath>
+      <Private>True</Private>
+    </Reference>
+    <Reference Include="ServiceStack">
+      <HintPath>Assembly\ServiceStack.dll</HintPath>
+    </Reference>
+    <Reference Include="ServiceStack.Common">
+      <HintPath>Assembly\ServiceStack.Common.dll</HintPath>
+    </Reference>
+    <Reference Include="ServiceStack.Interfaces, Version=1.0.0.0, Culture=neutral, processorArchitecture=MSIL">
+      <SpecificVersion>False</SpecificVersion>
+      <HintPath>Assembly\ServiceStack.Interfaces.dll</HintPath>
+    </Reference>
+    <Reference Include="ServiceStack.OrmLite">
+      <HintPath>Assembly\ServiceStack.OrmLite.dll</HintPath>
+    </Reference>
+    <Reference Include="ServiceStack.OrmLite.SqlServer">
+      <HintPath>Assembly\ServiceStack.OrmLite.SqlServer.dll</HintPath>
+    </Reference>
+    <Reference Include="ServiceStack.Redis">
+      <HintPath>Assembly\ServiceStack.Redis.dll</HintPath>
+    </Reference>
+    <Reference Include="ServiceStack.ServiceInterface">
+      <HintPath>Assembly\ServiceStack.ServiceInterface.dll</HintPath>
+    </Reference>
+    <Reference Include="ServiceStack.Text">
+      <HintPath>Assembly\ServiceStack.Text.dll</HintPath>
+    </Reference>
+    <Reference Include="System" />
+    <Reference Include="System.configuration" />
+    <Reference Include="System.Core" />
+    <Reference Include="System.Drawing" />
+    <Reference Include="System.Net.Http" />
+    <Reference Include="System.Web.Cors, Version=5.0.0.0, Culture=neutral, PublicKeyToken=31bf3856ad364e35, processorArchitecture=MSIL">
+      <HintPath>..\packages\Microsoft.AspNet.Cors.5.0.0\lib\net45\System.Web.Cors.dll</HintPath>
+      <Private>True</Private>
+    </Reference>
+    <Reference Include="System.Xml.Linq" />
+    <Reference Include="System.Data.DataSetExtensions" />
+    <Reference Include="Microsoft.CSharp" />
+    <Reference Include="System.Data" />
+    <Reference Include="System.Xml" />
+  </ItemGroup>
+  <ItemGroup>
+    <Compile Include="Buisness\Analyse\CasquePossibleConstitueEtiquette.cs" />
+    <Compile Include="Buisness\Analyse\ConsultationEtiquette.cs" />
+    <Compile Include="Buisness\Analyse\ConsultationEvenement.cs" />
+    <Compile Include="Buisness\Analyse\DetailCommandePiece.cs" />
+    <Compile Include="Buisness\Analyse\DetailCommandeTagLu.cs" />
+    <Compile Include="Buisness\Analyse\EtiquetteHistorique.cs" />
+    <Compile Include="Buisness\Analyse\INumero.cs" />
+    <Compile Include="Buisness\Configuration.cs" />
+    <Compile Include="Buisness\Encode\EncodeAssemblage.cs" />
+    <Compile Include="Buisness\Encode\EncodeCommande.cs" />
+    <Compile Include="Buisness\Encode\EncodeCommandeEtiquette.cs" />
+    <Compile Include="Buisness\MailConfig.cs" />
+    <Compile Include="Buisness\Report\CompteurAdministration.cs" />
+    <Compile Include="Buisness\Report\CompteurBase.cs" />
+    <Compile Include="Buisness\Report\CompteurConfiguration.cs" />
+    <Compile Include="Buisness\Report\CompteurHome.cs" />
+    <Compile Include="Buisness\View\AssemblageView.cs" />
+    <Compile Include="Buisness\View\CasqueAssembleView.cs" />
+    <Compile Include="Buisness\View\ClientLivraisonView.cs" />
+    <Compile Include="Buisness\View\EtiquetteDebug.cs" />
+    <Compile Include="Buisness\View\EtiquetteView.cs" />
+    <Compile Include="Buisness\View\LivraisonView.cs" />
+    <Compile Include="Buisness\View\PosteCompteur.cs" />
+    <Compile Include="Buisness\View\UtilisationPosteEnCoursView.cs" />
+    <Compile Include="Common\BaseListCompteur.cs" />
+    <Compile Include="Common\CleOnly.cs" />
+    <Compile Include="Common\FConnexion.cs" />
+    <Compile Include="Common\Folder.cs" />
+    <Compile Include="Common\NomCle.cs" />
+    <Compile Include="Common\NomCleImprimante.cs" />
+    <Compile Include="Buisness\DetailPageCode.cs" />
+    <Compile Include="Common\OrmLiteExtension.cs" />
+    <Compile Include="Common\SqlFormat.cs" />
+    <Compile Include="Buisness\CommandeLigne.cs" />
+    <Compile Include="Buisness\Etiquette.cs" />
+    <Compile Include="Buisness\Joins\CasqueConstitueView.cs" />
+    <Compile Include="Buisness\Joins\FournisseurPieceView.cs" />
+    <Compile Include="Buisness\Joins\TypePieceCouleur.cs" />
+    <Compile Include="Buisness\Joins\TypePieceTaille.cs" />
+    <Compile Include="Buisness\Poste.cs" />
+    <Compile Include="Buisness\Analyse\AssemblageLivrable.cs" />
+    <Compile Include="Buisness\Analyse\AssemblageLivrableDetail.cs" />
+    <Compile Include="Buisness\Analyse\CasquePossible.cs" />
+    <Compile Include="Buisness\Analyse\CasquePossibleConstitue.cs" />
+    <Compile Include="Buisness\Analyse\ReadBddCasqueConstitue.cs" />
+    <Compile Include="Buisness\Analyse\ReadBddCommandePiece.cs" />
+    <Compile Include="Buisness\Analyse\ReadBddTagInfo.cs" />
+    <Compile Include="Buisness\View\CasqueView.cs" />
+    <Compile Include="Buisness\View\ClientView.cs" />
+    <Compile Include="Buisness\ClientFournisseur.cs" />
+    <Compile Include="Buisness\Couleur.cs" />
+    <Compile Include="Buisness\Carton.cs" />
+    <Compile Include="Buisness\Casque.cs" />
+    <Compile Include="Buisness\Commande.cs" />
+    <Compile Include="Buisness\Analyse\DetailCommande.cs" />
+    <Compile Include="Buisness\View\CommandeLigneView.cs" />
+    <Compile Include="Buisness\View\CommandeView.cs" />
+    <Compile Include="Buisness\View\CouleurTypePiece.cs" />
+    <Compile Include="Buisness\View\FournisseurView.cs" />
+    <Compile Include="Buisness\FournisseurPiece.cs" />
+    <Compile Include="Buisness\Lecture.cs" />
+    <Compile Include="Buisness\Page.cs" />
+    <Compile Include="Buisness\Taille.cs" />
+    <Compile Include="Buisness\TypePiece.cs" />
+    <Compile Include="Buisness\UtilisationPoste.cs" />
+    <Compile Include="Buisness\Utilisateur.cs" />
+    <Compile Include="Buisness\Joins\PageDroitView.cs" />
+    <Compile Include="Buisness\View\TailleTypePiece.cs" />
+    <Compile Include="Buisness\View\TypePieceView.cs" />
+    <Compile Include="Buisness\View\UtilisationPosteView.cs" />
+    <Compile Include="Email\Commande.cs" />
+    <Compile Include="Email\EmailComposer.cs" />
+    <Compile Include="Enum.cs" />
+    <Compile Include="ENumHelper.cs" />
+    <Compile Include="Matos\ClientOwin\IWriter.cs" />
+    <Compile Include="Matos\ClientOwin\GenericClient.cs" />
+    <Compile Include="Matos\ClientOwin\IReader.cs" />
+    <Compile Include="Matos\Encodeur\SimpleEncodeurEventArgs.cs" />
+    <Compile Include="Matos\Encodeur\SimpleEncodeurProgressArgs.cs" />
+    <Compile Include="Matos\Lecteur\Enum.cs" />
+    <Compile Include="Matos\Lecteur\Lecture.cs" />
+    <Compile Include="Matos\Lecteur\SimpleReaderAntenneInfo.cs" />
+    <Compile Include="Matos\Lecteur\SimpleReaderConsoleArgs.cs" />
+    <Compile Include="Matos\Lecteur\SimpleReaderEventArgs.cs" />
+    <Compile Include="Matos\Lecteur\SimpleReaderParameters.cs" />
+    <Compile Include="Matos\Ping\EPingStatut.cs" />
+    <Compile Include="Matos\Ping\NotifiePingArgs.cs" />
+    <Compile Include="Matos\Ping\Pinger.cs" />
+    <Compile Include="Matos\ServerOwin\CasqueHub.cs" />
+    <Compile Include="Matos\ServerOwin\Compteur.cs" />
+    <Compile Include="Matos\ServerOwin\Enum.cs" />
+    <Compile Include="Matos\ServerOwin\EnumHelper.cs" />
+    <Compile Include="Matos\ServerOwin\HubConnector.cs">
+      <ExcludeFromStyleCop>False</ExcludeFromStyleCop>
+    </Compile>
+    <Compile Include="Matos\ServerOwin\HubConnectorEventEncodeur.cs" />
+    <Compile Include="Matos\ServerOwin\HubConnectorEventLecteur.cs" />
+    <Compile Include="Matos\ServerOwin\HubConnectorEventStatut.cs" />
+    <Compile Include="Matos\ServerOwin\HubLecteurInfo.cs" />
+    <Compile Include="Matos\ServerOwin\Startup.cs" />
+    <Compile Include="Matos\ServerOwin\TypeConnexionList.cs" />
+    <Compile Include="Properties\AssemblyInfo.cs" />
+    <Compile Include="Services\Administration\Configuration\ConfigurationRequest.cs" />
+    <Compile Include="Services\Administration\Configuration\ConfigurationResponse.cs" />
+    <Compile Include="Services\Administration\Configuration\ConfigurationService.cs" />
+    <Compile Include="Services\Parametrage\CartonEdit\CartonEditRequest.cs" />
+    <Compile Include="Services\Parametrage\CartonEdit\CartonEditResponse.cs" />
+    <Compile Include="Services\Parametrage\CartonEdit\CartonEditService.cs" />
+    <Compile Include="Services\Administration\MailConfig\MailConfigRequest.cs" />
+    <Compile Include="Services\Administration\MailConfig\MailConfigResponse.cs" />
+    <Compile Include="Services\Administration\MailConfig\MailConfigService.cs" />
+    <Compile Include="Services\Administration\PosteEdit\PosteEditRequest.cs" />
+    <Compile Include="Services\Administration\PosteEdit\PosteEditResponse.cs" />
+    <Compile Include="Services\Administration\PosteEdit\PosteEditService.cs" />
+    <Compile Include="Services\Administration\PosteList\PosteListRequest.cs" />
+    <Compile Include="Services\Administration\PosteList\PosteListResponse.cs" />
+    <Compile Include="Services\Administration\PosteList\PosteListService.cs" />
+    <Compile Include="Services\Administration\UtilisateurDroit\UtilisateurDroitRequest.cs" />
+    <Compile Include="Services\Administration\UtilisateurDroit\UtilisateurDroitResponse.cs" />
+    <Compile Include="Services\Administration\UtilisateurDroit\UtilisateurDroitService.cs" />
+    <Compile Include="Services\Assemblage\Detail\AssemblageDetailRequest.cs" />
+    <Compile Include="Services\Assemblage\Detail\AssemblageDetailResponse.cs" />
+    <Compile Include="Services\Assemblage\Detail\AssemblageDetailService.cs" />
+    <Compile Include="Services\Assemblage\Resume\AssemblageResumeRequest.cs" />
+    <Compile Include="Services\Assemblage\Resume\AssemblageResumeResponse.cs" />
+    <Compile Include="Services\Assemblage\Resume\AssemblageResumeService.cs" />
+    <Compile Include="Services\Assemblage\List\AssemblageListRequest.cs" />
+    <Compile Include="Services\Assemblage\List\AssemblageListResponse.cs" />
+    <Compile Include="Services\Assemblage\List\AssemblageListService.cs" />
+    <Compile Include="Services\Commande\Edit\CommandeEditRequest.cs" />
+    <Compile Include="Services\Commande\Edit\CommandeEditResponse.cs" />
+    <Compile Include="Services\Commande\Edit\CommandeEditService.cs" />
+    <Compile Include="Services\Commande\Enum.cs" />
+    <Compile Include="Services\Commande\List\CommandeListRequest.cs" />
+    <Compile Include="Services\Commande\List\CommandeListResponse.cs" />
+    <Compile Include="Services\Commande\List\CommandeListService.cs" />
+    <Compile Include="Services\Commande\Resume\CommandeResumeData.cs" />
+    <Compile Include="Services\Commande\Resume\CommandeResumeRequest.cs" />
+    <Compile Include="Services\Commande\Resume\CommandeResumeResponse.cs" />
+    <Compile Include="Services\Commande\Resume\CommandeResumeService.cs" />
+    <Compile Include="Services\Lectures\AssemblageDeleteRequest.cs" />
+    <Compile Include="Services\Lectures\AssemblageDeleteResponse.cs" />
+    <Compile Include="Services\Lectures\FinaliseLivraisonRequest.cs" />
+    <Compile Include="Services\Lectures\FinaliseLivraisonResponse.cs" />
+    <Compile Include="Services\Lectures\LecteurEnCoursRequest.cs" />
+    <Compile Include="Services\Lectures\LecteurEnCoursResponse.cs" />
+    <Compile Include="Buisness\View\CartonLivreView.cs" />
+    <Compile Include="Services\Livraison\Detail\CartonLivreInfo.cs" />
+    <Compile Include="Services\Livraison\Detail\CasqueLivreInfo.cs" />
+    <Compile Include="Email\Livraison.cs" />
+    <Compile Include="Services\Livraison\Detail\EtiquetteInfo.cs" />
+    <Compile Include="Services\Livraison\Detail\LivraisonDetailRequest.cs" />
+    <Compile Include="Services\Livraison\Detail\LivraisonDetailResponse.cs" />
+    <Compile Include="Services\Livraison\Detail\LivraisonDetailService.cs" />
+    <Compile Include="Services\Livraison\Resume\LivraisonResumeRequest.cs" />
+    <Compile Include="Services\Livraison\Resume\LivraisonResumeResponse.cs" />
+    <Compile Include="Services\Livraison\Resume\LivraisonResumeService.cs" />
+    <Compile Include="Services\Livraison\List\LivraisonListRequest.cs" />
+    <Compile Include="Services\Livraison\List\LivraisonListResponse.cs" />
+    <Compile Include="Services\Livraison\List\LivraisonListService.cs" />
+    <Compile Include="Services\Parametrage\CasqueConstitue\CasqueConstitueInfoRequest.cs" />
+    <Compile Include="Services\Parametrage\CasqueConstitue\CasqueConstitueInfoResponse.cs" />
+    <Compile Include="Services\Parametrage\CasqueConstitue\CasqueConstitueRequest.cs" />
+    <Compile Include="Services\Parametrage\CasqueConstitue\CasqueConstitueResponse.cs" />
+    <Compile Include="Services\Parametrage\CasqueConstitue\CasqueConstitueService.cs" />
+    <Compile Include="Services\Parametrage\CasqueEdit\CasqueEditPhotoRequest.cs" />
+    <Compile Include="Services\Parametrage\CasqueEdit\CasqueEditPhotoResponse.cs" />
+    <Compile Include="Services\Parametrage\CasqueEdit\CasqueEditPhotoService.cs" />
+    <Compile Include="Services\Parametrage\CasqueEdit\CasqueEditRequest.cs" />
+    <Compile Include="Services\Parametrage\CasqueEdit\CasqueEditResponse.cs" />
+    <Compile Include="Services\Parametrage\CasqueEdit\CasqueEditService.cs" />
+    <Compile Include="Services\Parametrage\CasqueList\CasqueListRequest.cs" />
+    <Compile Include="Services\Parametrage\CasqueList\CasqueListResponse.cs" />
+    <Compile Include="Services\Parametrage\CasqueList\CasqueListService.cs" />
+    <Compile Include="Services\Parametrage\ClientEdit\ClientEditRequest.cs" />
+    <Compile Include="Services\Parametrage\ClientEdit\ClientEditResponse.cs" />
+    <Compile Include="Services\Parametrage\ClientEdit\ClientEditService.cs" />
+    <Compile Include="Services\Parametrage\ClientList\ClientListRequest.cs" />
+    <Compile Include="Services\Parametrage\ClientList\ClientListResponse.cs" />
+    <Compile Include="Services\Parametrage\ClientList\ClientListService.cs" />
+    <Compile Include="Services\Parametrage\CouleurEdit\CouleurEditRequest.cs" />
+    <Compile Include="Services\Parametrage\CouleurEdit\CouleurEditResponse.cs" />
+    <Compile Include="Services\Parametrage\CouleurEdit\CouleurEditService.cs" />
+    <Compile Include="Services\Parametrage\CartonList\CartonListRequest.cs" />
+    <Compile Include="Services\Parametrage\CartonList\CartonListResponse.cs" />
+    <Compile Include="Services\Parametrage\CartonList\CartonListService.cs" />
+    <Compile Include="Services\Parametrage\CouleurList\CouleurListRequest.cs" />
+    <Compile Include="Services\Parametrage\CouleurList\CouleurListResponse.cs" />
+    <Compile Include="Services\Parametrage\CouleurList\CouleurListService.cs" />
+    <Compile Include="Services\Parametrage\FournisseurEdit\FournisseurEditRequest.cs" />
+    <Compile Include="Services\Parametrage\FournisseurEdit\FournisseurEditResponse.cs" />
+    <Compile Include="Services\Parametrage\FournisseurEdit\FournisseurEditService.cs" />
+    <Compile Include="Services\Parametrage\FournisseurList\FournisseurListRequest.cs" />
+    <Compile Include="Services\Parametrage\FournisseurList\FournisseurListResponse.cs" />
+    <Compile Include="Services\Parametrage\FournisseurList\FournisseurListService.cs" />
+    <Compile Include="Services\Parametrage\TailleList\TailleListRequest.cs" />
+    <Compile Include="Services\Parametrage\TailleList\TailleListResponse.cs" />
+    <Compile Include="Services\Parametrage\TailleList\TailleListService.cs" />
+    <Compile Include="Services\Parametrage\TailleEdit\TailleEditRequest.cs" />
+    <Compile Include="Services\Parametrage\TailleEdit\TailleEditResponse.cs" />
+    <Compile Include="Services\Parametrage\TailleEdit\TailleEditService.cs" />
+    <Compile Include="Services\Administration\UtilisateurEdit\UtilisateurEditRequest.cs" />
+    <Compile Include="Services\Administration\UtilisateurEdit\UtilisateurEditResponse.cs" />
+    <Compile Include="Services\Administration\UtilisateurEdit\UtilisateurEditService.cs" />
+    <Compile Include="Services\Administration\UtilisateurList\UtilisateurListRequest.cs" />
+    <Compile Include="Services\Administration\UtilisateurList\UtilisateurListResponse.cs" />
+    <Compile Include="Services\Administration\UtilisateurList\UtilisateurListService.cs" />
+    <Compile Include="Services\AppHost.cs" />
+    <Compile Include="Services\FsService.cs" />
+    <Compile Include="Services\Home\HomeRequest.cs" />
+    <Compile Include="Services\Home\HomeResponse.cs" />
+    <Compile Include="Services\Home\HomeService.cs" />
+    <Compile Include="Services\Login\LoginRequest.cs" />
+    <Compile Include="Services\Login\LoginResponse.cs" />
+    <Compile Include="Services\Login\LoginService.cs" />
+    <Compile Include="Services\Login\PageForUser.cs" />
+    <Compile Include="Services\MyServiceRunner.cs" />
+    <Compile Include="Services\Parametrage\FournisseurPiece\FournisseurPieceRequest.cs" />
+    <Compile Include="Services\Parametrage\FournisseurPiece\FournisseurPieceResponse.cs" />
+    <Compile Include="Services\Parametrage\FournisseurPiece\FournisseurPieceService.cs" />
+    <Compile Include="Services\Parametrage\TypePieceEdit\TypePieceEditPhotoService.cs" />
+    <Compile Include="Services\Parametrage\TypePieceEdit\TypePieceEditPhotoResponse.cs" />
+    <Compile Include="Services\Parametrage\TypePieceEdit\TypePieceEditRequest.cs" />
+    <Compile Include="Services\Parametrage\TypePieceEdit\TypePieceEditResponse.cs" />
+    <Compile Include="Services\Parametrage\TypePieceEdit\TypePieceEditService.cs" />
+    <Compile Include="Services\Parametrage\TypePieceEdit\TypePieceEditPhotoRequest.cs" />
+    <Compile Include="Services\Parametrage\TypePieceList\TypePieceListRequest.cs" />
+    <Compile Include="Services\Parametrage\TypePieceList\TypePieceListResponse.cs" />
+    <Compile Include="Services\Parametrage\TypePieceList\TypePieceListService.cs" />
+    <Compile Include="Services\Lectures\AnalyseRequest.cs" />
+    <Compile Include="Services\Lectures\AnalyseResponse.cs" />
+    <Compile Include="Services\Lectures\UtilisationPosteRequest.cs" />
+    <Compile Include="Services\Lectures\UtilisationPosteResponse.cs" />
+    <Compile Include="Services\Lectures\UtilisationPosteService.cs" />
+    <Compile Include="Services\RequestBase.cs" />
+    <Compile Include="Services\RequestPagineBase.cs" />
+    <Compile Include="Services\ResponseBase.cs" />
+  </ItemGroup>
+  <ItemGroup>
+    <COMReference Include="VBIDE">
+      <Guid>{0002E157-0000-0000-C000-000000000046}</Guid>
+      <VersionMajor>5</VersionMajor>
+      <VersionMinor>3</VersionMinor>
+      <Lcid>0</Lcid>
+      <WrapperTool>primary</WrapperTool>
+      <Isolated>False</Isolated>
+      <EmbedInteropTypes>True</EmbedInteropTypes>
+    </COMReference>
+  </ItemGroup>
+  <ItemGroup>
+    <Content Include="Assembly\EPPlus.dll" />
+    <Content Include="Assembly\EPPlus.pdb" />
+    <Content Include="Assembly\EPPlus.XML" />
+    <Content Include="Assembly\Impinj.OctaneSdk.dll" />
+    <Content Include="Assembly\Impinj.OctaneSdk.pdb" />
+    <Content Include="Assembly\Impinj.OctaneSdk.XML" />
+    <Content Include="Assembly\LLRP.dll" />
+    <Content Include="Assembly\LLRP.Impinj.dll" />
+    <Content Include="Assembly\LLRP.Impinj.pdb" />
+    <Content Include="Assembly\LLRP.pdb" />
+    <Content Include="Assembly\ServiceStack.Common.dll" />
+    <Content Include="Assembly\ServiceStack.dll" />
+    <Content Include="Assembly\ServiceStack.Interfaces.dll" />
+    <Content Include="Assembly\ServiceStack.OrmLite.dll" />
+    <Content Include="Assembly\ServiceStack.OrmLite.SqlServer.dll" />
+    <Content Include="Assembly\ServiceStack.Redis.dll" />
+    <Content Include="Assembly\ServiceStack.ServiceInterface.dll" />
+    <Content Include="Assembly\ServiceStack.Text.dll" />
+    <Content Include="Services\Lectures\Documentation.txt" />
+  </ItemGroup>
+  <ItemGroup>
+    <None Include="app.config" />
+    <None Include="packages.config" />
+  </ItemGroup>
+  <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
+  <!-- To modify your build process, add your task inside one of the targets below and uncomment it. 
+       Other similar extension points exist, see Microsoft.Common.targets.
+  <Target Name="BeforeBuild">
+  </Target>
+  <Target Name="AfterBuild">
+  </Target>
+  -->
+</Project>

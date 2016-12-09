@@ -1,0 +1,34 @@
+﻿
+WS GET :
+
+AnalyseResponse renvoie une collection en fonction du contexte
+
+Si reception  : Commandes
+Si assemblage : Casques
+Si livraison  : Assemblages
+
+Chacune des ces collection doit respecter les infos suivantes pour être traitée de manière générique par le Javascript de : CasqueController2.js
+
+  Chaque élément de la collection doit avoir comme propriété (A minima) :
+    Cle (int)           : clé de l'objet sélectionné ou manipulé
+    Pieces (Collection) : collection d'objets sous ensemble de l'objet manipulé
+
+    Chaque élément de la collection "Pieces" doit avoir comme propriété (A minima) :
+        Tags (Collection) : collection des tags possibles associé à la pièce décrite
+
+        Chaque élément de la collection "Tags" doit avoir comme propriété (A minima) : 
+            Numero (string) : Numero du tag lu ou attendu
+            StatutInt (int) : Code qui indique le statut de l'étiquette
+                    1 : commandé, attente de reception
+                    2 : reçu, attente d'assemblage
+                    3 : assemblé, attente de livraison
+                    4 : livré
+
+En fonction de la collection le tag sera correct s'il à un statut compatible avec l'écran :
+
+Dans l'écran "Reception"  les tags doivent avoir un statut 1 ==> alors c'est Ok si on le lit c'est qu'ils étaient attendus tout va bien ==> tout autre statut dans ce cas est une erreur
+Dans l'écran "Assemblage" les tags doivent avoir un statut 2 ==>...
+...
+
+
+Ensiute pour des besoin d'affichage, et en fonction de l'écran, les objets sont complétés par d'autres propriétés...

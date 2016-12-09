@@ -1,0 +1,105 @@
+﻿<div>
+  <!-- Page header -->
+  <data:header-menu data-titre="{{ 'LivraisonList.SousTitre'| translate }}" data-niveau-menu="4"></data:header-menu>
+  <!-- Contenu -->
+  <div class="page-content">
+
+    <table class="admin-list">
+      <thead>
+        <tr>
+          <td colspan="8">
+            <select name="statut" data-ng-model="statut" data-ng-change="getInfos();">
+              <option value="0" data-ng-checked="statut == 0">{{ 'LivraisonList.All' |translate }}</option>
+              <option value="1" data-ng-checked="statut == 1">{{ 'LivraisonList.Statut1' |translate }}</option>
+              <option value="2" data-ng-checked="statut == 2">{{ 'LivraisonList.Statut2' |translate }}</option>
+            </select>
+            <div class="recherche">
+              <input type="text" data-ng-model="searchText" data-my-enter="changePage(1)" placeholder="{{ 'AssemblageList.SearchText' | translate }}" />
+              <span class="btn" data-ng-click="changePage(1)" title="{{ 'Common.TipsLaunchSearch' | translate }}"><i class="fa fa-search"></i></span>
+              <span class="btn" data-ng-show="searchText" data-ng-click="defaultParam()" title="{{ 'Common.TipsInitSearch' | translate }}"><i class="fa fa-eraser green"></i></span>
+            </div>
+          </td>
+        </tr>
+        <!-- waiting ring -->
+        <tr data-ng-show="processing">
+          <td colspan="8" align="center">
+            <i class="fa fa-circle-o-notch fa-spin fa-3x orange"></i>
+          </td>
+        </tr>
+        <!-- en cas d'erreur -->
+        <tr data-ng-show="error">
+          <td colspan="8">
+            <data:display-error></data:display-error>
+          </td>
+        </tr>
+        <tr data-ng-show="nombre > 0">
+          <th colspan="2">
+            #
+            <data-sorter data-column="cle" data-tri="tri" data-tri-asc="triAsc" data-change-method="changeTri('cle')"></data-sorter>
+          </th>
+          <th>
+            {{ 'LivraisonList.LblClient' | translate }}
+            <data-sorter data-column="client" data-tri="tri" data-tri-asc="triAsc" data-change-method="changeTri('client')"></data-sorter>
+          </th>
+          <th>
+            {{ 'LivraisonList.LblUtilisateur' | translate }}
+            <data-sorter data-column="utilisateur" data-tri="tri" data-tri-asc="triAsc" data-change-method="changeTri('utilisateur')"></data-sorter>
+          </th>
+          <th>
+            {{ 'LivraisonList.LblValidation' | translate }}
+            <data-sorter data-column="validation" data-tri="tri" data-tri-asc="triAsc" data-change-method="changeTri('validation')"></data-sorter>
+          </th>
+          <th>
+            {{ 'LivraisonList.LblNombreCarton' | translate }}
+            <data-sorter data-column="cartons" data-tri="tri" data-tri-asc="triAsc" data-change-method="changeTri('cartons')"></data-sorter>
+          </th>
+          <th>
+            {{ 'LivraisonList.LblNombrePiece' | translate }}
+            <data-sorter data-column="pieces" data-tri="tri" data-tri-asc="triAsc" data-change-method="changeTri('pieces')"></data-sorter>
+          </th>
+          <th>
+            <a class="btn" data-ng-href="#/livraisonEdit"><i class="fa fa-plus" title="{{ 'Common.CRUDAdd' | translate }}"></i></a>
+          </th>
+        </tr>
+      </thead>
+      <tbody>
+        <tr data-ng-if="nombre == 0">
+          <td colspan="8" class="center no-data">
+            {{ 'Common.NotFound' | translate }}
+            <br /><a class="btn" data-ng-href="#/livraisonEdit"><i class="fa fa-plus" title="{{ 'Common.CRUDAdd' | translate }}"></i> {{ 'Common.CRUDAdd' | translate }}</a>
+          </td>
+        </tr>
+        <tr data-ng-repeat="x in livraisons">
+          <td class="id">{{ ((page-1) * pageSize) + $index + 1 }}</td>
+          <td class="id" data-ng-class="{'red' : !x.clientNom }">{{ x.cle }}</td>
+          <td>{{ x.clientNom }}</td>
+          <td>{{ x.utilisateurNom }}</td>
+          <td>{{ x.validation | datews: 'short' }}</td>
+          <td align="right" data-ng-class="{'red' : !x.clientNom }">{{ x.nombreCarton }} x <i class="fa fa-archive"></i></td>
+          <td align="right" data-ng-class="{'red' : !x.clientNom }">{{ x.nombrePiece }} x <i class="fa fa-video-camera"></i></td>
+          <td align="center">
+            <a data-ng-show="!x.clientNom" class="btn" data-ng-href="#/livraisonDetail?cle={{x.cle}}"><i class="fa fa-pencil" title="{{ 'Common.CRUDEdit' | translate }}"></i></a>
+            <a data-ng-show="!x.clientNom" class="btn" data-ng-href="" data-ng-click="confirmDelete(x)"><i class="fa fa-times" title="{{ 'Common.CRUDDel' | translate }}"></i></a>
+            <a data-ng-show="x.clientNom" class="btn" data-ng-href="#/livraisonDetail?cle={{x.cle}}"><i class="fa fa-search" title="{{ 'Common.CRUDDetail' | translate }}"></i></a>
+          </td>
+        </tr>
+      </tbody>
+      <tfoot>
+        <tr data-ng-if="nombre > 0">
+          <td colspan="5" class="collapse">
+            {{ 'Common.TitreTotal' | translate }} <strong>{{ nombre }}</strong>
+          </td>
+          <td colspan="3" class="collapse" align="right">
+            <no-paging class="small" page="page" page-size="pageSize" total="nombre" hide-if-empty="true"
+                       title-page="{{ 'Common.PageTitle' | translate }}"
+                       paging-action="changePage(page)">
+            </no-paging>
+          </td>
+        </tr>
+      </tfoot>
+    </table>
+  </div>
+
+  <!-- Page footer -->
+  <data:footer></data:footer>
+</div>

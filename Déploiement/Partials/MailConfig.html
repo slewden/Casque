@@ -1,0 +1,176 @@
+﻿<div>
+  <!-- Page header -->
+  <data:header-menu data-titre="{{ 'MailConfig.SousTitre'| translate }}" data-niveau-menu="7"></data:header-menu>
+  <!-- Contenu -->
+  <div class="page-content">
+    <form name="saisie" novalidate>
+      <table>
+        <tr>
+          <td valign="top">
+
+            <table class="admin-edit">
+              <thead>
+                <tr>
+                  <th>
+                    {{ 'MailConfig.TitreEdit' | translate }}
+                  </th>
+                </tr>
+                <!-- en cas d'erreur -->
+                <tr data-ng-show="error">
+                  <td>
+                    <data:display-error></data:display-error>
+                  </td>
+                </tr>
+              </thead>
+              <tbody>
+                <!-- Host -->
+                <tr>
+                  <td>
+                    <label for="host">{{ 'MailConfig.LblHost' | translate }}</label><br />
+                    <input type="text" id="host" name="host" style="width:400px;"
+                           data-ng-model="config.host" data-ng-maxlength="200" maxlength="201" required />
+                    <div data-ng-show="saisie.host.$dirty && saisie.host.$invalid">
+                      <div class="error-message" data-ng-show="saisie.host.$error.required">
+                        {{ 'MailConfig.RequisHost' | translate }}
+                      </div>
+                      <div class="error-message" data-ng-show="saisie.host.$error.maxlength">
+                        {{ 'MailConfig.MaxLenghtHost' | translate }}
+                      </div>
+                    </div>
+                  </td>
+                </tr>
+                <!-- Port -->
+                <tr>
+                  <td>
+                    <label for="port">{{ 'MailConfig.LblPort' | translate }}</label><br />
+                    <input type="number" id="port" name="port" style="width:60px;"
+                           data-ng-model="config.port" />
+                    <div data-ng-show="saisie.port.$dirty && saisie.port.$invalid">
+                      <div class="error-message" data-ng-show="saisie.port.$error.number">
+                        {{ 'MailConfig.FormatPort' | translate }}
+                      </div>
+                    </div>
+                  </td>
+                </tr>
+                <!-- User -->
+                <tr>
+                  <td>
+                    <label for="user">{{ 'MailConfig.LblUser' | translate }}</label><br />
+                    <input type="text" id="user" name="user" style="width:200px;"
+                           data-ng-model="config.user" data-ng-maxlength="200" maxlength="201" />
+                    <div data-ng-show="saisie.user.$dirty && saisie.user.$invalid">
+                      <div class="error-message" data-ng-show="saisie.user.$error.maxlength">
+                        {{ 'MailConfig.MaxLenghtUser' | translate }}
+                      </div>
+                    </div>
+                  </td>
+                </tr>
+                <!-- Password -->
+                <tr>
+                  <td>
+                    <label for="password">{{ 'MailConfig.LblPassword' | translate }}</label><br />
+                    <input type="text" id="password" name="password" style="width:200px;"
+                           data-ng-model="config.password" data-ng-maxlength="200" maxlength="201" />
+                    <div data-ng-show="saisie.password.$dirty && saisie.password.$invalid">
+                      <div class="error-message" data-ng-show="saisie.password.$error.maxlength">
+                        {{ 'MailConfig.MaxLenghtPassword' | translate }}
+                      </div>
+                    </div>
+                  </td>
+                </tr>
+                <!-- From email -->
+                <tr>
+                  <td>
+                    <label for="fromEmail">{{ 'MailConfig.LblFromEmail' | translate }}</label><br />
+                    <input type="email" id="fromEmail" name="fromEmail" style="width:200px;"
+                           data-ng-model="config.fromEmail" data-ng-maxlength="100" maxlength="101" required />
+                    <div data-ng-show="saisie.fromEmail.$dirty && saisie.fromEmail.$invalid">
+                      <div class="error-message" data-ng-show="saisie.fromEmail.$error.required">
+                        {{ 'MailConfig.RequisFromEmail' | translate }}
+                      </div>
+                      <div class="error-message" data-ng-show="saisie.fromEmail.$error.maxlength">
+                        {{ 'MailConfig.MaxLenghtFromEmail' | translate }}
+                      </div>
+                      <div class="error-message" data-ng-show="saisie.fromEmail.$error.email">
+                        {{ 'MailConfig.FormatFromEmail' | translate }}
+                      </div>
+                    </div>
+                  </td>
+                </tr>
+                <!-- BCCEmails -->
+                <tr>
+                  <td>
+                    <label for="bccEmails">{{ 'MailConfig.LblBCCEmails' | translate }}</label><br />
+                    <input type="text" multiple-emails id="bccEmails" name="bccEmails" style="width:400px;"
+                           data-ng-model="config.bccEmails" />
+                    <div class="txt-small gray">{{ 'MailConfig.HelpBCCEMails' | translate}}</div>
+                    <div data-ng-show="saisie.bccEmails.$dirty && saisie.bccEmails.$invalid">
+                      <div class="error-message" data-ng-show="saisie.bccEmails.$error.multipleEmails">
+                        {{ 'MailConfig.FormatBCCEmails' | translate }}
+                      </div>
+                    </div>
+                  </td>
+                </tr>
+
+                <tr>
+                  <th></th>
+                </tr>
+                <!-- Commande fournisseur -->
+                <tr>
+                  <td>
+                    <label for="subjetFournisseur">{{ 'MailConfig.LblSubjetFournisseur' | translate }}</label><br />
+                    <input type="text" id="subjetFournisseur" name="subjetFournisseur" style="width:400px;"
+                           data-ng-model="config.subjetFournisseur" required />
+                    <i class="fa fa-question-circle btn" data-ng-click="subjectFournisseurFocus = !subjectFournisseurFocus"></i>
+                    <div data-ng-show="saisie.subjetFournisseur.$dirty && saisie.subjetFournisseur.$invalid">
+                      <div class="error-message" data-ng-show="saisie.subjetFournisseur.$error.required">
+                        {{ 'MailConfig.RequisSubjetFournisseur' | translate }}
+                      </div>
+                    </div>
+                  </td>
+                </tr>
+                <!-- Livraison client -->
+                <tr>
+                  <td>
+                    <label for="subjetClient">{{ 'MailConfig.LblSubjetClient' | translate }}</label><br />
+                    <input type="text" id="subjetClient" name="subjetClient" style="width:400px;"
+                           data-ng-model="config.subjetClient" required />
+                    <i class="fa fa-question-circle btn" data-ng-click="subjectClientFocus = !subjectClientFocus"></i>
+
+                    <div data-ng-show="saisie.subjetClient.$dirty && saisie.subjetClient.$invalid">
+                      <div class="error-message" data-ng-show="saisie.subjetClient.$error.required">
+                        {{ 'MailConfig.RequisSubjetClient' | translate }}
+                      </div>
+                    </div>
+                  </td>
+                </tr>
+
+              </tbody>
+              <tfoot>
+                <tr>
+                  <td class="button">
+                    <span class="btn btn-submit" data-ng-click="saveModif()" data-ng-show="saisie.$valid && !processing">{{ 'Common.BoutonEnregistrer' | translate }}&nbsp;<i class="fa fa-check"></i></span>
+                    <i class="fa fa-circle-o-notch fa-spin gray" data-ng-show="processing"></i>
+                    &nbsp;&nbsp;<a href="#/administration">{{ 'Common.BoutonAnuller' | translate }}</a>
+                  </td>
+                </tr>
+              </tfoot>
+            </table>
+
+          </td>
+          <td valign="bottom">
+
+            <data-help-subject-fournisseur></data-help-subject-fournisseur>
+            <data-help-subject-client></data-help-subject-client>
+
+            
+
+          </td>
+        </tr>
+      </table>
+
+    </form>
+  </div>
+  <!-- Page footer -->
+  <data:footer></data:footer>
+</div>

@@ -1,0 +1,87 @@
+﻿<div>
+  <!-- Page header -->
+  <data:header-menu data-titre="{{ 'Couleur.SousTitre'| translate }}" data-niveau-menu="7"></data:header-menu>
+  <!-- Contenu -->
+  <div class="page-content">
+
+    <table class="admin-list">
+      <thead>
+        <tr>
+          <td colspan="5">
+            <div class="recherche">
+              <input type="text" data-ng-model="searchText" data-my-enter="changePage(1)" placeholder="{{ 'Couleur.SearchText' | translate }}" />
+              <span class="btn" data-ng-click="changePage(1)" title="{{ 'Common.TipsLaunchSearch' | translate }}"><i class="fa fa-search"></i></span>
+              <span class="btn" data-ng-show="searchText" data-ng-click="defaultParam()" title="{{ 'Common.TipsInitSearch' | translate }}"><i class="fa fa-eraser green"></i></span>
+            </div>
+          </td>
+        </tr>
+        <!-- waiting ring -->
+        <tr data-ng-show="processing">
+          <td colspan="5" align="center">
+            <i class="fa fa-circle-o-notch fa-spin fa-3x orange"></i>
+          </td>
+        </tr>
+        <!-- en cas d'erreur -->
+        <tr data-ng-show="error">
+          <td colspan="5">
+            <data:display-error></data:display-error>
+          </td>
+        </tr>
+        <tr data-ng-show="nombre > 0">
+          <th colspan="2">
+            #
+            <data-sorter data-column="cle" data-tri="tri" data-tri-asc="triAsc" data-change-method="changeTri('cle')"></data-sorter>
+          </th>
+          <th>
+            {{ 'Couleur.LblNom' | translate }}
+            <data-sorter data-column="nom" data-tri="tri" data-tri-asc="triAsc" data-change-method="changeTri('nom')"></data-sorter>
+          </th>
+          <th>
+            {{ 'Couleur.LblCode' | translate }}
+            <data-sorter data-column="code" data-tri="tri" data-tri-asc="triAsc" data-change-method="changeTri('code')"></data-sorter>
+          </th>
+          <th>
+            <a data-ng-show="canAdd" class="btn" data-ng-href="#/couleurEdit"><i class="fa fa-plus" title="{{ 'Common.CRUDAdd' | translate }}"></i></a>
+          </th>
+        </tr>
+      </thead>
+      <tbody>
+        <tr data-ng-if="nombre == 0">
+          <td colspan="5" class="center no-data">
+            {{ 'Common.NotFound' | translate }}
+            <br /><a class="btn" data-ng-href="#/couleurEdit"><i class="fa fa-plus" title="{{ 'Common.CRUDAdd' | translate }}"></i> {{ 'Common.CRUDAdd' | translate }}</a>
+          </td>
+        </tr>
+        <tr data-ng-repeat="x in couleurs">
+          <td class="id">{{ ((page-1) * pageSize) + $index + 1 }}</td>
+          <td class="id">{{ x.cle }}</td>
+          <td>{{ x.nom }}</td>
+          <td align="center">
+            <div style="background-color:{{ x.code }};border:1px solid black;width:1em;height:1em;"></div>
+          </td>
+          <td align="center">
+            <a data-ng-show="canAdd" class="btn" data-ng-href="#/couleurEdit?cle={{x.cle}}"><i class="fa fa-pencil" title="{{ 'Common.CRUDEdit' | translate }}"></i></a>
+            <a data-ng-show="canAdd" class="btn" data-ng-href="" data-ng-click="confirmDelete(x)"><i class="fa fa-times" title="{{ 'Common.CRUDDel' | translate }}"></i></a>
+            <a data-ng-show="!canAdd" class="btn" data-ng-href="#/couleurRead?cle={{x.cle}}"><i class="fa fa-eye" title="{{ 'Common.CRUDDetail' | translate }}"></i></a>
+          </td>
+        </tr>
+      </tbody>
+      <tfoot>
+        <tr data-ng-if="nombre > 0">
+          <td colspan="3" class="collapse">
+            {{ 'Common.TitreTotal' | translate }} <strong>{{ nombre }}</strong>
+          </td>
+          <td colspan="2" class="collapse" align="right">
+            <no-paging class="small" page="page" page-size="pageSize" total="nombre" hide-if-empty="true"
+                       title-page="{{ 'Common.PageTitle' | translate }}"
+                       paging-action="changePage(page)">
+            </no-paging>
+          </td>
+        </tr>
+      </tfoot>
+    </table>
+  </div>
+
+  <!-- Page footer -->
+  <data:footer></data:footer>
+</div>

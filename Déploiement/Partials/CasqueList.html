@@ -1,0 +1,116 @@
+﻿<div>
+  <!-- Page header -->
+  <data:header-menu data-titre="{{ 'Casque.SousTitre'| translate }}" data-niveau-menu="6"></data:header-menu>
+  <!-- Contenu -->
+  <div class="page-content">
+
+    <table class="admin-list">
+      <thead>
+        <tr>
+          <td colspan="8">
+            <div class="recherche">
+              <input type="text" data-ng-model="searchText" data-my-enter="changePage(1)" placeholder="{{ 'Casque.SearchText' | translate }}" />
+              <span class="btn" data-ng-click="changePage(1)" title="{{ 'Common.TipsLaunchSearch' | translate }}"><i class="fa fa-search"></i></span>
+              <span class="btn" data-ng-show="searchText" data-ng-click="defaultParam()" title="{{ 'Common.TipsInitSearch' | translate }}"><i class="fa fa-eraser green"></i></span>
+            </div>
+          </td>
+        </tr>
+        <!-- waiting ring -->
+        <tr data-ng-show="processing">
+          <td colspan="8" align="center">
+            <i class="fa fa-circle-o-notch fa-spin fa-3x orange"></i>
+          </td>
+        </tr>
+        <!-- en cas d'erreur -->
+        <tr data-ng-show="error">
+          <td colspan="8">
+            <data:display-error></data:display-error>
+          </td>
+        </tr>
+        <tr data-ng-show="nombre > 0">
+          <th colspan="2">
+            #
+            <data-sorter data-column="cle" data-tri="tri" data-tri-asc="triAsc" data-change-method="changeTri('cle')"></data-sorter>
+          </th>
+          <th>
+            {{ 'Casque.LblNom' | translate }}
+            <data-sorter data-column="nom" data-tri="tri" data-tri-asc="triAsc" data-change-method="changeTri('nom')"></data-sorter>
+          </th>
+          <th>
+            {{ 'Casque.LblCode' | translate }}
+            <data-sorter data-column="code" data-tri="tri" data-tri-asc="triAsc" data-change-method="changeTri('code')"></data-sorter>
+          </th>
+          <th>
+            {{ 'Casque.LblPhoto' | translate }}
+            <data-sorter data-column="photo" data-tri="tri" data-tri-asc="triAsc" data-change-method="changeTri('photo')"></data-sorter>
+          </th>
+          <th>
+            {{ 'Casque.LblNombrePiece' | translate }}
+            <data-sorter data-column="nombrepiece" data-tri="tri" data-tri-asc="triAsc" data-change-method="changeTri('nombrepiece')"></data-sorter>
+          </th>
+          <th>
+            {{ 'Casque.lblNombreAssemblage' | translate }}
+            <data-sorter data-column="nombreassemblage" data-tri="tri" data-tri-asc="triAsc" data-change-method="changeTri('nombreassemblage')"></data-sorter>
+          </th>
+          <th>
+            <a data-ng-show="canAdd" class="btn" data-ng-href="#/casqueEdit"><i class="fa fa-plus" title="{{ 'Common.CRUDAdd' | translate }}"></i></a>
+          </th>
+        </tr>
+      </thead>
+      <tbody>
+        <tr data-ng-if="nombre == 0">
+          <td colspan="8" class="center no-data">
+            {{ 'Common.NotFound' | translate }}
+            <br /><a class="btn" data-ng-href="#/casqueEdit"><i class="fa fa-plus" title="{{ 'Common.CRUDAdd' | translate }}"></i> {{ 'Common.CRUDAdd' | translate }}</a>
+          </td>
+        </tr>
+        <tr data-ng-repeat="x in casques">
+          <td valign="top">{{ ((page-1) * pageSize) + $index + 1 }}</td>
+          <td valign="top">{{ x.cle }}</td>
+          <td valign="top">{{ x.nom }}</td>
+          <td valign="top">{{ x.code }}</td>
+          <td class="fond-photo">
+            <img data-ng-src="{{ x.photoUrl }}" style="height:50px;" />
+          </td>
+          <td valign="top" align="center">
+            <span title="{{ 'Casque.TipsNombrePiece' | translate }}" data-ng-show="x.nombrePiece">{{ x.nombrePiece }} x <i class="fa fa-puzzle-piece"></i></span>
+
+            <span data-ng-show="x.nombreTaille || x.nombreCouleur"><br/><br /></span>
+            <span title="{{ 'Casque.TipsNombreTaille' | translate }}" data-ng-show="x.nombreTaille">{{ x.nombreTaille }} x <i class="fa fa-signal"></i></span>
+            <span data-ng-show="x.nombreTaille && x.nombreCouleur">&nbsp;</span>
+            <span title="{{ 'Casque.TipsNombreCouleur' | translate }}" data-ng-show="x.nombreCouleur">{{ x.nombreCouleur }} x <i class="fa fa-paint-brush"></i></span>
+
+          </td>
+          <td valign="top" align="right">
+            <span title="{{ 'Casque.TipsNombreStock' | translate }}" data-ng-show="x.nombreAssemblageStock" class="orange">{{ x.nombreAssemblageStock }} x <i class="fa fa-building-o"></i></span>
+            <span data-ng-show="x.nombreAssemblageStock && x.nombreAssemblageLivre"><br /><br /></span>
+            <span title="{{ 'Casque.TipsNombreLivre' | translate }}" data-ng-show="x.nombreAssemblageLivre" class="green">{{ x.nombreAssemblageLivre }} x <i class="fa fa fa-archive"></i></span>
+          </td>
+          <td valign="top" align="center">
+            <a data-ng-show="!canAdd" class="btn" data-ng-href="#/casqueRead?cle={{x.cle}}"><i class="fa fa-eye" title="{{ 'Common.CRUDDetail' | translate }}"></i></a>
+            <a data-ng-show="canAdd" class="btn" data-ng-href="#/casqueEdit?cle={{x.cle}}"><i class="fa fa-pencil" title="{{ 'Common.CRUDEdit' | translate }}"></i></a><br />
+            <a data-ng-show="canAdd" class="btn" data-ng-href="#/casqueConstitue?cle={{x.cle}}"><i class="fa fa-puzzle-piece" title="{{ 'Casque.TipsConstitue' | translate }}"></i></a><br />
+            <a data-ng-show="canAdd && x.nombreAssemblage == 0" class="btn" data-ng-href="" data-ng-click="confirmDelete(x)"><i class="fa fa-times" title="{{ 'Common.CRUDDel' | translate }}"></i></a>
+          </td>
+        </tr>
+      </tbody>
+      <tfoot>
+        <tr data-ng-if="nombre > 0">
+          <td colspan="4" class="collapse">
+            {{ 'Common.TitreTotal' | translate }} <strong>{{ nombre }}</strong>
+          </td>
+          <td colspan="4" class="collapse" align="right">
+            <no-paging class="small" page="page" page-size="pageSize" total="nombre" hide-if-empty="true"
+                       title-page="{{ 'Common.PageTitle' | translate }}"
+                       paging-action="changePage(page)">
+            </no-paging>
+          </td>
+        </tr>
+      </tfoot>
+    </table>
+  </div>
+
+  <!-- Page footer -->
+  <data:footer></data:footer>
+</div>
+

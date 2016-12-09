@@ -1,0 +1,270 @@
+﻿<div>
+  <!-- Page header -->
+  <data:header-menu data-titre="{{ 'Livraison.SousTitre'| translate }}" data-niveau-menu="4"></data:header-menu>
+  <!-- Contenu -->
+  <div class="page-content">
+
+    <div class="columnsContainer40">
+      <div class="leftColumn">
+        <!-- Notification Zone -->
+        <data-notify-zone data-ng-model="hub.message"></data-notify-zone>
+        <!-- Menu -->
+        <div>
+          <!-- connexion au hub -->
+          <span data-ng-show="progression == 1" class="info-readonly">
+            <i class="fa fa-circle-o-notch fa-spin orange"></i> {{ 'HubLecteur.progression1'| translate }}<br />
+          </span>
+          <!-- Au cas ou le hub ne serait pas démarré -->
+          <div data-ng-show="!hub.open || progression == 0">
+            <button data-ng-click="hubConnect()"> {{ 'HubLecteur.RestartConnection' | translate }}</button>
+          </div>
+          <!-- connexion ok -->
+          <span data-ng-show="progression > 1" class="info-readonly">
+            <i class="fa fa-check green"></i> {{ 'HubLecteur.progressionOk1'| translate }}<br />
+          </span>
+          <!-- recherche des lecteurs -->
+          <span data-ng-show="progression == 2" class="info-readonly">
+            <i class="fa fa-circle-o-notch fa-spin orange"></i> {{ 'HubLecteur.progression2'| translate }}<br />
+          </span>
+          <!-- driver lecteur non démarré -->
+          <span data-ng-show="progression == 3">
+            <span class="red"><i class="fa fa-times red"></i> {{ 'HubLecteur.progression3'| translate }}</span><br />
+            {{ 'HubLecteur.progression42'| translate }} <button data-ng-click="sayHello()">{{ 'Common.BoutonRetry'| translate }}</button> <a href="#/livraison"><button>{{ 'Common.BoutonAnuller'| translate }}</button></a><br /><br />
+          </span>
+          <!-- driver imprimante non démarré -->
+          <span data-ng-show="progression == 4">
+            <span class="red"><i class="fa fa-times red"></i> {{ 'HubLecteur.progression4'| translate }}</span><br />
+            {{ 'HubLecteur.progression42'| translate }} <button data-ng-click="sayHello()">{{ 'Common.BoutonRetry'| translate }}</button> <a href="#/livraison"><button>{{ 'Common.BoutonAnuller'| translate }}</button></a><br /><br />
+          </span>
+          <!-- driver Ok -->
+          <span data-ng-show="progression >= 5" class="info-readonly">
+            <i class="fa fa-check green"></i> {{ 'HubLecteur.progression5'| translate }}<br />
+          </span>
+          <!-- Choix du poste -->
+          <div data-ng-show="progression == 5 && postes && postes.length >= 1 && !utilisationPosteCle">
+            {{ 'Reception.lblPoste' | translate }}<br />
+            <select data-ng-model="poste" style="width:90%;" data-ng-show="postes"
+                    data-ng-options="p.nom for p in postes track by p.cle"></select><br />
+            <i class="fa fa-circle-o-notch fa-spin gray" data-ng-show="processing"></i>
+            <button data-ng-show="poste && !processing" data-ng-click="startReception()">{{ 'Reception.BtStart' | translate }}</button> <a href="#/livraison"><button>{{ 'Common.BoutonAnuller'| translate }}</button></a><br /><br />
+          </div>
+
+          <!-- correction quand y a pas de poste de lecture disponible -->
+          <div data-ng-show="progression == 5 && (!postes || postes.length == 0) && !utilisationPosteCle">
+            <i class="fa fa-times red"></i> {{ 'HubLecteur.progressNoReader'| translate }}<br />
+            <i class="fa fa-circle-o-notch fa-spin gray" data-ng-show="processing"></i>
+            <button data-ng-show="!processing" data-ng-click="checkOtherProcess()">{{ 'HubLecteur.progressSession'| translate }}</button>
+            <div data-ng-show="noReaderFound">
+              <i class="fa fa-times red"></i> {{ 'HubLecteur.ErrorNoSession'| translate }}<br />
+            </div>
+            <div data-ng-show="lecteursEnCours && lecteursEnCours.length">
+              <table class="admin-list">
+                <thead>
+                  <tr>
+                    <th colspan="2">{{ 'HubLecteur.SessionList'| translate }}</th>
+                  </tr>
+                </thead>
+                <tbody>
+                  <tr data-ng--repeat="l in lecteursEnCours">
+                    <td>{{ l.posteNom }} - {{ l.utilisateurNom }}<br />{{ 'HubLecteur.SessionSince'| translate : {date : l.creation } }}</td>
+                    <td>
+                      <i class="fa fa-circle-o-notch fa-spin gray" data-ng-show="processing"></i>
+                      <span data-ng-show="!processing" data-ng-click="deleteOtherProcess(l.cle)" title="Terminer cette session">
+                        <i class="fa fa-stop-circle btn-warning"></i>
+                      </span>
+                    </td>
+                  </tr>
+                </tbody>
+              </table>
+            </div>
+          </div>
+
+          <!-- recherche de l'état du lecteur -->
+          <span data-ng-show="progression == 6">
+            <i class="fa fa-circle-o-notch fa-spin orange"></i> {{ 'HubLecteur.progression6'| translate }}  <button data-ng-click="sayHello()">{{ 'Common.BoutonAnuller'| translate }}</button><br />
+          </span>
+
+          <!-- lecteur xxx ok -->
+          <span data-ng-show="progression == 8" class="info-readonly">
+            <i class="fa fa-check green"></i> {{ 'HubLecteur.progression8'| translate : {poste: poste.nom} }}<br />
+          </span>
+
+          <!-- Poste choisi -->
+          <div data-ng-show="progression >= 8 && progression < 20  && utilisationPosteCle">
+
+            <!-- lecteur en statut inconnu-->
+            <div data-ng-show="reader.statut == -1">
+              <i class="fa fa-circle-o-notch fa-spin orange"></i> {{ 'HubLecteur.LecteurQuering' | translate }}<br />
+              <button data-ng-click="cancelStarting()">{{ 'Reception.BtCancel' | translate }}</button>
+            </div>
+
+            <!-- lecteur pas démarré -->
+            <div data-ng-show="reader.statut == 1">
+              <i class="fa fa-circle-o-notch fa-spin orange"></i> {{ 'HubLecteur.LecteurStarting' | translate }}<br />
+              <button data-ng-click="cancelStarting()">{{ 'Reception.BtCancel' | translate }}</button>
+            </div>
+
+            <!-- lecteur démarré -->
+            <div data-ng-show="reader.statut == 2" class="info-readonly">
+              <i class="fa fa-circle-o-notch fa-spin green"></i> {{ 'Reception.ReceptionEnCours' | translate }}<br />
+            </div>
+
+            <!-- lecteur en cours de stop-->
+            <div data-ng-show="reader.statut == 3">
+              <i class="fa fa-circle-o-notch fa-spin orange"></i>  {{ 'HubLecteur.LecteurStopping' | translate }}<br />
+            </div>
+
+            <!-- actions possibles -->
+            <div data-ng-show="reader.statut == 2">
+              <br />
+              <button data-ng-show="isLecturePending()" data-ng-click="resetReception()">{{ 'Reception.BtReset' | translate }}</button>
+              <button data-ng-show="isLecturePending()" data-ng-click="cancelReception()">{{ 'Reception.BtCancel' | translate }}</button>
+              <button data-ng-show="!isLecturePending()" data-ng-click="stopReception()">{{ 'Reception.BtStop' | translate }}</button>
+            </div>
+          </div>
+
+          <!-- Error Zone -->
+          <div class="error" data-ng-show="error">
+            <div class="notify-message">
+              <div class="notify-message-left">
+                {{ error }}
+              </div>
+              <div class="notify-message-right">
+                <div class="btn" data-ng-click="clearError()" title="{{ 'Common.TipsHide' | translate }}"><i class="fa fa-times"></i></div>
+              </div>
+            </div>
+          </div>
+
+        </div>
+      </div>
+      <div class="rightColumn">
+        <!-- les casques -->
+        <td valign="top" rowspan="2">
+          <div data-ng-show="reader.statut == 2 && progression < 20">
+            <div class="casque">
+              <!-- choix du carton -->
+              <div>
+                {{ 'Livraison.CartonIndex' | translate: { numero: cartonIndex + 1} }}<br />
+                <select data-ng-model="carton" style="width:90%;" data-ng-show="cartons"
+                        data-ng-options="c.nom for c in cartons track by c.cle"></select><br />
+              </div>
+
+              <!-- resumé des casque dans le carton -->
+              <ul>
+                <li class="casque" data-ng-repeat="c in analyseur.casques">
+                  <div class="image" data-ng-show="c.photoUrl"><img data-ng-src="{{ c.photoUrl }}" width="50" /></div>
+                  <div class="code" title="{{ c.code }}">{{ c.code }}</div>
+                  <div class="nom" title="{{ c.nom }}">{{ c.nom }}</div>
+                  <div class="nombre">x</div>
+                  <div class="recu">{{ c.nombre }}</div>
+                </li>
+              </ul>
+              <!-- boutons save carton-->
+              <div class="clearFix">
+                <!-- Attente des lectures -->
+                <span data-ng-show="!analyseur.casques || !analyseur.casques.length" class="info-readonly">
+                  <i class="fa fa-circle-o-notch fa-spin green"></i> {{ 'Livraison.WaitingRead' | translate }}
+                </span>
+                <span data-ng-show="analyseur.casques && analyseur.casques.length && carton">
+                  <i class="fa fa-circle-o-notch fa-spin gray" data-ng-show="processing"></i>
+                  <button data-ng-click="valideCarton(false)" data-ng-show="!processing">{{ 'Livraison.SaveAndContinue' | translate }}</button>
+                  <button data-ng-click="valideCarton(true)" data-ng-show="!processing">{{ 'Livraison.SaveAndClose' | translate }}</button>
+                </span>
+              </div>
+            </div>
+
+            <!-- détail des casques lus -->
+            <ul class="reception">
+              <li class="assemblage" data-ng-repeat="c in analyseur.commandes">
+                <img data-ng-src="{{ c.casquePhotoUrl }}" width="50" />
+                <div class="assemblage-nom"> {{ c.casqueNom }} </div>
+                <div data-ng-show="isComplet(c)" class="assemblage-complet" title="{{ 'Assemblage.AllTagRead' | translate }}"><i class="fa fa-check green fa-2x"></i></div>
+                <ul>
+                  <li data-ng-repeat="p in c.pieces" data-ng-class="{'green': p.tagLus.length == 1}">
+                    <i class="fa fa-plus orange sepi" data-ng-show="$index>0"></i>
+                    <i class="fa fa-check green" data-ng-show="p.tagLus.length == 1" title="{{ 'Assemblage.TipTagRead' | translate }}"></i>
+                    <img data-ng-src="{{  p.typePiecePhotoUrl }}" height="25" />{{ p.typePieceNom}}
+                    <span data-ng-show="p.tailleCle && p.couleurCle" style="background-color:{{ p.couleurCode }};" title="{{ 'Assemblage.TipsPieceCT' | translate: { couleur: p.couleurNom, taille: p.tailleNom} }}"> T{{ p.tailleNom }}</span>
+                    <span data-ng-show="!p.tailleCle && p.couleurCle" style="background-color:{{ p.couleurCode }};" title="{{ 'Assemblage.TipsPieceC' | translate: { couleur: p.couleurNom} }}">&nbsp;<i class="fa fa-paint-brush"></i>&nbsp;</span>
+                    <span data-ng-show="p.tailleCle && !p.couleurCle" title="{{ 'Assemblage.TipsPieceT' | translate: { taille: p.tailleNom} }}"> T{{ p.tailleNom }}</span>
+                  </li>
+                </ul>
+                <div class="clearFix"></div>
+              </li>
+
+              <!-- Les étiquettes en attente de scan -->
+              <li class="commande" data-ng-show="analyseur.lectures && analyseur.lectures.length">
+                <div>
+                  {{ 'Livraison.WaitingList' | translate }} <span class="recu">{{ analyseur.lectures.length }}</span>
+                  <a class="btn pull-right" data-ng-click="faitUneDemande()" title="{{ 'Livraison.BadTagList' | translate }}" data-ng-show="!analyseur.nbDemandeEnCours"><i class="fa fa-refresh"></i></a>
+                  <a class="btn pull-right" data-ng-click="razWaiting()" title="{{ 'Assemblage.AnalyseEncore' | translate }}"><i class="fa fa-times"></i></a>
+                </div>
+                <ul class="inconnu">
+                  <li data-ng-repeat="l in analyseur.lectures"><i class="fa fa-circle orange sepi"></i> {{ l }}</li>
+                </ul>
+              </li>
+
+              <!-- les tags inconnus -->
+              <li class="commande" data-ng-show="tagInconnus && tagInconnus.length">
+                {{ 'Livraison.BadTagList' | translate }} <span class="recu">{{ tagInconnus.length }}</span>
+                <a class="btn pull-right" data-ng-click="razInconnus()" title="{{ 'Reception.BtMasquerInconnus' | translate }}"><i class="fa fa-times"></i></a>
+                <ul class="inconnu">
+                  <li data-ng-repeat="l in tagInconnus"><i class="fa fa-circle orange sepi"></i> {{ l }}</li>
+                </ul>
+              </li>
+
+            </ul>
+          </div>
+
+          <!-- formulaire de choix du client et fin de livraison -->
+          <div data-ng-show="progression >= 20">
+            <div data-ng-show="livraison">
+              <span class="txt-commande green">{{ 'Livraison.Titre' | translate }}</span>
+              {{ 'Livraison.Reference' | translate: {reference:livraison.reference, creation:livraison.creation} }}<br />
+              {{ 'Livraison.NombreCarton' | translate }} <span class="recu">{{ livraison.nombreCarton }}</span>
+              {{ 'Livraison.NombreCasque' | translate }} <span class="recu">{{ livraison.nombrePiece }}</span><br />
+              <br />
+            </div>
+
+            {{ 'Livraison.ChooseClient' | translate }}<br />
+            <select data-ng-model="client" style="width:90%;" data-ng-show="clients"
+                    data-ng-options="c.nom for c in clients track by c.cle"></select><br />
+            <i class="fa fa-circle-o-notch fa-spin gray" data-ng-show="processing"></i>
+            <span data-ng-show="client && !processing">
+              <label for="printTheBL">{{ 'Livraison.PrintTheBl' | translate }}</label><input id="printTheBL" type="checkbox" data-ng-model="printTheBL" />
+              <button data-ng-click="finaliseLivraison()">{{ 'Livraison.BtTerminer' | translate }}</button>
+            </span>
+            <button data-ng-show="!processing" data-ng-click="deleteLivraison()">{{ 'Common.BoutonAnuller'| translate }}</button>
+          </div>
+
+        </td>
+      </div>
+    </div>
+
+    <!-- Debug panel -->
+    <div style="display:none;">
+      Nombre de demande ##{{ analyseur.nbDemandeEnCours }}## <br />
+      PageCode ##{{ pageCode }}##<br />
+      Statut attendu: ##{{ waitTagStatut }}##<br />
+      Progression ##{{ progression }}##<br />
+      Identifiant Hub : ##{{ hub.connectionId }}##<br />
+      Utilisation cle : ##{{ utilisationPosteCle }}##<br />
+      User : ##{{ user.nom }}## <br />
+      Poste : ##{{ poste.nom }}##<br />
+      Error : ## {{ error }}##<br />
+      Etat du lecteur :
+      <span data-ng-show="hub.open">
+        <i class="fa fa-stop red" data-ng-show="!reader.statut" title="{{ 'HubLecteur.Statut0' | translate }}"></i>
+        <i class="fa fa-ellipsis-h orange" data-ng-show="reader.statut == 1" title="{{ 'HubLecteur.Statut1' | translate }}"></i><i class="fa fa-play orange" data-ng-show="reader.statut == 1" title="{{ 'HubLecteur.Statut1' | translate }}"></i>
+        <i class="fa fa-play green" data-ng-show="reader.statut == 2" title="{{ 'HubLecteur.Statut2' | translate }}"></i>
+        <i class="fa fa-ellipsis-h orange" data-ng-show="reader.statut == 3" title="{{ 'HubLecteur.Statut3' | translate }}"></i><i class="fa fa-stop orange" data-ng-show="reader.statut == 3" title="{{ 'HubLecteur.Statut3' | translate }}"></i>
+      </span><br />
+      <span data-ng-show="!hub.open">
+        <i class="fa fa-question-circle orange" title="{{ 'HubLecteur.StatutUnknow' | translate }}"></i>
+      </span>
+    </div>
+
+    <!-- Page footer -->
+    <data:footer></data:footer>
+  </div>
+</div>

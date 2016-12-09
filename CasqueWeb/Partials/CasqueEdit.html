@@ -1,0 +1,91 @@
+﻿<div>
+  <!-- Page header -->
+  <data:header-menu data-titre="{{ 'Casque.SousTitre'| translate }}" data-niveau-menu="6" data-roothub="roothub"></data:header-menu>
+  <!-- Contenu -->
+  <div class="page-content">
+    <form name="saisie" novalidate>
+      <table class="admin-edit">
+        <thead>
+          <tr>
+            <th>
+              <span data-ng-if="cle > 0">{{ 'Casque.TitreEdit' | translate }}</span>
+              <span data-ng-if="!cle || cle < 0">{{ 'Casque.TitreAdd' | translate }}</span>
+            </th>
+          </tr>
+          <tr data-ng-show="error">
+            <td>
+              <!-- en cas d'erreur -->
+              <data:display-error></data:display-error>
+            </td>
+          </tr>
+        </thead>
+        <tbody>
+          <!-- Nom -->
+          <tr>
+            <td>
+              <label for="nom">{{ 'Casque.LblNom' | translate }}</label><br />
+              <input type="text" id="nom" name="nom" style="width:400px;"
+                     data-ng-model="casque.nom" data-ng-maxlength="100" maxlength="101" required />
+              <div data-ng-show="saisie.nom.$dirty && saisie.nom.$invalid">
+                <div class="error-message" data-ng-show="saisie.nom.$error.required">
+                  {{ 'Casque.RequisNom' | translate }}
+                </div>
+                <div class="error-message" data-ng-show="saisie.nom.$error.maxlength">
+                  {{ 'Casque.MaxLenghtNom' | translate }}
+                </div>
+              </div>
+            </td>
+          </tr>
+          <!-- Code -->
+          <tr>
+            <td>
+              <label for="code">{{ 'Casque.LblCode' | translate }}</label><br />
+              <input type="text" id="code" name="code" style="width:400px;"
+                     data-ng-model="casque.code" data-ng-maxlength="20" maxlength="21" required />
+              <div data-ng-show="saisie.code.$dirty && saisie.code.$invalid">
+                <div class="error-message" data-ng-show="saisie.code.$error.required">
+                  {{ 'Casque.RequisCode' | translate }}
+                </div>
+                <div class="error-message" data-ng-show="saisie.code.$error.maxlength">
+                  {{ 'Casque.MaxLenghtCode' | translate }}
+                </div>
+              </div>
+            </td>
+          </tr>
+
+          <!-- Description -->
+          <tr>
+            <td>
+              <label for="description">{{ 'Casque.LblDescription' | translate }}</label><br />
+              <textarea type="text" id="description" name="description" style="width:400px;height:150px;"
+                        data-ng-model="casque.description"></textarea>
+            </td>
+          </tr>
+
+          <!-- Photo -->
+          <tr>
+            <td>
+              <label for="photo">{{ 'Casque.LblPhoto' | translate }}</label><br />
+              <div data-ng-show="casque.photoUrl">
+                <img data-ng-src="{{ casque.photoUrl }}" height="180" /><br />
+              </div>
+              <input type="file" file_model="leFichier" style="width:400px;" />
+            </td>
+          </tr>
+
+        </tbody>
+        <tfoot>
+          <tr>
+            <td class="button">
+              <span class="btn btn-submit" data-ng-click="saveModif()" data-ng-show="saisie.$valid && !processing">{{ 'Common.BoutonEnregistrer' | translate }}&nbsp;<i class="fa fa-check"></i></span>
+              <i class="fa fa-circle-o-notch fa-spin gray" data-ng-show="processing"></i>
+              &nbsp;&nbsp;<a href="#/casque">{{ 'Common.BoutonAnuller' | translate }}</a>
+            </td>
+          </tr>
+        </tfoot>
+      </table>
+    </form>
+  </div>
+  <!-- Page footer -->
+  <data:footer></data:footer>
+</div>

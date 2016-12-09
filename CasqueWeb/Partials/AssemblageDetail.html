@@ -1,0 +1,131 @@
+﻿<div>
+  <!-- Page header -->
+  <data:header-menu data-titre="{{ 'Casque.SousTitre'| translate }}" data-niveau-menu="3" data-roothub="roothub"></data:header-menu>
+
+  <!-- Contenu -->
+  <div class="page-content">
+
+    <table class="admin-edit">
+      <thead>
+        <tr>
+          <th colspan="2">
+            {{ 'AssemblageDetail.Titre' | translate }}
+          </th>
+        </tr>
+        <tr data-ng-show="error">
+          <td colspan="2">
+            <!-- en cas d'erreur -->
+            <div class="error-message-bloc">
+              {{ error }}
+              <span class="btn pull-right" data-ng-click="clearError()"><i class="fa fa-times"></i></span>
+            </div>
+          </td>
+        </tr>
+      </thead>
+      <tbody>
+        <!-- nom du casque -->
+        <tr>
+          <td>
+            <label for="nom">{{ 'Casque.LblNom' | translate }}</label><br />
+            <span class="info-readonly">{{ assemblage.casqueNom }}</span>
+          </td>
+          <td>
+            <img data-ng-src="{{ assemblage.casquePhotoUrl }}" width="75" />
+          </td>
+        </tr>
+        <!-- Création -->
+        <tr>
+          <td colspan="2">
+            <label for="nom">{{ 'AssemblageResume.LblCreation' | translate }}</label><br />
+            <span class="info-readonly">{{ assemblage.creation | datews: 'short' }}</span>
+            {{ 'AssemblageResume.LblCreationBy' | translate }}
+            <span class="info-readonly">{{ assemblage.utilisateurAssembleNom }}</span>
+          </td>
+        </tr>
+        <!-- Validation -->
+        <tr>
+          <td colspan="2">
+            <label for="nom">{{ 'AssemblageResume.LblValidation' | translate }}</label><br />
+            <span class="info-readonly">{{ assemblage.validation | datews: 'short' }}</span>
+          </td>
+        </tr>
+        <!-- Statut -->
+        <tr>
+          <td colspan="2">
+            <label for="nom">{{ 'AssemblageResume.LblStatut' | translate }}</label><br />
+            <span class="info-readonly">{{ assemblage.statutNom }}</span>
+          </td>
+        </tr>
+        <tr>
+          <td colspan="2">
+            <label for="nom">{{ 'AssemblageResume.LblTag' | translate }}</label><br />
+            <span class="info-readonly">{{ assemblage.tag }}</span>
+          </td>
+        </tr>
+
+        <tr>
+          <td colspan="2">
+
+            <table class="admin-list">
+              <thead>
+                <tr>
+                  <th colspan="2">{{ 'AssemblageResume.ColPiece' | translate }}</th>
+                  <th>{{ 'AssemblageResume.ColCouleur' | translate }}</th>
+                  <th>{{ 'AssemblageResume.ColTaille' | translate }}</th>
+                  <th>{{ 'AssemblageResume.ColEtiquette' | translate }}</th>
+                  <th>{{ 'AssemblageResume.ColCreation' | translate }}</th>
+                  <th>{{ 'AssemblageResume.ColEntreeStock' | translate }}</th>
+                  <th>{{ 'AssemblageResume.ColAssemblage' | translate }}</th>
+                  <th></th>
+                </tr>
+              </thead>
+              <tbody>
+                <tr data-ng-repeat="e in etiquettes">
+                  <td>
+                    <img data-ng-src="{{ e.photoUrl }}" width="50" />
+                  </td>
+                  <td>
+                    {{ e.typePieceNom }} <br /> <small>{{ e.typePieceCode }}</small>
+                  </td>
+                  <td>{{ e.couleurNom }}</td>
+                  <td>{{ e.tailleNom }}</td>
+                  <td>
+                    {{ e.numero }}
+                  </td>
+                  <td>
+                    {{ e.creation | datews : 'short' }}
+                  </td>
+                  <td>
+                    {{ e.entreeStock | datews : 'short' }}
+                  </td>
+                  <td>
+                    {{ e.assemblage | datews : 'short' }}
+                  </td>
+                  <td>
+                    <a href="#/commandeEdit?cle={{ e.commandeCle}}&r=1" target="_blank" title="{{ 'AssemblageResume.TipsShowcommande' | translate }}"><i class="fa fa-eye"></i></a>
+                  </td>
+                </tr>
+              </tbody>
+            </table>
+
+
+          </td>
+        </tr>
+
+      </tbody>
+      <tfoot>
+        <tr>
+          <td colspan="2" class="button">
+            <i class="fa fa-circle-o-notch fa-spin gray" data-ng-show="processing"></i>
+            <a href="#/assemblageList">{{ 'Common.BoutonRetour' | translate }}</a>
+          </td>
+        </tr>
+      </tfoot>
+    </table>
+
+  </div>
+
+  <!-- Page footer -->
+  <data:footer></data:footer>
+
+</div>

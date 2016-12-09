@@ -1,0 +1,63 @@
+﻿<div>
+  <!-- Page header -->
+  <data:header-menu data-titre="{{ 'UtilisateurDroit.SousTitre'| translate }}" data-niveau-menu="7" data-roothub="roothub"></data:header-menu>
+  <!-- Contenu -->
+  <div class="page-content">
+    <form name="saisie" novalidate>
+      <table class="admin-edit">
+        <thead>
+          <tr>
+            <th colspan="3">
+              {{ 'UtilisateurDroit.Titre' | translate: { nom: utilisateur.nom } }}
+            </th>
+          </tr>
+          <tr data-ng-show="error">
+            <td colspan="3">
+              <!-- en cas d'erreur -->
+              <data:display-error></data:display-error>
+            </td>
+          </tr>
+        </thead>
+        <tbody>
+          <tr data-ng-repeat="d in droits">
+            <td title="{{ d.description }}" style="width:30px;">
+              <span data-ng-show="!d.niveau">
+                <span data-ng-show="d.avecDroitInt == 2">
+                  <i class="no-btn-box fa fa-eye bg-gray" title="{{ 'UtilisateurDroit.AccessFils' | translate }}"></i>
+                </span>
+                <span data-ng-show="d.avecDroitInt == 1">
+                  <i class="btn-box fa fa-question bg-red" data-ng-click="changeAcces(d, 2)" data-ng-show="!d.accesInt" title="{{ 'UtilisateurDroit.AccessNull' | translate }}"></i>
+                  <i class="btn-box fa fa-times bg-red" data-ng-click="changeAcces(d, 2)" data-ng-show="d.accesInt === 1" title="{{ 'UtilisateurDroit.Access0' | translate }}"></i>
+                  <i class="btn-box fa fa-eye bg-orange" data-ng-click="changeAcces(d, 3)" data-ng-show="d.accesInt === 2" title="{{ 'UtilisateurDroit.Access1' | translate }}"></i>
+                  <i class="btn-box fa fa-check bg-green" data-ng-click="changeAcces(d, 1)" data-ng-show="d.accesInt === 3" title="{{ 'UtilisateurDroit.Access2' | translate }}"></i>
+                </span>
+              </span>
+            </td>
+            <td title="{{ d.description }}" style="width:20px;">
+              <span data-ng-show="d.niveau">
+                <i class="btn-box fa fa-question bg-red" data-ng-click="changeAcces(d, 2, d.pereCle)" data-ng-show="!d.accesInt" title="{{ 'UtilisateurDroit.AccessNull' | translate }}"></i>
+                <i class="btn-box fa fa-times bg-red" data-ng-click="changeAcces(d, 2, d.pereCle)" data-ng-show="d.accesInt === 1" title="{{ 'UtilisateurDroit.Access0' | translate }}"></i>
+                <i class="btn-box fa fa-eye bg-orange" data-ng-click="changeAcces(d, 3, d.pereCle)" data-ng-show="d.accesInt === 2" title="{{ 'UtilisateurDroit.Access1' | translate }}"></i>
+                <i class="btn-box fa fa-check bg-green" data-ng-click="changeAcces(d, 1, d.pereCle)" data-ng-show="d.accesInt === 3" title="{{ 'UtilisateurDroit.Access2' | translate }}"></i>
+              </span>
+            </td>
+            <td title="{{ d.description }}">
+              {{ d.nom }}
+            </td>
+          </tr>
+        </tbody>
+        <tfoot>
+          <tr>
+            <td colspan="3" class="button">
+              <span class="btn btn-submit" data-ng-click="saveModif()" data-ng-show="saisie.$valid && !processing">{{ 'Common.BoutonEnregistrer' | translate }}&nbsp;<i class="fa fa-check"></i></span>
+              <i class="fa fa-circle-o-notch fa-spin gray" data-ng-show="processing"></i>
+              &nbsp;&nbsp;<a href="#/utilisateur">{{ 'Common.BoutonAnuller' | translate }}</a>
+            </td>
+          </tr>
+        </tfoot>
+      </table>
+    </form>
+  </div>
+  <!-- Page footer -->
+  <data:footer></data:footer>
+</div>

@@ -1,0 +1,78 @@
+﻿<div>
+  <!-- Page header -->
+  <data:header-menu data-titre="{{ 'CommandeResume.SousTitre'| translate }}" data-niveau-menu="1"></data:header-menu>
+  <!-- Contenu -->
+  <div class="page-content">
+
+    <div class="columnsContainer50">
+      <div class="leftColumn">
+        <table class="admin-list">
+          <thead>
+            <tr>
+              <td colspan="3">
+                {{ 'CommandeResume.Title' | translate }}
+              </td>
+            </tr>
+            <!-- waiting ring -->
+            <tr data-ng-show="processing">
+              <td colspan="3" align="center">
+                <i class="fa fa-circle-o-notch fa-spin fa-3x orange"></i>
+              </td>
+            </tr>
+            <!-- en cas d'erreur -->
+            <tr data-ng-show="error">
+              <td colspan="3">
+                <data:display-error></data:display-error>
+              </td>
+            </tr>
+          </thead>
+          <tbody>
+            <tr data-ng-show="!commandes || !commandes.length">
+              <td colspan="3" class="center no-data">
+                {{ 'CommandeResume.NotFound' | translate }}
+              </td>
+            </tr>
+            <tr data-ng-repeat="c in commandes">
+              <td>
+                <a data-ng-show="canRead" class="btn" data-ng-href="#/commandeList?statut={{ c.statutInt }}" title="{{ 'CommandeResume.CRUDList' | translate }}">
+                  <span data-ng-show="c.statutInt == 1" class="red">{{ 'CommandeResume.Statut1' | translate }}</span>
+                  <span data-ng-show="c.statutInt == 2" class="orange">{{ 'CommandeResume.Statut2' | translate }}</span>
+                  <span data-ng-show="c.statutInt == 3" class="red">{{ 'CommandeResume.Statut3' | translate }}</span>
+                  <span data-ng-show="c.statutInt == 4" class="orange">{{ 'CommandeResume.Statut4' | translate }}</span>
+                  <span data-ng-show="c.statutInt == 5" class="orange">{{ 'CommandeResume.Statut5' | translate }}</span>
+                  <span data-ng-show="c.statutInt == 6" class="green">{{ 'CommandeResume.Statut6' | translate }}</span>
+                  <span data-ng-show="c.statutInt == 7" class="green">{{ 'CommandeResume.Statut7' | translate }}</span>
+                </a>
+              </td>
+              <td align="right" title="{{ 'CommandeResume.TipsNombreCommande' | translate }}">x <b>{{ c.nombre }}</b></td>
+              <td align="right" title="{{ 'CommandeResume.TipsNombrePiece' | translate }}">{{ c.totalPiece }} x <i class="fa fa-puzzle-piece"></i></td>
+            </tr>
+          </tbody>
+          <tfoot>
+            <tr data-ng-show="commandes && commandes.length">
+              <td class="collapse" align="right">
+                {{ 'Common.LblTotal' | translate }}
+              </td>
+              <td class="collapse" align="center"><b>{{ total }}</b></td>
+              <td class="collapse" align="center"><b>{{ totalPiece }}</b></td>
+            </tr>
+          </tfoot>
+        </table>
+      </div>
+      <div class="rightColumn">
+        <!-- menus -->
+        <ul class="menu-inter">
+          <li data-ng-repeat="m in user.menus" title="{{ m.description}}" data-ng-if="m.niveau == 1">
+            <a href="{{ m.url }}" data-ng-class="{'sel' : path == m.url}"><i class="fa {{ m.image}}"></i> {{ m.description }}</a>
+          </li>
+        </ul>
+
+      </div>
+    </div>
+
+  </div>
+
+  <!-- Page footer -->
+  <data:footer></data:footer>
+</div>
+

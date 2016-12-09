@@ -1,0 +1,58 @@
+﻿<div>
+  <!-- Page header -->
+  <data:header-menu data-titre="{{ 'Couleur.SousTitre'| translate }}" data-niveau-menu="6" data-roothub="roothub"></data:header-menu>
+  <!-- Contenu -->
+  <div class="page-content">
+    <form name="saisie" novalidate>
+      <table class="admin-edit">
+        <thead>
+          <tr>
+            <th>
+              <span>{{ 'Couleur.TitreDetail' | translate }}</span>
+            </th>
+          </tr>
+          <tr data-ng-show="error">
+            <td>
+              <!-- en cas d'erreur -->
+              <data:display-error></data:display-error>
+            </td>
+          </tr>
+        </thead>
+        <tbody>
+          <!-- Nom -->
+          <tr>
+            <td>
+              <label for="nom">{{ 'Couleur.LblNom' | translate }}</label><br />
+              <span class="info-readonly">{{ couleur.nom }}</span>
+            </td>
+          </tr>
+          <!-- Code couleur -->
+          <tr>
+            <td>
+              <label for="code">{{ 'Couleur.LblCode' | translate }}</label><br />
+              <div style="border:1px solid grey;background-color:{{ couleur.code }};width:100px;height:25px;"></div>
+            </td>
+          </tr>
+          <!-- Description -->
+          <tr>
+            <td>
+              <label for="description">{{ 'Couleur.LblDescription' | translate }}</label><br />
+              <span class="info-readonly" data-ng-show="couleur.description">{{ couleur.description }}</span>
+              <span class="info-readonly" data-ng-show="!couleur.description">{{ 'Common.Aucune' | translate  }}</span>
+            </td>
+          </tr>
+        </tbody>
+        <tfoot>
+          <tr>
+            <td class="button">
+              <i class="fa fa-circle-o-notch fa-spin gray" data-ng-show="processing"></i>
+              <a href="#/couleur">{{ 'Common.BoutonRetour' | translate }}</a>
+            </td>
+          </tr>
+        </tfoot>
+      </table>
+    </form>
+  </div>
+  <!-- Page footer -->
+  <data:footer></data:footer>
+</div>

@@ -1,0 +1,461 @@
+﻿<div>
+  <!-- Page header -->
+  <data:header-menu data-titre="{{ 'Commande.SousTitre'| translate }}" data-niveau-menu="1" data-roothub="roothub"></data:header-menu>
+  <!-- Contenu -->
+  <div class="page-content">
+    <form name="saisie" novalidate>
+
+      <span data-ng-show="!commande">
+        <data:display-error></data:display-error>
+      </span>
+
+      <!-- table pour la création de la commande -->
+      <table class="admin-edit" data-ng-show="commande.cle <= 0">
+        <thead>
+          <tr>
+            <th>{{ 'Commande.TitreAdd' | translate }}</th>
+          </tr>
+        </thead>
+        <tbody>
+          <!-- Numéro -->
+          <tr>
+            <td>
+
+              <label for="numero1">{{ 'Commande.LblNumero' | translate }}</label><br />
+              <input type="text" id="numero1" name="numero1" style="width:400px;"
+                     data-ng-model="commande.numero" data-ng-maxlength="20" maxlength="21" required />
+              <div data-ng-show="saisie.numero1.$dirty && saisie.numero1.$invalid">
+                <div class="error-message" data-ng-show="saisie.numero1.$error.required">
+                  {{ 'Commande.RequisNumero' | translate }}
+                </div>
+                <div class="error-message" data-ng-show="saisie.numero1.$error.maxlength">
+                  {{ 'Commande.MaxLenghtNumero' | translate }}
+                </div>
+              </div>
+            </td>
+          </tr>
+          <!-- fournisseur -->
+          <tr>
+            <td>
+              <label for="fournisseur">{{ 'Commande.LblFournisseur' | translate }}</label><br />
+              <select data-ng-model="commande.fournisseurNomCle" style="width:408px;"
+                      data-ng-options="f.nom for f in fournisseurs track by f.cle" required></select>
+              <div class="error-message" data-ng-show="commande.fournisseurNomCle.cle <= 0">
+                {{ 'Commande.RequisFournisseur' | translate }}
+              </div>
+            </td>
+          </tr>
+        </tbody>
+        <tfoot>
+          <tr>
+            <td class="button">
+              <span class="btn btn-submit" data-ng-click="saveCommande()"
+                    data-ng-show="commande.fournisseurNomCle.cle > 0 && commande.numero && !processing">{{ 'Common.BoutonSuivant' | translate }}&nbsp;<i class="fa fa-forward"></i></span>
+              <i class="fa fa-circle-o-notch fa-spin gray" data-ng-show="processing"></i>
+              &nbsp;&nbsp;<a href="#/commandeList">{{ 'Common.BoutonAnuller' | translate }}</a>
+            </td>
+          </tr>
+        </tfoot>
+      </table>
+
+      <!-- table pour l'édition de la commande -->
+      <table class="admin-edit" data-ng-show="commande.cle > 0">
+        <thead>
+          <tr>
+            <th>
+              {{ 'Commande.TitreEdit' | translate }}
+            </th>
+            <th class="right">
+              <span data-ng-show="commande.validation && commande.impressionFinie && commande.envoieEmail && commande.statutInt <= 4 && !readOnly">
+                <i class="fa fa-print btn" title="{{'Commande.TipsPrintBC'| translate }}" data-ng-click="printBC()"></i>
+                <i class="fa fa-envelope btn" data-ng-show="configEmailOk" data-ng-click="showEmailplus = !showEmailplus" title="{{ 'Commande.TipsSendAutreEmail' | translate }}"></i>
+              </span>
+              &nbsp;
+            </th>
+          </tr>
+          <tr>
+            <td align="right" colspan="2" data-ng-show="showEmailplus" title="{{ 'Commande.TipsSendAutreEmail' | translate }}" style="border:1px solid;padding-bottom:5px;padding-right:10px;">
+              <div style="position:relative">
+                <i class="fa fa-caret-up" style="position:absolute;right:7px;top:-14px;"></i>
+
+                <span data-ng-show="saisie.emailSuplementaire.$dirty && saisie.emailSuplementaire.$invalid">
+                  <span class="error-message" data-ng-show="saisie.emailSuplementaire.$error.email">
+                    {{ 'Fournisseur.FormatEmail' | translate }}
+                  </span>
+                </span><input type="email" id="emailSuplementaire" name="emailSuplementaire" data-ng-show="!processing" data-ng-model="emailSuplementaire" style="width:200px;" placeholder="{{ 'Commande.EmailAutre' | translate }}" />
+
+                <i class="fa fa-circle-o-notch fa-spin gray" data-ng-show="processing"></i>
+                <span class="btn" data-ng-click="sendEmail()" data-ng-show="!processing && saisie.$valid">{{ 'Commande.BtSendAutreEmail' | translate }}</span>
+                <i class="fa fa-times btn" data-ng-click="showEmailplus = false" title="{{ 'Common.TipsHide' | translate }}"></i>
+
+              </div>
+            </td>
+          </tr>
+          <tr data-ng-show="error">
+            <td colspan="2">
+              <!-- en cas d'erreur -->
+              <data:display-error></data:display-error>
+            </td>
+          </tr>
+        </thead>
+        <tbody>
+          <!-- Numéro -->
+          <tr>
+            <td colspan="2">
+              <label for="numero">{{ 'Commande.LblNumero' | translate }}</label><br />
+              <span data-ng-show="commande.validation || readOnly" class="info-readonly">{{ commande.numero }}</span>
+              <span data-ng-show="!commande.validation && !readOnly">
+                <input type="text" id="numero" name="numero" style="width:200px;"
+                       data-ng-model="commande.numero" data-ng-maxlength="20" maxlength="21" required />
+                <div data-ng-show="saisie.numero.$dirty && saisie.numero.$invalid">
+                  <div class="error-message" data-ng-show="saisie.numero.$error.required">
+                    {{ 'Commande.RequisNumero' | translate }}
+                  </div>
+                  <div class="error-message" data-ng-show="saisie.numero.$error.maxlength">
+                    {{ 'Commande.MaxLenghtNumero' | translate }}
+                  </div>
+                </div>
+              </span>
+            </td>
+          </tr>
+
+          <!-- Qui quand -->
+          <tr>
+            <td colspan="2">
+              <label for="LblCreation">{{ 'Commande.LblCreation' | translate }}</label><br />
+              <span class="info-readonly">{{ 'Commande.LblQuiQaund' | translate: {user: commande.utilisateurNom, date:commande.saisie} }}</span>
+            </td>
+          </tr>
+
+          <!-- fournisseur -->
+          <tr>
+            <td colspan="2">
+              <label for="fournisseur">{{ 'Commande.LblFournisseur' | translate }}</label><br />
+              <span class="info-readonly">{{ commande.fournisseurNomCle.nom }} <span data-ng-show="commande.fournisseurEmail">(<a href="mailto:{{ commande.fournisseurEmail }}">{{ commande.fournisseurEmail }}</a>)</span></span>
+            </td>
+          </tr>
+
+          <!-- Pièces -->
+          <tr>
+            <td colspan="2">
+              <table class="admin-edit">
+                <thead>
+                  <tr>
+                    <th>{{ 'Commande.LblReference' | translate }}</th>
+                    <th colspan="2">{{ 'FournisseurPiece.LblTypePiece' | translate }}</th>
+                    <th colspan="2" style="width:60px;" title="{{ 'Commande.TipsQuantite' | translate }}">{{ 'Commande.LblQuantite' | translate }}</th>
+                    <th style="width:100px;">{{ 'CasqueConstitue.LblCouleur' | translate }}</th>
+                    <th style="width:130px;">{{ 'CasqueConstitue.LblTaille' | translate }}</th>
+                    <th class="right" style="width:85px;" title="{{ 'FournisseurPiece.TipsPrix' | translate }}">{{ 'FournisseurPiece.LblPrix' | translate }}</th>
+                    <th class="right" style="width:85px;" title="{{ 'FournisseurPiece.TipsFrais' | translate }}">{{ 'FournisseurPiece.Lblfrais' | translate }}</th>
+                  </tr>
+                </thead>
+                <tbody>
+                  <tr data-ng-repeat-start="p in commande.pieces track by p.guid" data-ng-show="!commande.validation || (commande.validation && p.quantite)">
+                    <td>
+                      <span class="info-readonly"><small>{{ p.reference }}</small></span>
+                    </td>
+                    <td title="{{ p.typePieceDescription }}">
+                      <span class="info-readonly">{{ p.typePieceNom }}</span>
+                    </td>
+                    <td>
+                      <span class="info-readonly">{{ p.typePieceCode }}</span>
+                    </td>
+                    <td align="center">
+                      <span data-ng-show="commande.validation || readOnly" class="info-readonly"> x <b>{{ p.quantite }}</b></span>
+                      <div data-ng-show="!commande.validation && !readOnly">
+                        <input type="number" data-ng-model="p.quantite" id="quantite_{{ p.guid }}" name="quantite_{{ p.guid}}" min="0" max="{{ qteMax }}"
+                               placeholder="{{ 'Commande.TipsQuantite' | translate }}" style="width:60px;" data-ng-change="computeTotaux()">
+                        
+                    </td>
+                    <td title="{{ p.typePieceDescription }}" align="left">
+                      <i class="fa fa-tags green" title="{{ 'CasqueConstitue.TipsPieceEtiquette' | translate }}" data-ng-show="p.typePieceAvecTag"></i>
+                    </td>
+                    <td>
+                      <span data-ng-show="commande.validation || readOnly" class="info-readonly">{{ p.couleurNom }}</span>
+                      <span data-ng-show="!commande.validation && !readOnly">
+                        <select data-ng-model="p.couleur" style="width:100px;" data-ng-show="p.quantite > 0 && p.couleurNombre"
+                                data-ng-options="c.nom for c in p.couleurs track by c.cle"></select>
+                      </span>
+                    </td>
+                    <td>
+                      <span data-ng-show="commande.validation || readOnly" class="info-readonly">{{ p.tailleNom }}</span>
+                      <span data-ng-show="!commande.validation && !readOnly">
+                        <select data-ng-model="p.taille" style="width:100px;" data-ng-show="p.quantite > 0 && p.tailleNombre"
+                                data-ng-options="t.nom for t in p.tailles track by t.cle"></select>
+                        <a class="btn" data-ng-show="(p.quantite > 0 && p.quantite < qteMax && (p.couleurNombre || p.tailleNombre)) || p.quantite >= qteMax"
+                           data-ng-click="addPiece(p)" title="{{ 'Commande.TipsAddPiece' | translate }}"><i class="fa fa-plus-circle"></i></a>
+                      </span>
+                    </td>
+                    <td align="right">
+                      <span data-ng-show="commande.validation || readOnly" class="info-readonly">{{ p.prixUnitaire | masquezero | currency }}</span>
+                      <span data-ng-show="!commande.validation && !readOnly">
+                        <div data-ng-show="p.quantite > 0">
+                          <input type="number" data-ng-model="p.prixUnitaire" id="prix_{{ p.guid }}" name="prix_{{ p.guid }}"
+                                 placeholder="{{ 'FournisseurPiece.TipsPrix' | translate }}" style="width:60px;" data-ng-change="computeTotaux()">&nbsp;€
+                          
+                        </div>
+                      </span>
+                    </td>
+                    <td align="right">
+                      <div data-ng-show="p.quantite > 0">
+                        <span data-ng-show="commande.validation || readOnly" class="info-readonly">{{ p.frais | masquezero | currency }}</span>
+                        <span data-ng-show="!commande.validation  && !readOnly">
+                          <input type="number" data-ng-model="p.frais" id="frais_{{ p.guid }}" name="frais_{{ p.guid }}"
+                                 placeholder="{{ 'FournisseurPiece.TipsFrais' | translate }}" style="width:60px;" data-ng-change="computeTotaux()">&nbsp;€
+                        </span>
+                      </div>
+                    </td>
+                  </tr>
+                  <tr data-ng-repeat-end>
+                    <td colspan="9">
+                      <!-- validator's message -->
+                      <div data-ng-show="saisie.quantite_{{ p.guid }}.$dirty && saisie.quantite_{{ p.guid }}.$invalid">
+                        <div class="error-message" data-ng-show="saisie.quantite_{{ p.guid }}.$error.number">
+                          {{ 'Commande.FormatQuantite' | translate }}
+                        </div>
+                        <div class="error-message" data-ng-show="saisie.quantite_{{ p.guid }}.$error.min">
+                          {{ 'Commande.MinQuantite' | translate }}
+                        </div>
+                        <div class="error-message" data-ng-show="saisie.quantite_{{ p.guid }}.$error.max">
+                          {{ 'Commande.MaxQuantite' | translate: {qte: qteMax}  }}
+                        </div>
+                      </div>
+
+                      <div data-ng-show="p.quantite > 0 && saisie.prix_{{ p.guid }}.$dirty && saisie.prix_{{ p.guid }}.$invalid">
+                        <div class="error-message pull-right" data-ng-show="saisie.prix_{{ p.guid }}.$error.number">
+                          {{ 'FournisseurPiece.FormatPrix' | translate }}
+                        </div>
+                      </div>
+
+                      <div data-ng-show="p.quantite > 0 && saisie.frais_{{ p.guid }}.$dirty && saisie.frais_{{ p.guid }}.$invalid">
+                        <div class="error-message pull-right" data-ng-show="saisie.frais_{{ p.guid }}.$error.number">
+                          {{ 'FournisseurPiece.FormatFrais' | translate }}
+                        </div>
+                      </div>
+                    </td>
+                  </tr>
+                  <tr><td colspan="9"></td></tr>
+                </tbody>
+                <tfoot>
+                  <tr>
+                    <td colspan="3" align="right">
+                      {{ 'Commande.TipsNombrePiece' | translate }}
+                    </td>
+                    <td align="center">
+                      x <b>{{ commande.nombreProduit | masquezero }}</b>
+                    </td>
+                    <td>
+                      &nbsp;
+                    </td>
+                    <td colspan="4"></td>
+                  </tr>
+                  <tr>
+                    <td colspan="3" align="right">
+                      {{ 'Commande.TotalNBProduitEtiquette' | translate }}
+                    </td>
+                    <td>
+                      &nbsp;
+                    </td>
+                    <td align="center">
+                      <span data-ng-show="commande.nombreProduitEtiquette">
+                        <i class="fa fa-tags green" title="{{ 'CasqueConstitue.TipsPieceEtiquette' | translate }}"></i>
+                        x <b>{{ commande.nombreProduitEtiquette | masquezero }}</b>
+                      </span>
+                    </td>
+                    <td colspan="4">
+                      <div class="error-message" data-ng-show="!commande.nombreProduitEtiquette">
+                        {{ 'Commande.RequisPieceDansCommande' | translate }}
+                      </div>
+                    </td>
+                  </tr>
+                  <tr data-ng-show="commande.montantCommande">
+                    <td colspan="7" align="right">
+                      {{ 'Commande.LblTotal' | translate }}
+                    </td>
+                    <td colspan="2" align="center">
+                      <span data-ng-show="commande.montantCommande">
+                        <b>{{ commande.montantCommande | currency  }}</b>
+                      </span>
+                    </td>
+                  </tr>
+                </tfoot>
+              </table>
+            </td>
+          </tr>
+
+          <!-- Delai de réception -->
+          <tr data-ng-show="!commande.validation">
+            <td colspan="2">
+              <label for="delaiSemaine">{{ 'Commande.LblDelaiReception' | translate }}</label><br />
+
+              <span data-ng-show="readOnly" class="info-readonly">{{ commande.delaiSemaine }}&nbsp;semaine(s)</span>
+              <span data-ng-show="!readOnly">
+
+
+                <input type="number" data-ng-model="commande.delaiSemaine" id="delaiSemaine" name="delaiSemaine"
+                       style="width:60px;">&nbsp;semaine(s)
+                <div data-ng-show="saisie.delaiSemaine.$dirty && saisie.delaiSemaine.$invalid">
+                  <div class="error-message" data-ng-show="saisie.delaiSemaine.$error.number">
+                    {{ 'FournisseurPiece.FormatDelaiSemaine' | translate }}
+                  </div>
+                </div>
+              </span>
+            </td>
+          </tr>
+
+          <!-- Validation -->
+          <tr>
+            <td colspan="2">
+              <label for="LblCreation">{{ 'Commande.LblValidation' | translate }}</label><br />
+              <span data-ng-show="commande.validation" class="info-readonly">
+                <i class="fa fa-check green"></i> {{ 'Commande.CommandeValidee' | translate :  {date: commande.validation} }}
+              </span>
+
+              <!-- choix de l'impression du BC et envoie de l'email -->
+              <span data-ng-show="!commande.validation">
+                <span data-ng-show="readOnly" class="info-readonly">
+                  <i class="fa fa-times"></i> {{ 'Commande.TipsNotValider' | translate }}
+                </span>
+                <span data-ng-show="!readOnly">
+                  <input type="checkbox" id="validation" name="validation"
+                         data-ng-model="validation" />
+                  <label data-ng-show="validation" data-ng-click="validation = false">{{ 'Commande.TipsValider' | translate }}</label>
+                  <label data-ng-show="!validation" data-ng-click="validation = true">{{ 'Commande.TipsNotValider' | translate }}</label>
+                </span>
+              </span>
+            </td>
+          </tr>
+
+          <!-- Impression -->
+          <tr data-ng-show="commande.validation">
+            <td colspan="2">
+              <label for="LblImpression">{{ 'Commande.LblImpression' | translate }}</label><br />
+              <!-- pas commencer -->
+              <span data-ng-show="!commande.debutImpression">
+                <span class="orange">{{ 'Commande.LblWaitValidation' | translate }}</span>
+              </span>
+              <span data-ng-show="commande.debutImpression && !commande.impressionFinie" class="red">
+                {{ 'Commande.LblImpressionEncours' | translate  }}
+              </span>
+              <span data-ng-show="commande.impressionFinie" class="info-readonly">
+                <i class="fa fa-check green"></i> {{ 'Commande.LblImpressionFini' | translate :  {date: commande.impressionFinie} }}
+              </span>
+            </td>
+          </tr>
+
+          <!-- Valide l'envoie au fournisseur -->
+          <tr data-ng-show="commande.validation && commande.impressionFinie">
+            <td colspan="2">
+              <label for="LblEmail">{{ 'Commande.LblEmail' | translate }}</label><br />
+
+              <!-- commande envoyée au fournisseur -->
+              <span data-ng-show="commande.envoieEmail" class="info-readonly">
+                <i class="fa fa-check green"></i> {{ 'Commande.LblEmailFini' | translate :  {date: commande.envoieEmail} }}
+              </span>
+
+              <!-- commande pas envoyée au fournisseur -->
+              <span data-ng-show="!commande.envoieEmail">
+                <span data-ng-show="readOnly" class="info-readonly">
+                  <i class="fa fa-times"></i> {{ 'Commande.TipsNotEnvoieEmail' | translate }}
+                </span>
+                <!-- choix d'imprimer -->
+                <span data-ng-show="!readOnly">
+                  <input type="checkbox" id="envoieEmail" name="envoieEmail" data-ng-model="envoieEmail" />
+                  <label data-ng-show="envoieEmail" data-ng-click="envoieEmail = false">{{ 'Commande.TipsEnvoieEmail' | translate }}</label>
+                  <label data-ng-show="!envoieEmail" data-ng-click="envoieEmail = true">{{ 'Commande.TipsNotEnvoieEmail' | translate }}</label>
+                </span>
+
+                <!-- choix d'envoyer l'email -->
+                <div data-ng-show="envoieEmail" style="padding-left:30px;">
+                  <input type="checkbox" id="doPrintBC" name="doPrintBC" data-ng-model="doPrintBC" />
+                  <label data-ng-show="doPrintBC" data-ng-click="doPrintBC = false"><i class="fa fa-print"></i> {{ 'Commande.TipsPrintBC' | translate }}</label>
+                  <label data-ng-show="!doPrintBC" data-ng-click="doPrintBC = true">{{ 'Commande.TipsNotPrintBC' | translate }}</label>
+                  <div data-ng-show="configEmailOk && commande.fournisseurEmail">
+                    <input type="checkbox" id="processEnvoie" name="processEnvoie" data-ng-model="processEnvoie" />
+                    <label data-ng-show="processEnvoie" data-ng-click="processEnvoie = false"><i class="fa fa-envelope"></i> {{ 'Commande.TipsSendEmail' | translate }}</label>
+                    <label data-ng-show="!processEnvoie" data-ng-click="processEnvoie = true">{{ 'Commande.TipsNotSendEmail' | translate }}</label>
+                  </div>
+                  <div data-ng-show="!configEmailOk" class="error-message">
+                    <i class="fa fa-envelope"></i> {{ 'Common.TipsConfigEmailKo' | translate }}
+                  </div>
+                  <div data-ng-show="!commande.fournisseurEmail" class="error-message">
+                    <i class="fa fa-envelope"></i> {{ 'Commande.TipsEmailFournisseurKo' | translate }}
+                  </div>
+                </div>
+              </span>
+            </td>
+          </tr>
+
+          <!-- Réception des pièces -->
+          <tr data-ng-show="commande.validation && commande.impressionFinie && commande.envoieEmail">
+            <td colspan="2">
+              <label for="LblReception">{{ 'Commande.LblReception' | translate }}</label><br />
+              <span data-ng-show="commande.statutInt ==4">
+                <span data-ng-show="commande.retardEcheance > 0" class="info-readonly">
+                  <i class="fa fa-clock-o"></i>
+                  {{ 'Commande.LivraisonAttendueLeOk' | translate : {date : commande.echeance, jour : commande.retardEcheance} }}
+                </span>
+                <span data-ng-show="commande.retardEcheance == 0" class="info-readonly">
+                  <i class="fa fa-calendar-check-o orange"></i>
+                  {{ 'Commande.LivraisonAttendueToday' | translate }}
+                </span>
+                <span data-ng-show="commande.retardEcheance < 0" class="red">
+                  <i class="fa fa-warning red"></i>
+                  {{ 'Commande.LivraisonAttendueLeKo' | translate : {date : commande.echeance, jour : commande.retardEcheance} }}
+                </span>
+              </span>
+              <span data-ng-show="commande.statutInt > 4" class="info-readonly">
+                <i class="fa fa-check green" data-ng-show="acquittee || (commande.pieceRecues > 0 && commande.pieceAttendues == 0)"></i>
+                <span data-ng-show="commande.pieceRecues > 0 && commande.pieceTotal > 0 && !acquittee">{{ 'Commande.StatutRecuNonAcquitte' | translate }} {{ commande.pieceRecues }} sur {{ commande.pieceTotal }}</span>
+                <span data-ng-show="commande.pieceRecues > 0 && commande.pieceTotal > 0 && acquittee">{{ commande.statutNom }} {{ commande.pieceRecues }} sur {{ commande.pieceTotal }}</span>
+                <span data-ng-show="commande.pieceRecues > 0 && commande.pieceAttendues > 0 && !acquittee"> soit <strong>{{ commande.pieceRecues / commande.pieceTotal | percentage : 1 }}</strong></span>
+              </span>
+            </td>
+          </tr>
+
+          <!-- Acquittement de la réception -->
+          <tr data-ng-show="commande.statutInt > 4 && commande.statutInt < 7">
+            <td colspan="2">
+              <label for="LblCreation">{{ 'CommandeResume.BtAcquitte' | translate }}</label><br />
+              <span data-ng-show="readOnly">
+                <span data-ng-show="acquittee"><i class="fa fa-check green"></i> {{ 'Commande.TipsAcquittee' | translate }}</span>
+                <span data-ng-show="!acquittee"><i class="fa fa-times"></i> {{ 'Commande.TipsNotAcquittee' | translate }}</span>
+              </span>
+              <span data-ng-show="!readOnly">
+                <input type="checkbox" id="acquittee" name="acquittee"
+                       data-ng-model="acquittee" />
+                <label data-ng-show="acquittee" data-ng-click="acquittee = false">{{ 'Commande.TipsAcquittee' | translate }}</label>
+                <label data-ng-show="!acquittee" data-ng-click="acquittee = true">{{ 'Commande.TipsNotAcquittee' | translate }}</label>
+              </span>
+            </td>
+          </tr>
+
+          <tr><td colspan="2"></td></tr>
+        </tbody>
+        <tfoot>
+          <tr>
+            <td colspan="2" class="button">
+              <span data-ng-show="!readOnly">
+                <span class="btn btn-submit" data-ng-click="saveModif()"
+                      data-ng-show="(commande.statutInt == 1 || commande.statutInt == 3 || commande.statutInt == 5 || commande.statutInt == 6)
+                                    && saisie.$valid && commande.nombreProduitEtiquette && !processing">
+                  {{ 'Common.BoutonEnregistrer' | translate }}&nbsp;<i class="fa fa-check"></i>
+                </span>
+                <span class="btn btn-submit" data-ng-click="goPrint()"
+                      data-ng-show="commande.validation && !commande.debutImpression && !processing">
+                  {{ 'Common.BoutonPrint' | translate }}
+                </span>
+                <i class="fa fa-circle-o-notch fa-spin gray" data-ng-show="processing"></i>
+                <span data-ng-show="commande.debutImpression && !commande.impressionFinie">&nbsp;&nbsp;<a href="#/commandeList">{{ 'Common.BoutonAnuller' | translate }}</a></span>
+              </span>
+              <a href="#/commandeList">{{ 'Common.BoutonRetour' | translate }}</a>
+            </td>
+          </tr>
+        </tfoot>
+      </table>
+    </form>
+  </div>
+  <!-- Page footer -->
+  <data:footer></data:footer>
+</div>

@@ -1,0 +1,54 @@
+﻿
+Microsoft Visual Studio Solution File, Format Version 12.00
+# Visual Studio 2013
+VisualStudioVersion = 12.0.40629.0
+MinimumVisualStudioVersion = 10.0.40219.1
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "CasqueLib", "CasqueLib\CasqueLib.csproj", "{D52559DB-B798-4059-BD86-FC28F1647421}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "CasqueWeb", "CasqueWeb\CasqueWeb.csproj", "{2A1EC695-69ED-4453-BD59-2C8E4E6C22F7}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "CasqueReaderSimulator", "CasqueReaderSimulator\CasqueReaderSimulator.csproj", "{7E6B5CB3-A10C-4C3B-BE7F-1AC0EBDD2A76}"
+EndProject
+Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "Documentations", "Documentations", "{A3B70977-89EA-4461-9A03-AF0159D53D0D}"
+	ProjectSection(SolutionItems) = preProject
+		HOWTO.txt = HOWTO.txt
+	EndProjectSection
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "CasqueServeur", "CasqueServeur\CasqueServeur.csproj", "{DFDBCB67-4538-4EC3-B23A-8A8FB361D02B}"
+EndProject
+Global
+	GlobalSection(SolutionConfigurationPlatforms) = preSolution
+		Debug|Any CPU = Debug|Any CPU
+		DevTest|Any CPU = DevTest|Any CPU
+		Release|Any CPU = Release|Any CPU
+	EndGlobalSection
+	GlobalSection(ProjectConfigurationPlatforms) = postSolution
+		{D52559DB-B798-4059-BD86-FC28F1647421}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{D52559DB-B798-4059-BD86-FC28F1647421}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{D52559DB-B798-4059-BD86-FC28F1647421}.DevTest|Any CPU.ActiveCfg = Debug|Any CPU
+		{D52559DB-B798-4059-BD86-FC28F1647421}.DevTest|Any CPU.Build.0 = Debug|Any CPU
+		{D52559DB-B798-4059-BD86-FC28F1647421}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{D52559DB-B798-4059-BD86-FC28F1647421}.Release|Any CPU.Build.0 = Release|Any CPU
+		{2A1EC695-69ED-4453-BD59-2C8E4E6C22F7}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{2A1EC695-69ED-4453-BD59-2C8E4E6C22F7}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{2A1EC695-69ED-4453-BD59-2C8E4E6C22F7}.DevTest|Any CPU.ActiveCfg = Debug|Any CPU
+		{2A1EC695-69ED-4453-BD59-2C8E4E6C22F7}.DevTest|Any CPU.Build.0 = Debug|Any CPU
+		{2A1EC695-69ED-4453-BD59-2C8E4E6C22F7}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{2A1EC695-69ED-4453-BD59-2C8E4E6C22F7}.Release|Any CPU.Build.0 = Release|Any CPU
+		{7E6B5CB3-A10C-4C3B-BE7F-1AC0EBDD2A76}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{7E6B5CB3-A10C-4C3B-BE7F-1AC0EBDD2A76}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{7E6B5CB3-A10C-4C3B-BE7F-1AC0EBDD2A76}.DevTest|Any CPU.ActiveCfg = Debug|Any CPU
+		{7E6B5CB3-A10C-4C3B-BE7F-1AC0EBDD2A76}.DevTest|Any CPU.Build.0 = Debug|Any CPU
+		{7E6B5CB3-A10C-4C3B-BE7F-1AC0EBDD2A76}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{7E6B5CB3-A10C-4C3B-BE7F-1AC0EBDD2A76}.Release|Any CPU.Build.0 = Release|Any CPU
+		{DFDBCB67-4538-4EC3-B23A-8A8FB361D02B}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{DFDBCB67-4538-4EC3-B23A-8A8FB361D02B}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{DFDBCB67-4538-4EC3-B23A-8A8FB361D02B}.DevTest|Any CPU.ActiveCfg = Debug|Any CPU
+		{DFDBCB67-4538-4EC3-B23A-8A8FB361D02B}.DevTest|Any CPU.Build.0 = Debug|Any CPU
+		{DFDBCB67-4538-4EC3-B23A-8A8FB361D02B}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{DFDBCB67-4538-4EC3-B23A-8A8FB361D02B}.Release|Any CPU.Build.0 = Release|Any CPU
+	EndGlobalSection
+	GlobalSection(SolutionProperties) = preSolution
+		HideSolutionNode = FALSE
+	EndGlobalSection
+EndGlobal

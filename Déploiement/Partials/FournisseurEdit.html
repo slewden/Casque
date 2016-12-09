@@ -1,0 +1,115 @@
+﻿<div>
+  <!-- Page header -->
+  <data:header-menu data-titre="{{ 'Fournisseur.SousTitre'| translate }}" data-niveau-menu="6"></data:header-menu>
+  <!-- Contenu -->
+  <div class="page-content">
+    <form name="saisie" novalidate>
+      <table>
+        <tr>
+          <td valign="top">
+
+
+            <table class="admin-edit">
+              <thead>
+                <tr>
+                  <th>
+                    <span data-ng-if="cle > 0">{{ 'Fournisseur.TitreEdit' | translate }}</span>
+                    <span data-ng-if="!cle || cle < 0">{{ 'Fournisseur.TitreAdd' | translate }}</span>
+                  </th>
+                </tr>
+                <tr data-ng-show="error">
+                  <td>
+                    <!-- en cas d'erreur -->
+                    <data:display-error></data:display-error>
+                  </td>
+                </tr>
+              </thead>
+              <tbody>
+                <!-- Nom -->
+                <tr>
+                  <td>
+                    <label for="nom">{{ 'Fournisseur.LblNom' | translate }}</label><br />
+                    <input type="text" id="nom" name="nom" style="width:400px;"
+                           data-ng-model="fournisseur.nom" data-ng-maxlength="200" maxlength="201" required />
+                    <div data-ng-show="saisie.nom.$dirty && saisie.nom.$invalid">
+                      <div class="error-message" data-ng-show="saisie.nom.$error.required">
+                        {{ 'Fournisseur.RequisNom' | translate }}
+                      </div>
+                      <div class="error-message" data-ng-show="saisie.nom.$error.maxlength">
+                        {{ 'Fournisseur.MaxLenghtNom' | translate }}
+                      </div>
+                    </div>
+                  </td>
+                </tr>
+                <!-- email -->
+                <tr>
+                  <td>
+                    <label for="email">{{ 'Fournisseur.LblEmail' | translate }}</label><br />
+                    <input type="email" id="email" name="email" style="width:400px;"
+                           data-ng-model="fournisseur.email" data-ng-maxlength="100" maxlength="101" />
+                    <div data-ng-show="saisie.email.$dirty && saisie.email.$invalid">
+                      <div class="error-message" data-ng-show="saisie.email.$error.maxlength">
+                        {{ 'Fournisseur.MaxLenghtEmail' | translate }}
+                      </div>
+                      <div class="error-message" data-ng-show="saisie.email.$error.email">
+                        {{ 'Fournisseur.FormatEmail' | translate }}
+                      </div>
+                    </div>
+                  </td>
+                </tr>
+                <!-- Adresse Commande -->
+                <tr>
+                  <td>
+                    <label for="adresseCommande">{{ 'Fournisseur.LblAdresseCommande' | translate }}</label><br />
+                    <textarea type="text" id="adresseCommande" name="adresseCommande" style="width:400px;height:150px;"
+                              data-ng-model="fournisseur.adresseCommande"></textarea>
+                  </td>
+                </tr>
+                <!-- Adresse livraison -->
+                <tr>
+                  <td>
+                    <label for="adresseLivraison">{{ 'Fournisseur.LblAdresseLivraison' | translate }}</label><br />
+                    <textarea type="text" id="adresseLivraison" name="adresseLivraison" style="width:400px;height:150px;"
+                              data-ng-model="fournisseur.adresseLivraison"></textarea>
+                  </td>
+                </tr>
+
+                <!-- Sujet des emails -->
+                <tr>
+                  <td>
+                    <label for="sujetEmail">{{ 'MailConfig.LblSubjetFournisseur' | translate }}</label><br />
+                    <input type="text" id="sujetEmail" name="sujetEmail" style="width:400px;"
+                           data-ng-model="fournisseur.sujetEmail" required />
+                    <i class="fa fa-question-circle btn" data-ng-click="subjectFournisseurFocus = !subjectFournisseurFocus"></i>
+
+                    <div data-ng-show="saisie.sujetEmail.$dirty && saisie.sujetEmail.$invalid">
+                      <div class="error-message" data-ng-show="saisie.sujetEmail.$error.required">
+                        {{ 'MailConfig.RequisSubjetFournisseur' | translate }}
+                      </div>
+                    </div>
+                  </td>
+                </tr>
+              </tbody>
+              <tfoot>
+                <tr>
+                  <td class="button">
+                    <span class="btn btn-submit" data-ng-click="saveModif()" data-ng-show="saisie.$valid && !processing">{{ 'Common.BoutonEnregistrer' | translate }}&nbsp;<i class="fa fa-check"></i></span>
+                    <i class="fa fa-circle-o-notch fa-spin gray" data-ng-show="processing"></i>
+                    &nbsp;&nbsp;<a href="#/fournisseur">{{ 'Common.BoutonAnuller' | translate }}</a>
+                  </td>
+                </tr>
+              </tfoot>
+            </table>
+
+
+          </td>
+          <td valign="bottom">
+            <data-help-subject-fournisseur></data-help-subject-fournisseur>
+          </td>
+        </tr>
+      </table>
+    </form>
+  </div>
+  <!-- Page footer -->
+  <data:footer></data:footer>
+</div>

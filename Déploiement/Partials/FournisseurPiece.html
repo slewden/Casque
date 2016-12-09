@@ -1,0 +1,76 @@
+﻿<div>
+  <!-- Page header -->
+  <data:header-menu data-titre="{{ 'FournisseurPiece.SousTitre'| translate }}" data-niveau-menu="6"></data:header-menu>
+  <!-- Contenu -->
+  <div class="page-content">
+    <form name="saisie" novalidate>
+      <table class="admin-edit">
+        <thead>
+          <tr>
+            <th colspan="4">
+              {{fournisseur.nom}} <small>{{ 'FournisseurPiece.Titre' | translate }}</small>
+            </th>
+          </tr>
+          <tr data-ng-show="error">
+            <td colspan="4">
+              <!-- en cas d'erreur -->
+              <data:display-error></data:display-error>
+            </td>
+          </tr>
+        </thead>
+        <tbody>
+          <tr>
+            <td colspan="4">&nbsp;</td>
+          </tr>
+          <tr>
+            <th colspan="2">{{ 'FournisseurPiece.LblTypePiece' | translate }}</th>
+            <th title="{{ 'FournisseurPiece.TipsPrix' | translate }}">{{ 'FournisseurPiece.LblPrix' | translate }}</th>
+            <th title="{{ 'FournisseurPiece.TipsFrais' | translate }}">{{ 'FournisseurPiece.Lblfrais' | translate }}</th>
+          </tr>
+          <tr data-ng-repeat="p in pieces">
+            <td title="{{ p.description }}" align="center">
+              <input type="checkbox" value="{{ p }}" data-ng-click="togglePiece(p)" data-ng-checked="p.fournisseurCle == fournisseur.cle" />
+            </td>
+            <td title="{{ p.description }}">
+              {{ p.nom }}
+            </td>
+            <td>
+              <div data-ng-show="p.fournisseurCle == fournisseur.cle">
+                <input type="number" data-ng-model="p.prixUnitaire" id="prix_{{p.cle}}" name="prix_{{p.cle}}"
+                       placeholder="{{ 'FournisseurPiece.TipsPrix' | translate }}" style="width:60px;">&nbsp;€
+                <div data-ng-show="saisie.prix_{{p.cle}}.$dirty && saisie.prix_{{p.cle}}.$invalid">
+                  <div class="error-message" data-ng-show="saisie.prix_{{p.cle}}.$error.number">
+                    {{ 'FournisseurPiece.FormatPrix' | translate }}
+                  </div>
+                </div>
+              </div>
+            </td>
+            <td>
+              <div data-ng-show="p.fournisseurCle == fournisseur.cle">
+                <input type="number" data-ng-model="p.frais" id="frais_{{p.cle}}" name="frais_{{p.cle}}"
+                       placeholder="{{ 'FournisseurPiece.TipsFrais' | translate }}" style="width:60px;">&nbsp;€
+                <div data-ng-show="saisie.frais_{{p.cle}}.$dirty && saisie.frais_{{p.cle}}.$invalid">
+                  <div class="error-message" data-ng-show="saisie.frais_{{ p.cle }}.$error.number">
+                    {{ 'FournisseurPiece.FormatFrais' | translate }}
+                  </div>
+                </div>
+              </div>
+
+            </td>
+          </tr>
+        </tbody>
+        <tfoot>
+          <tr>
+            <td colspan="4" class="button">
+              <span class="btn btn-submit" data-ng-click="saveModif()" data-ng-show="saisie.$valid && !processing">{{ 'Common.BoutonEnregistrer' | translate }}&nbsp;<i class="fa fa-check"></i></span>
+              <i class="fa fa-circle-o-notch fa-spin gray" data-ng-show="processing"></i>
+              &nbsp;&nbsp;<a href="#/fournisseur">{{ 'Common.BoutonAnuller' | translate }}</a>
+            </td>
+          </tr>
+        </tfoot>
+      </table>
+    </form>
+  </div>
+  <!-- Page footer -->
+  <data:footer></data:footer>
+</div>

@@ -1,0 +1,30 @@
+﻿<?xml version='1.0' encoding='utf-8'?>
+<SettingsFile xmlns="http://schemas.microsoft.com/VisualStudio/2004/01/settings" CurrentProfile="(Default)" GeneratedClassNamespace="CasqueReaderSimulator.Properties" GeneratedClassName="Settings">
+  <Profiles />
+  <Settings>
+    <Setting Name="RepondOkStart" Type="System.Boolean" Scope="User">
+      <Value Profile="(Default)">True</Value>
+    </Setting>
+    <Setting Name="RepondOkStop" Type="System.Boolean" Scope="User">
+      <Value Profile="(Default)">True</Value>
+    </Setting>
+    <Setting Name="RepondOkReset" Type="System.Boolean" Scope="User">
+      <Value Profile="(Default)">True</Value>
+    </Setting>
+    <Setting Name="Width1" Type="System.Int32" Scope="User">
+      <Value Profile="(Default)">154</Value>
+    </Setting>
+    <Setting Name="Width2" Type="System.Int32" Scope="User">
+      <Value Profile="(Default)">417</Value>
+    </Setting>
+    <Setting Name="chkLecteur" Type="System.Boolean" Scope="User">
+      <Value Profile="(Default)">True</Value>
+    </Setting>
+    <Setting Name="chkWriter" Type="System.Boolean" Scope="User">
+      <Value Profile="(Default)">True</Value>
+    </Setting>
+    <Setting Name="FrmSize" Type="System.Drawing.Size" Scope="User">
+      <Value Profile="(Default)">985, 560</Value>
+    </Setting>
+  </Settings>
+</SettingsFile>

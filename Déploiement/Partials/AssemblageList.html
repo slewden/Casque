@@ -1,0 +1,107 @@
+﻿<div>
+  <!-- Page header -->
+  <data:header-menu data-titre="{{ 'AssemblageList.SousTitre'| translate }}" data-niveau-menu="3"></data:header-menu>
+  <!-- Contenu -->
+  <div class="page-content">
+
+    <table class="admin-list">
+      <thead>
+        <tr>
+          <td colspan="8">
+            <select name="statut" data-ng-model="statut" data-ng-change="getInfos();">
+              <option value="0" data-ng-checked="statut == 0">{{ 'AssemblageList.AssemblageListAll' |translate }}</option>
+              <option value="1" data-ng-checked="statut == 1">{{ 'AssemblageList.AssemblageListStatut1' |translate }}</option>
+              <option value="2" data-ng-checked="statut == 2">{{ 'AssemblageList.AssemblageListStatut2' |translate }}</option>
+              <option value="3" data-ng-checked="statut == 3">{{ 'AssemblageList.AssemblageListStatut3' |translate }}</option>
+            </select>
+
+            <select name="casque" data-ng-model="casque" data-ng-change="getInfos();" data-ng-options="c.nom for c in casques track by c.cle">
+              <option value="">{{ 'AssemblageList.CasqueListAll' |translate }}</option>
+            </select>
+
+
+            <div class="recherche">
+              <input type="text" data-ng-model="searchText" data-my-enter="changePage(1)" placeholder="{{ 'AssemblageList.SearchText' | translate }}" />
+              <span class="btn" data-ng-click="changePage(1)" title="{{ 'Common.TipsLaunchSearch' | translate }}"><i class="fa fa-search"></i></span>
+              <span class="btn" data-ng-show="searchText" data-ng-click="defaultParam()" title="{{ 'Common.TipsInitSearch' | translate }}"><i class="fa fa-eraser green"></i></span>
+            </div>
+          </td>
+        </tr>
+        <!-- waiting ring -->
+        <tr data-ng-show="processing">
+          <td colspan="8" align="center">
+            <i class="fa fa-circle-o-notch fa-spin fa-3x orange"></i>
+          </td>
+        </tr>
+        <!-- en cas d'erreur -->
+        <tr data-ng-show="error">
+          <td colspan="8">
+            <data:display-error></data:display-error>
+            {{ error }}
+            <span class="btn pull-right" data-ng-click="clearError()" title="{{ 'Common.TipsHide' | translate }}"><i class="fa fa-times"></i></span>
+          </td>
+        </tr>
+        <tr data-ng-show="nombre > 0">
+          <th colspan="2">
+            #
+            <data-sorter data-column="cle" data-tri="tri" data-tri-asc="triAsc" data-change-method="changeTri('cle')"></data-sorter>
+          </th>
+          <th colspan="2">
+            {{ 'AssemblageList.LblCasqueNom' | translate }}
+            <data-sorter data-column="casque" data-tri="tri" data-tri-asc="triAsc" data-change-method="changeTri('casque')"></data-sorter>
+          </th>
+          <th>
+            {{ 'AssemblageList.LblUtilisateurAssemble' | translate }}
+            <data-sorter data-column="utilisateur" data-tri="tri" data-tri-asc="triAsc" data-change-method="changeTri('utilisateur')"></data-sorter>
+          </th>
+          <th>
+            {{ 'AssemblageList.LblCreation' | translate }}
+            <data-sorter data-column="creation" data-tri="tri" data-tri-asc="triAsc" data-change-method="changeTri('creation')"></data-sorter>
+          </th>
+          <th>
+            {{ 'AssemblageList.LblStatut' | translate }}
+            <data-sorter data-column="statutInt" data-tri="tri" data-tri-asc="triAsc" data-change-method="changeTri('statut')"></data-sorter>
+          </th>
+          <th>
+          </th>
+        </tr>
+      </thead>
+      <tbody>
+        <tr data-ng-if="nombre == 0">
+          <td colspan="8" class="center no-data">
+            {{ 'Common.NotFound' | translate }}
+            <br /><a class="btn" data-ng-href="#/AssemblageEdit"><i class="fa fa-plus" title="{{ 'Common.CRUDAdd' | translate }}"></i> {{ 'Common.CRUDAdd' | translate }}</a>
+          </td>
+        </tr>
+        <tr data-ng-repeat="x in assemblages">
+          <td class="id">{{ ((page-1) * pageSize) + $index + 1 }}</td>
+          <td class="id">{{ x.cle }}</td>
+          <td><img data-ng-src="{{ x.casquePhotoUrl }}" width="25" /></td>
+          <td>{{ x.casqueNom }}</td>
+          <td>{{ x.utilisateurAssembleNom }}</td>
+          <td>{{ x.creation | datews : 'short' }}</td>
+          <td>{{ x.statutNom }}</td>
+          <td align="center">
+            <a class="btn" data-ng-href="#/assemblageDetail?cle={{x.cle}}"><i class="fa fa-search" title="{{ 'Common.CRUDDetail' | translate }}"></i></a>
+          </td>
+        </tr>
+      </tbody>
+      <tfoot>
+        <tr data-ng-if="nombre > 0">
+          <td colspan="5" class="collapse">
+            {{ 'Common.TitreTotal' | translate }} <strong>{{ nombre }}</strong>
+          </td>
+          <td colspan="3" class="collapse" align="right">
+            <no-paging class="small" page="page" page-size="pageSize" total="nombre" hide-if-empty="true"
+                       title-page="{{ 'Common.PageTitle' | translate }}"
+                       paging-action="changePage(page)">
+            </no-paging>
+          </td>
+        </tr>
+      </tfoot>
+    </table>
+  </div>
+
+  <!-- Page footer -->
+  <data:footer></data:footer>
+</div>

@@ -1,0 +1,125 @@
+﻿<!-- Contenu -->
+<div class="page-content">
+
+  <div class="print-page">
+    <!-- Référence -->
+    <div class="print-titre">
+      {{ 'CommandePrint.Titre' | translate }}
+    </div>
+    <!-- Création -->
+    <div class="print-date">
+      {{ 'CommandePrint.LblCreation' | translate : { date : commande.saisie } }}
+    </div>
+
+    <!-- Référence BL -->
+    <div class="print-commande">{{ 'CommandePrint.lblReference' | translate : {numero : commande.numero } }}</div>
+
+    <!-- fournisseur -->
+    <div class="print-client-lib">
+      {{ 'CommandePrint.LblClient' | translate }}
+    </div>
+    <div class="print-client">{{ commande.fournisseurNom }}</div>
+    <!-- fournisseur adresse livraison -->
+    <div class="print-adresse-lib">
+      {{ 'CommandePrint.LblAdresse' | translate }}
+    </div>
+    <div class="print-adresse">
+      <span class="info-readonly" data-ng-bind-html="encode(commande.fournisseurAdresseCommandeHtml)"></span>
+    </div>
+    <!-- détail des pièces -->
+    <table class="print-list">
+        <thead>
+          <tr>
+            <th colspan="2">{{ 'FournisseurPiece.LblTypePiece' | translate }}</th>
+            <th>{{ 'Commande.LblReference' | translate }}</th>
+            <th colspan="2">{{ 'Commande.LblQuantite' | translate }}</th>
+            <th>{{ 'CasqueConstitue.LblCouleur' | translate }}</th>
+            <th>{{ 'CasqueConstitue.LblTaille' | translate }}</th>
+            <th>{{ 'FournisseurPiece.LblPrix' | translate }}</th>
+            <th>{{ 'FournisseurPiece.Lblfrais' | translate }}</th>
+          </tr>
+        </thead>
+        <tbody>
+          <tr data-ng-repeat="p in commande.pieces track by p.guid" data-ng-show="p.quantite">
+           <td>
+              {{ p.typePieceNom }}
+            </td>
+            <td>
+              {{ p.typePieceCode }}
+            </td>
+            <td>
+              {{ p.reference }}
+            </td>
+            <td align="center">
+              <b>{{ p.quantite }}</b>
+            </td>
+            <td align="center">
+              <i class="fa fa-tags green" data-ng-show="p.typePieceAvecTag"></i> x <b>{{ p.quantite }}</b>
+            </td>
+           <td>
+              {{ p.couleurNom }}
+            </td>
+            <td>
+              {{ p.tailleNom }}
+            </td>
+            <td align="right">
+              {{ p.prixUnitaire | masquezero | currency }}
+            </td>
+            <td align="right">
+              {{ p.frais | masquezero | currency }}
+            </td>
+          </tr>
+        </tbody>
+      <tfoot>
+        <tr>
+          <td colspan="3" align="right">
+            {{ 'Commande.TipsNombrePiece' | translate }}
+          </td>
+          <td align="center">
+            x <b>{{ commande.nombreProduit | masquezero }}</b>
+          </td>
+          <td>
+            &nbsp;
+          </td>
+          <td colspan="4">
+            &nbsp;
+          </td>
+        </tr>
+        <tr>
+          <td colspan="3" align="right">
+            {{ 'Commande.TotalNBProduitEtiquette' | translate }}
+          </td>
+          <td>
+            &nbsp;
+          </td>
+          <td align="center">
+            <span data-ng-show="commande.nombreProduitEtiquette">
+              <i class="fa fa-tags green" title="{{ 'CasqueConstitue.TipsPieceEtiquette' | translate }}"></i>
+              x <b>{{ commande.nombreProduitEtiquette | masquezero }}</b>
+            </span>
+            <div class="error-message" data-ng-show="!commande.nombreProduitEtiquette">
+              {{ 'Commande.RequisPieceDansCommande' | translate }}
+            </div>
+          </td>
+          <td colspan="4">
+            &nbsp;
+          </td>
+        </tr>
+        <tr>
+          <td colspan="7" align="right">
+            {{ 'Commande.LblTotal' | translate }}
+          </td>
+          <td colspan="2" align="center">
+            <span data-ng-show="commande.montantCommande">
+              <b>{{ commande.montantCommande | currency  }}</b>
+            </span>
+          </td>
+        </tr>
+      </tfoot>
+      </table>
+
+
+
+  </div>
+
+</div>

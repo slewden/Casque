@@ -1,0 +1,319 @@
+﻿<div>
+  <!-- Page header -->
+  <data:header-menu data-titre="{{ 'Assemblage.SousTitre'| translate }}" data-niveau-menu="3" data-roothub="roothub"></data:header-menu>
+  <!-- Contenu -->
+  <div class="page-content">
+
+    <div class="columnsContainer40">
+      <div class="leftColumn">
+        <!-- Notification Zone -->
+        <data-notify-zone data-ng-model="hub.message"></data-notify-zone>
+
+        <div class="error-message" data-ng-show="messageBloquant">
+          <span data-ng-bind-html="encode(messageBloquant)"></span>
+          <a href="#/commande">{{ 'Common.BoutonRetour' | translate }}</a>
+        </div>
+
+        <!-- Menu -->
+        <div data-ng-show="!messageBloquant">
+          <span data-ng-show="progression == 1" class="info-readonly">
+            <i class="fa fa-circle-o-notch fa-spin orange"></i> {{ 'HubLecteur.progression1'| translate }}<br />
+          </span>
+          <!-- Au cas ou le hub ne serait pas démarré -->
+          <div data-ng-show="!hub.open || progression == 0">
+            <button data-ng-click="hubConnect()"> {{ 'HubLecteur.RestartConnection' | translate }}</button>
+          </div>
+          <!-- hub ok -->
+          <span data-ng-show="progression > 1" class="info-readonly">
+            <i class="fa fa-check green"></i> {{ 'HubLecteur.progressionOk1'| translate }}<br />
+          </span>
+          <!-- recherche lecteur -->
+          <span data-ng-show="progression == 2" class="info-readonly">
+            <i class="fa fa-circle-o-notch fa-spin orange"></i> {{ 'HubLecteur.progression2'| translate }}<br />
+          </span>
+          <!-- pas drivers reader -->
+          <span data-ng-show="progression == 3">
+            <span class="red"><i class="fa fa-times red"></i> {{ 'HubLecteur.progression3'| translate }}</span><br />
+            {{ 'HubLecteur.progression42'| translate }}<button data-ng-click="sayHello()">{{ 'Common.BoutonRetry'| translate }}</button> <a href="#/assemblage"><button>{{ 'Common.BoutonAnuller'| translate }}</button></a><br /><br />
+          </span>
+          <!-- pas drivers printer -->
+          <span data-ng-show="progression == 4">
+            <span class="red"><i class="fa fa-times red"></i> {{ 'HubLecteur.progression4'| translate }}</span><br />
+            {{ 'HubLecteur.progression42'| translate }} <button data-ng-click="sayHello()">{{ 'Common.BoutonRetry'| translate }}</button> <a href="#/assemblage"><button>{{ 'Common.BoutonAnuller'| translate }}</button></a><br /><br />
+          </span>
+          <!-- Drivers Ok -->
+          <span data-ng-show="progression >= 5" class="info-readonly">
+            <i class="fa fa-check green"></i> {{ 'HubLecteur.progression5'| translate }}<br />
+          </span>
+          <!-- Choix du poste de lecture -->
+          <div data-ng-show="progression == 5 && postes && postes.length >= 1 && !utilisationPosteCle">
+            {{ 'Reception.lblPoste' | translate }}<br />
+            <select data-ng-model="poste" style="width:90%;" data-ng-show="postes"
+                    data-ng-options="p.nom for p in postes track by p.cle"></select><br />
+            <button data-ng-show="poste && !processing" data-ng-click="startReception()">{{ 'Reception.BtStart' | translate }}</button>
+            <i class="fa fa-circle-o-notch fa-spin gray" data-ng-show="processing"></i>
+            <a href="#/assemblage"><button>{{ 'Common.BoutonAnuller'| translate }}</button></a><br />
+          </div>
+
+          <!-- correction quand y a pas de poste de lecture disponible -->
+          <div data-ng-show="progression == 5 && (!postes || postes.length == 0) && !utilisationPosteCle">
+            <i class="fa fa-times red"></i> {{ 'HubLecteur.progressNoReader'| translate }}<br />
+            <button data-ng-click="checkOtherProcess()" data-ng-show="!processing">{{ 'HubLecteur.progressSession'| translate }}</button>
+            <i class="fa fa-circle-o-notch fa-spin gray" data-ng-show="processing"></i>
+            <div data-ng-show="noReaderFound">
+              <i class="fa fa-times red"></i> {{ 'HubLecteur.ErrorNoSession'| translate }}<br />
+            </div>
+            <div data-ng-show="lecteursEnCours && lecteursEnCours.length">
+              <table class="admin-list">
+                <thead>
+                  <tr>
+                    <th colspan="2">{{ 'HubLecteur.SessionList'| translate }}</th>
+                  </tr>
+                </thead>
+                <tbody>
+                  <tr data-ng--repeat="l in lecteursEnCours">
+                    <td>{{ l.posteNom }} - {{ l.utilisateurNom }}<br />{{ 'HubLecteur.SessionSince'| translate : {date : l.creation } }}</td>
+                    <td>
+                      <span data-ng-click="deleteOtherProcess(l.cle)" title="{{ 'HubLecteur.TipsCloseSession'| translate }}" data-ng-show="!processing">
+                        <i class="fa fa-stop-circle btn-warning"></i>
+                      </span>
+                    </td>
+                  </tr>
+                </tbody>
+              </table>
+            </div>
+          </div>
+          <!-- Recherche de l'état du lecteur -->
+          <span data-ng-show="progression == 6">
+            <i class="fa fa-circle-o-notch fa-spin orange"></i> {{ 'HubLecteur.progression6'| translate }}  <button data-ng-click="sayHello()">{{ 'Common.BoutonAnuller'| translate }}</button><br />
+          </span>
+
+          <!-- poste xx Ok -->
+          <span data-ng-show="progression >= 8" class="info-readonly">
+            <i class="fa fa-check green"></i> {{ 'HubLecteur.progression8'| translate : {poste: poste.nom} }}<br />
+          </span>
+
+          <!-- Poste choisi -->
+          <div data-ng-show="progression == 8 && progression < 20  && utilisationPosteCle">
+
+            <!-- lecteur en statut inconnu-->
+            <div data-ng-show="reader.statut == -1">
+              <i class="fa fa-circle-o-notch fa-spin orange"></i> {{ 'HubLecteur.LecteurQuering' | translate }}<br />
+              <button data-ng-click="cancelStarting()">{{ 'Reception.BtCancel' | translate }}</button>
+            </div>
+
+            <!-- lecteur pas démarré -->
+            <div data-ng-show="reader.statut == 1">
+              <i class="fa fa-circle-o-notch fa-spin orange"></i> {{ 'HubLecteur.LecteurStarting' | translate }}<br />
+              <button data-ng-click="cancelStarting()">{{ 'Reception.BtCancel' | translate }}</button>
+            </div>
+
+            <!-- lecteur démarré -->
+            <div data-ng-show="reader.statut == 2" class="info-readonly">
+              <i class="fa fa-circle-o-notch fa-spin green"></i> {{ 'Reception.ReceptionEnCours' | translate }}<br />
+            </div>
+
+            <!-- lecteur en cours de stop-->
+            <div data-ng-show="reader.statut == 3">
+              <i class="fa fa-circle-o-notch fa-spin orange"></i> {{ 'HubLecteur.LecteurStopping' | translate }}<br />
+            </div>
+
+            <!-- actions possibles -->
+            <div data-ng-show="reader.statut == 2">
+              <br />
+              <button data-ng-show="isLecturePending()" data-ng-click="resetReception()">{{ 'Reception.BtReset' | translate }}</button>
+              <button data-ng-show="isLecturePending()" data-ng-click="cancelReception()">{{ 'Reception.BtCancel' | translate }}</button>
+              <button data-ng-show="!isLecturePending()" data-ng-click="stopReception()">{{ 'Reception.BtStop' | translate }}</button>
+            </div>
+          </div>
+
+          <!-- CUSTOM ASSEMBLAGE -->
+          <!-- Assemblage sauvé -->
+          <span data-ng-show="progression >= 10" class="info-readonly">
+            <i class="fa fa-check green"></i> {{ 'Assemblage.Saved' | translate }}<br />
+          </span>
+
+          <!-- impression en cours -->
+          <div data-ng-show="progression == 11 || progression == 12" class="info-readonly">
+            <i class="fa fa-circle-o-notch fa-spin orange"></i> {{ 'HubLecteur.progression11' | translate }}<br />
+          </div>
+
+          <!-- Assemblage terminé -->
+          <div data-ng-show="progression == 13" class="info-readonly">
+            <i class="fa fa-check green"></i> {{ 'HubLecteur.progression13' | translate }}<br />
+          </div>
+
+          <!-- actions possibles -->
+          <div data-ng-show="progression == 13">
+            <br />
+            <button data-ng-click="resumeAssemblage()">{{ 'Assemblage.Next' | translate }}</button>
+            <button data-ng-click="stopReception()">{{ 'Reception.BtStop' | translate }}</button>
+          </div>
+
+          <!-- Error Zone -->
+          <div class="error" data-ng-show="error">
+            <div class="notify-message">
+              <div class="notify-message-left">
+                {{ error }}
+              </div>
+              <div class="notify-message-right">
+                <div class="btn" data-ng-click="clearError()" title="{{ 'Common.TipsHide' | translate }}"><i class="fa fa-times"></i></div>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <!-- partie de droite -->
+
+      <div class="rightColumn">
+        <div data-ng-show="reader.statut == 2">
+          <ul class="reception">
+            <!-- bloc résumé -->
+            <li class="assemblage-resume" data-ng-show="analyseur.lectures && analyseur.lectures.length">
+              {{ 'Assemblage.AssPossible' | translate }} <span class="recu fa-2x">{{ analyseur.nombreCasqueEligible }}</span>
+              <button data-ng-show="isLecturePending()" data-ng-click="resetReception()">{{ 'Reception.BtReset' | translate }}</button>
+              <br />
+
+              <div class="complet">
+                {{ 'Assemblage.AssComplet' | translate }} <span class="bg-green fa-2x" style="padding:0 5px;">{{ analyseur.nombreCasqueComplet }}</span><br />
+              </div>
+              <div class="split">
+                <div>
+                  {{ 'Assemblage.AssEtiquette' | translate }} <span class="recu">{{ analyseur.lectures.length }}</span>
+                  <a class="btn pull-right" data-ng-click="faitUneDemande()" title="{{ 'Assemblage.AnalyseEncore' | translate }}" data-ng-show="!analyseur.nbDemandeEnCours" style="padding-right: 5px;"><i class="fa fa-refresh"></i></a>
+                  <!--<a class="btn pull-right" data-ng-click="razWaiting()" title="{{ 'Reception.BtMasquerInconnus' | translate }}" style="padding-right: 5px;"><i class="fa fa-times"></i></a>-->
+                </div>
+                <ul class="inconnu">
+                  <li data-ng-repeat="l in analyseur.lectures"><i class="fa fa-circle orange sepi"></i> {{ l }}</li>
+                </ul>
+                <div class="clearFix"></div>
+              </div>
+            </li>
+
+            <!-- les propositions d'assemblage -->
+            <li class="assemblage" data-ng-repeat="c in analyseur.commandes" data-ng-show="c.eligible">
+              <img data-ng-src="{{ c.photoUrl }}" height="50" />
+              <div class="assemblage-nom"> {{ c.nom }} </div>
+              <div data-ng-show="c.complet" class="assemblage-complet" title="{{ 'Assemblage.AllTagRead' | translate }}"><i class="fa fa-check green fa-2x"></i></div>
+              <br />
+              <i class="fa fa-circle-o-notch fa-spin gray" data-ng-show="processing"></i>
+              <button data-ng-show="c.complet && !processing" class="assemblage-bouton" data-ng-click="valideCommande(c)">{{ 'Assemblage.BoutonValide' | translate }}</button>
+              <ul>
+                <li data-ng-repeat="p in c.pieces" data-ng-class="{'green' : p.nombreEtiquette == 1}">
+                  <i class="fa fa-plus orange sepi" data-ng-show="$index>0"></i>
+                  <i class="fa fa-check green" data-ng-show="p.nombreEtiquette == 1" title="{{ 'Assemblage.TipTagRead' | translate }}"></i>
+                  <img data-ng-src="{{  p.typePiecePhotoUrl }}" height="25" />{{ p.typePieceNom}}
+                  <span data-ng-show="p.tailleCle && p.couleurCle" style="background-color:{{ p.couleurCode }};" title="{{ 'Assemblage.TipsPieceCT' | translate: { couleur: p.couleurNom, taille: p.tailleNom} }}"> T{{ p.tailleNom }}</span>
+                  <span data-ng-show="!p.tailleCle && p.couleurCle" style="background-color:{{ p.couleurCode }};" title="{{ 'Assemblage.TipsPieceC' | translate: { couleur: p.couleurNom} }}">&nbsp;<i class="fa fa-paint-brush"></i>&nbsp;</span>
+                  <span data-ng-show="p.tailleCle && !p.couleurCle" title="{{ 'Assemblage.TipsPieceT' | translate: { taille: p.tailleNom} }}"> T{{ p.tailleNom }}</span>
+                </li>
+              </ul>
+              <div class="clearFix"></div>
+            </li>
+
+            <div data-ng-show="progression == 10 || progression == 11 || progression == 12">
+              <li class="assemblage">
+                <img data-ng-src="{{ assemblageSaved.photoUrl }}" height="50" />
+                <div class="assemblage-nom"> {{ assemblageSaved.nom }} </div>
+                <div data-ng-show="assemblageSaved.complet" class="assemblage-complet" title="{{ 'Assemblage.AllTagRead' | translate }}"><i class="fa fa-check green fa-2x"></i></div>
+                <br />
+                <ul>
+                  <li data-ng-repeat="p in assemblageSaved.pieces" data-ng-class="{'green' : p.nombreEtiquette == 1}">
+                    <i class="fa fa-plus orange sepi" data-ng-show="$index>0"></i>
+                    <i class="fa fa-check green" data-ng-show="p.nombreEtiquette == 1" title="{{ 'Assemblage.TipTagRead' | translate }}"></i>
+                    <img data-ng-src="{{  p.typePiecePhotoUrl }}" height="25" />{{ p.typePieceNom}}
+                    <span data-ng-show="p.tailleCle && p.couleurCle" style="background-color:{{ p.couleurCode }};" title="{{ 'Assemblage.TipsPieceCT' | translate: { couleur: p.couleurNom, taille: p.tailleNom} }}"> T{{ p.tailleNom }}</span>
+                    <span data-ng-show="!p.tailleCle && p.couleurCle" style="background-color:{{ p.couleurCode }};" title="{{ 'Assemblage.TipsPieceC' | translate: { couleur: p.couleurNom} }}">&nbsp;<i class="fa fa-paint-brush"></i>&nbsp;</span>
+                    <span data-ng-show="p.tailleCle && !p.couleurCle" title="{{ 'Assemblage.TipsPieceT' | translate: { taille: p.tailleNom} }}"> T{{ p.tailleNom }}</span>
+                  </li>
+                </ul>
+                <div class="clearFix"></div>
+              </li>
+
+              <!-- choix de l'imprimante -->
+              <div data-ng-show="progression == 10 && postesPrint && postesPrint.length">
+                {{ 'Assemblage.ChoosePrinter' | translate }}<br />
+                <select data-ng-model="postePrint" style="width:90%;" data-ng-show="postesPrint"
+                        data-ng-options="p.nom for p in postesPrint track by p.cle"></select><br />
+                <button data-ng-show="postePrint" data-ng-click="startPrint()">{{ 'Assemblage.PrintTag' | translate }}</button>
+                <i class="fa fa-circle-o-notch fa-spin gray" data-ng-show="processing"></i>
+                <button data-ng-show="assemblageCle && !processing" data-ng-click="deleteAssemblage()">{{ 'Assemblage.Cancel' | translate }}</button>
+              </div>
+              <!-- correction quand y a pas de poste d'impression disponible -->
+              <div data-ng-show="progression == 10 && (!postesPrint || postesPrint.length == 0)">
+                <i class="fa fa-times red"></i> {{ 'HubLecteur.progressNoWriter' | translate }}<br />
+                <i class="fa fa-circle-o-notch fa-spin gray" data-ng-show="processing"></i>
+                <button data-ng-click="checkOtherProcess()" data-ng-show="!processing">{{ 'HubLecteur.progressSession' | translate }}</button>
+                <div data-ng-show="noReaderFound">
+                  <i class="fa fa-times red"></i> {{ 'HubLecteur.ErrorNoSessionI' | translate }}<br />
+                </div>
+                <div data-ng-show="lecteursEnCours && lecteursEnCours.length">
+                  <table class="admin-list">
+                    <thead>
+                      <tr>
+                        <th colspan="2">{{ 'HubLecteur.SessionList' | translate }}</th>
+                      </tr>
+                    </thead>
+                    <tbody>
+                      <tr data-ng--repeat="l in lecteursEnCours">
+                        <td>{{ l.posteNom }} - {{ l.utilisateurNom }}<br />{{ 'HubLecteur.SessionSince'| translate : {date : l.creation } }}</td>
+                        <td>
+                          <i class="fa fa-circle-o-notch fa-spin gray" data-ng-show="processing"></i>
+                          <span data-ng-show="!processing" data-ng-click="deleteOtherProcess(l.cle)" title="{{ 'HubLecteur.TipsCloseSession'| translate }}">
+                            <i class="fa fa-stop-circle btn-warning"></i>
+                          </span>
+                        </td>
+                      </tr>
+                    </tbody>
+                  </table>
+                </div>
+              </div>
+
+              <!-- impression en cours -->
+              <div data-ng-show="progression == 11 || progression == 12" class="info-readonly">
+                <i class="fa fa-circle-o-notch fa-spin orange"></i> {{ 'HubLecteur.progression11' | translate }}<br />
+              </div>
+            </div>
+
+            <!-- les tags inconnus -->
+            <li class="commande" data-ng-show="tagInconnus && tagInconnus.length">
+              {{ 'Assemblage.BadTagList' | translate }} <span class="recu">{{ tagInconnus.length }}</span>
+              <a class="btn pull-right" data-ng-click="razInconnus()" title="{{ 'Reception.BtMasquerInconnus' | translate }}"><i class="fa fa-times"></i></a>
+              <ul class="inconnu">
+                <li data-ng-repeat="l in tagInconnus"><i class="fa fa-circle orange sepi"></i> {{ l }}</li>
+              </ul>
+            </li>
+
+          </ul>
+        </div>
+      </div>
+    </div>
+
+    <!-- Debug panel -->
+    <div style="display:none;">
+      Nombre de demande ##{{ analyseur.nbDemandeEnCours }}## <br />
+      PageCode ##{{ pageCode }}##<br />
+      Statut attendu: ##{{ waitTagStatut }}##<br />
+      Progression ##{{ progression }}##<br />
+      Identifiant Hub : ##{{ hub.connectionId }}##<br />
+      Utilisation cle : ##{{ utilisationPosteCle }}##<br />
+      User : ##{{ user.nom }}## <br />
+      Poste : ##{{ poste.nom }}##<br />
+      Error : ## {{ error }}##<br />
+      Etat du lecteur :
+      <span data-ng-show="hub.open">
+        <i class="fa fa-stop red" data-ng-show="!reader.statut" title="{{ 'HubLecteur.Statut0' | translate }}"></i>
+        <i class="fa fa-ellipsis-h orange" data-ng-show="reader.statut == 1" title="{{ 'HubLecteur.Statut1' | translate }}"></i><i class="fa fa-play orange" data-ng-show="reader.statut == 1" title="{{ 'HubLecteur.Statut1' | translate }}"></i>
+        <i class="fa fa-play green" data-ng-show="reader.statut == 2" title="{{ 'HubLecteur.Statut2' | translate }}"></i>
+        <i class="fa fa-ellipsis-h orange" data-ng-show="reader.statut == 3" title="{{ 'HubLecteur.Statut3' | translate }}"></i><i class="fa fa-stop orange" data-ng-show="reader.statut == 3" title="{{ 'HubLecteur.Statut3' | translate }}"></i>
+      </span><br />
+      <span data-ng-show="!hub.open">
+        <i class="fa fa-question-circle orange" title="{{ 'HubLecteur.StatutUnknow' | translate }}"></i>
+      </span>
+    </div>
+
+    <!-- Page footer -->
+    <data:footer></data:footer>
+  </div>
+</div>
