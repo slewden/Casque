@@ -212,6 +212,7 @@
     <Content Include="Partials\CommandeResume.html" />
     <Content Include="Partials\Configuration.html" />
     <Content Include="Partials\Configurations.html" />
+    <Content Include="Partials\Consultation2.html" />
     <Content Include="Partials\CouleurRead.html" />
     <Content Include="Partials\CouleurEdit.html" />
     <Content Include="Partials\CouleurList.html" />

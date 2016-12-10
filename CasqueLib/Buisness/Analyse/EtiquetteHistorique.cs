@@ -26,6 +26,12 @@ namespace CasqueLib.Buisness.Analyse
     public int CommandeCle { get; set; }
 
     /// <summary>
+    /// La référence de la ligne de comande
+    /// </summary>
+    [Alias("colg_reference")]
+    public string Reference { get; set; }
+
+    /// <summary>
     /// La clé de l'assemblage
     /// </summary>
     [Alias("asse_id")]

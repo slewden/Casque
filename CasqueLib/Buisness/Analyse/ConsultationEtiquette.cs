@@ -36,6 +36,11 @@ namespace CasqueLib.Buisness.Analyse
     public CommandeView Commande { get; set; }
 
     /// <summary>
+    /// la référence de la ligne de commande
+    /// </summary>
+    public string Reference { get; set; }
+
+    /// <summary>
     /// Les infos de l'assemblage
     /// </summary>
     public AssemblageView Assemblage { get; set; }

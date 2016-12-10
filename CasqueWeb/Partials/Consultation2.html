@@ -1,0 +1,275 @@
+﻿<div>
+  <!-- Page header -->
+  <data:header-menu data-titre="{{ 'Consultation.SousTitre'| translate }}" data-niveau-menu="4" data-roothub="roothub"></data:header-menu>
+  <!-- Contenu -->
+  <div class="page-content">
+
+    <div>
+      <div class="columnsContainer50">
+        <div class="leftColumn">
+          <!-- Au cas ou le hub ne serait pas démarré -->
+          <div data-ng-show="!roothub || !roothub.open" class="error-message">
+            <i class="fa fa-times red"></i>&nbsp;{{ 'HubLecteur2.HubHs' | translate }}
+            <br />
+            <a href="#/livraison">{{ 'Common.BoutonRetour' | translate }}</a>
+          </div>
+
+          <i class="fa fa-circle-o-notch fa-spin gray" data-ng-show="processing"></i>
+
+          <!-- le hub est ok -->
+          <div data-ng-show="roothub && roothub.open">
+            <!-- Pas de lecteur -->
+            <div data-ng-show="!roothub.actifLecteur" class="error-message">
+              <i class="fa fa-times red"></i>&nbsp;{{ 'HubLecteur2.HubNoReader' | translate }}
+              <br />
+              <a href="#/livraison">{{ 'Common.BoutonRetour' | translate }}</a>
+            </div>
+
+            <!-- controle que l'utilisation de la page est cohérent -->
+            <div class="error-message" data-ng-show="messageBloquant">
+              <i class="fa fa-times red"></i>&nbsp;<span data-ng-bind-html="encode(messageBloquant)"></span>
+              <br />
+              <a href="#/livraison">{{ 'Common.BoutonRetour' | translate }}</a>
+            </div>
+
+            <!-- y a un driver de lecteurs disponible et on est autorisé à consulter -->
+            <div data-ng-show="roothub.actifLecteur && !messageBloquant">
+
+              <!-- pas de poste configuré ou disponible -->
+              <div data-ng-show="postes && !postes.length && !utilisationPosteCle">
+                <span class="error-message">
+                  <i class="fa fa-times red"></i> {{ 'HubLecteur2.HubNoReaderForConsult'| translate }}<br />
+                </span>
+
+                <!-- correction quand y a pas de poste de lecture disponible -->
+                <button data-ng-show="!processing && (!lecteursEnCours || !lecteursEnCours.length)"
+                        data-ng-click="checkOtherProcess()">
+                  {{ 'HubLecteur.progressSession'| translate }}
+                </button>
+                <div data-ng-show="noReaderFound">
+                  <i class="fa fa-times red"></i> {{ 'HubLecteur.ErrorNoSession'| translate }}<br />
+                </div>
+                <div data-ng-show="lecteursEnCours && lecteursEnCours.length">
+                  <br />
+                  <table class="admin-list">
+                    <thead>
+                      <tr>
+                        <td colspan="3">{{ 'HubLecteur.SessionList'| translate }}</td>
+                      </tr>
+                    </thead>
+                    <tbody>
+                      <tr data-ng--repeat="l in lecteursEnCours">
+                        <td>
+                          {{ l.posteNom }} - {{ l.utilisateurNom }}
+                        </td>
+                        <td>
+                          {{ 'HubLecteur.SessionSince'| translate : {date : l.creation } }}
+                        </td>
+                        <td>
+                          <i class="fa fa-circle-o-notch fa-spin gray" data-ng-show="processing"></i>
+                          <span data-ng-show="!processing" data-ng-click="deleteOtherProcess(l.cle)" title="Terminer cette session">
+                            <i class="fa fa-stop-circle btn-warning"></i>
+                          </span>
+                        </td>
+                      </tr>
+                    </tbody>
+                  </table>
+                </div>
+
+                <br />
+                <a href="#/livraison">{{ 'Common.BoutonRetour' | translate }}</a>
+              </div>
+
+              <div data-ng-show="postes && postes.length > 0">
+                <!-- Choix du poste -->
+                <div data-ng-show="postes && postes.length >= 1 && !utilisationPosteCle">
+                  {{ 'Reception.lblPoste' | translate }}<br />
+                  <select data-ng-model="poste" style="width:200px;" data-ng-show="postes"
+                          data-ng-options="p.nom for p in postes track by p.cle"></select><br />
+                  <i class="fa fa-circle-o-notch fa-spin gray" data-ng-show="processing"></i>
+                  <button data-ng-show="poste && !processing" data-ng-click="startReception()">{{ 'Reception.BtStart' | translate }}</button>
+                  <a href="#/livraison"><button>{{ 'Common.BoutonRetour'| translate }}</button></a><br />
+                </div>
+              </div>
+
+              <div data-ng-show="utilisationPosteCle">
+
+                <span data-ng-show="reader.statut == 2"><i class="fa fa-circle-o-notch fa-spin green"></i></span>
+                <span data-ng-show="reader.messageOk">{{ reader.messageOk }}</span>
+                <span data-ng-show="reader.messageKo" class="error-message">{{ reader.messageKo }}</span>
+
+                <!-- lecture en cours de démarrage ... -->
+                <div data-ng-show="reader.statut == 1">
+                  <button data-ng-click="cancelStarting()">{{ 'Reception.BtCancel' | translate }}</button>
+                </div>
+
+                <!-- lecture en cours ... -->
+                <div data-ng-show="reader.statut == 2">
+                  <button data-ng-click="stopReception()">{{ 'Reception.BtStop' | translate }}</button>
+                </div>
+              </div>
+
+            </div>
+          </div>
+
+        </div>
+        <div class="rightColumn">
+          <div>{{ 'Consultation.TitreManuel' | translate }}</div>
+          <input type="text" data-ng-model="tagManuel" />
+          <button data-ng-click="queryManuel()" data-ng-disabled="!tagManuel">{{ 'Consultation.BtAnalyseManuelle' | translate }}</button>
+
+        </div>
+      </div>
+    </div>
+    <br /><br />
+    <div>
+      <ul class="reception">
+        <!-- détail des historiques des tags lus -->
+        <li data-ng-repeat="t in tagConnus">
+          <table class="history">
+            <thead>
+              <tr>
+                <td colspan="4">
+                  <span data-ng-show="t.estUnTag">{{ 'Consultation.TypeTag' | translate }} {{ t.assemblage.casqueNom}}</span>
+                  <span data-ng-show="!t.estUnTag">{{ 'Consultation.TypeEtiquette' | translate }} {{ t.etiquette.typePieceNom}}</span>
+                  <small>N°{{ t.numero }}</small>
+                  <span class="btn-close pull-right" data-ng-click="RemoveTagConnu(t)"><i class="fa fa-times"></i></span>
+                </td>
+              </tr>
+            </thead>
+            <tbody>
+              <!-- la commande -->
+              <tr data-ng-show="t.nombreRowCommande">
+                <td rowspan="2"><i class="fa fa-shopping-basket fa-2x"></i></td>
+                <td>{{ 'Consultation.ActionCommande' | translate }}</td>
+                <td>{{ t.commande.numero }} <br /> <small>ref <b>{{ t.reference }}</b></small></td>
+                <td rowspan="2">
+                  <table class="no-border">
+                    <tr data-ng-repeat="e in t.evenements" data-ng-show="e.typeEvenement <= 6">
+                      <td>{{ e.date | datews: 'short' }}</td>
+                      <td>{{ e.description }}</td>
+                    </tr>
+                  </table>
+                </td>
+              </tr>
+              <tr data-ng-show="t.nombreRowCommande">
+                <td>{{ 'Consultation.ActionFournisseur' | translate }}</td>
+                <td>{{ t.commande.fournisseurNom }}</td>
+              </tr>
+              <!-- la réception -->
+              <tr data-ng-show="t.nombreRowReception">
+                <td><i class="fa fa-truck fa-2x invert"></i></td>
+                <td><span data-ng-show="t.etiquette.photoUrl"><img data-ng-src="{{ t.etiquette.photoUrl }}" style="width:50px;" /></span></td>
+                <td>{{ t.etiquette.typePieceNom}} ({{ t.etiquette.typePieceCode}})</td>
+                <td>
+                  <table class="no-border">
+                    <tr data-ng-repeat="e in t.evenements" data-ng-show="e.typeEvenement == 7">
+                      <td>{{ e.date | datews: 'short' }}</td>
+                      <td>{{ e.description }}</td>
+                    </tr>
+                  </table>
+                </td>
+              </tr>
+              <!-- Assemblage -->
+              <tr data-ng-show="t.nombreRowAssemblage">
+                <td><i class="fa fa-puzzle-piece fa-2x"></i></td>
+                <td><span data-ng-show="t.assemblage.casquePhotoUrl"><img data-ng-src="{{ t.assemblage.casquePhotoUrl }}" style="width:50px;" /></span></td>
+                <td>{{ t.assemblage.casqueNom}} ({{ t.assemblage.casqueCode}})</td>
+                <td>
+                  <table class="no-border">
+                    <tr data-ng-repeat="e in t.evenements" data-ng-show="e.typeEvenement > 7 && e.typeEvenement < 11">
+                      <td>{{ e.date | datews: 'short' }}</td>
+                      <td>{{ e.description }}</td>
+                    </tr>
+                  </table>
+                </td>
+              </tr>
+              <!-- Livraison -->
+              <tr data-ng-show="t.nombreRowLivraison">
+                <td rowspan="3"><i class="fa fa-archive fa-2x"></i></td>
+                <td>{{ 'Consultation.ActionLivraison' | translate }}</td>
+                <td>{{ t.livraison.reference}}</td>
+                <td rowspan="3">
+                  <table class="no-border">
+                    <tr data-ng-repeat="e in t.evenements" data-ng-show="e.typeEvenement >= 11">
+                      <td>{{ e.date | datews: 'short' }}</td>
+                      <td>{{ e.description }}</td>
+                    </tr>
+                  </table>
+                </td>
+              </tr>
+              <tr data-ng-show="t.nombreRowLivraison">
+                <td>{{ 'Consultation.ActionClient' | translate }}</td>
+                <td>{{ t.livraison.clientNom}}</td>
+              </tr>
+              <tr data-ng-show="t.nombreRowLivraison">
+                <td>{{ 'Consultation.ActionCarton' | translate }}</td>
+                <td>{{ t.assemblage.cartonNom }} <br /> {{'Consultation.DetailCarton' | translate : { index:t.assemblage.cartonIndex + 1 } }}</td>
+              </tr>
+            </tbody>
+          </table>
+        </li>
+
+        <!-- Les étiquettes en attente de scan -->
+        <li class="commande" data-ng-show="analyseur.lectures && analyseur.lectures.length">
+          <div>
+            <div class="pull-left">
+              <span class="recu">{{ analyseur.lectures.length }}</span>&nbsp;{{ 'Consultation.WaitingList' | translate }}
+            </div>
+            <span class="pull-right">
+              <a class="btn" data-ng-click="readerReset()"
+                 title="{{ 'Consultation.Reset' | translate }}"><i class="fa fa-times"></i></a>
+              &nbsp;
+              <a class="btn" data-ng-click="faitUneDemande()" data-ng-show="!analyseur.nbDemandeEnCours"
+                 title="{{ 'Assemblage.AnalyseEncore' | translate }}"><i class="fa fa-refresh"></i></a>
+              &nbsp;
+            </span>
+          </div>
+          <br />
+          <div>
+            <ul class="inconnu">
+              <li data-ng-repeat="l in analyseur.lectures"><i class="fa fa-circle orange sepi"></i> {{ l }}</li>
+            </ul>
+          </div>
+        </li>
+
+        <!-- les tags inconnus -->
+        <li class="commande" data-ng-show="tagInconnus && tagInconnus.length">
+          <div>
+            <div class="pull-left">
+              <span class="recu">{{ tagInconnus.length }}</span>&nbsp;{{ 'Consultation.BadTagList' | translate }}
+            </div>
+            <span class="pull-right">
+              <a class="btn" data-ng-click="razInconnus()"
+                 title="{{ 'Reception.BtMasquerInconnus' | translate }}"><i class="fa fa-times"></i></a>
+              &nbsp;
+            </span>
+          </div>
+          <br />
+          <div>
+            <ul class="inconnu">
+              <li data-ng-repeat="l in tagInconnus"><i class="fa fa-circle orange sepi"></i> {{ l }}</li>
+            </ul>
+          </div>
+        </li>
+
+      </ul>
+    </div>
+
+    <!-- Fin de la page ---------->
+    <!-- Debug panel -->
+    <div style="display:none;">
+      Identifiant Hub : ##{{ roothub.connectionId }}##<br />
+      PageCode ##{{ pageCode }}##<br />
+      Utilisation cle : ##{{ utilisationPosteCle }}##<br />
+      User : ##{{ user.nom }}## <br />
+
+      Nombre de demande ##{{ analyseur.nbDemandeEnCours }}## <br />
+      Postes : ##{{ postes }}##<br />
+      Poste : ##{{ poste.nom }}##<br />
+      UtilisationPoste : ##{{ utilisationPosteCle }}##<br/>
+    </div>
+
+    <!-- pas de Page footer ic : il bug dès qu'on scroll ! -->
+  </div>
+</div>

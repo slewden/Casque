@@ -401,8 +401,8 @@ var translations = {
     ConfirmCancel: 'Etes-vous certain de vouloir annuler la réception en cours ? Toutes les données pré enregistrées seront perdues',
     ReceptionEnCours: 'Lecture des pièces en cours...',
 
-    BtMasquerCommandeFinie: 'Masque cette commande',
-    BtMasquerInconnus: 'Masquer',
+    BtMasquerCommandeFinie: 'Masquer cette commande',
+    BtMasquerInconnus: 'Effacer la liste',
     BtValideCommandePartielle: 'Valider la réception partielle de cette commande',
     BtValideCommandeTotale: 'Valider la réception complète de cette commande',
     CommandeSaved: 'Réception commande enregistrée',
@@ -416,8 +416,14 @@ var translations = {
     TotalCommande: 'Total : {{ total }} pièces dans la commande.',
     TotalDont: 'Dont {{ nombre }} déjà recuès.',
     TotalLu: 'Nombre d\'étiquettes lues :',
-    BadTagList: 'Etiquette non reconnues :',
+    BadTagList: 'Etiquettes non reconnues',
   },
+  HubLecteur2: {
+    HubHs: 'Connexion impossible au hub : Actualiser la page.',
+    HubNoReader: 'Aucun lecteur activable !',
+    HubNoReaderForConsult: 'Aucun lecteur configuré ou disponible.',
+  },
+
   HubLecteur: {
     HubClosed: 'Non connecté au lecteur',
     HubOpen: 'Connecté au lecteur',
@@ -431,7 +437,6 @@ var translations = {
     Statut555: 'Finalisation...',
 
     StatutConnecte: 'Connecté au lecteur. Identifiant : ',
-    StatutDisconnected: 'Non connecté au lecteur',
     StatutConnectionFail: 'Impossible d\'établir la connexion; Réessayez.',
     LecteurStartFail: 'Impossible de démarrer le lecteur : {{ msg }}',
 
@@ -474,7 +479,7 @@ var translations = {
     progressSession: 'Vérifier les sessions en cours...',
     ErrorNoSession: 'Aucun lecteur en cours d\'utilisation. Vérifiez le paramétrage des postes !',
     ErrorNoSessionI: 'Aucune imprimande en cours d\'utilisation. Vérifiez le paramétrage des postes !',
-    SessionList: 'Sessions en cours',
+    SessionList: 'Sessions en cours...',
     SessionSince: 'depuis le {{ date | datews: \'short\'}}',
     TipsCloseSession: 'Terminer cette session',
     progression6: 'Recherche de l\'état du lecteur...',
@@ -522,7 +527,7 @@ var translations = {
     WaitingRead: 'Attente des lectures...',
     SaveAndContinue: 'Enregistrer et suivant',
     SaveAndClose: 'Enregistrer et terminer',
-    WaitingList: 'Etiquettes lues en attente d\'analyse :',
+    WaitingList: 'Etiquettes lues en attente d\'analyse',
     BadTagList: 'Etiquette non valide pour une livraison :',
     Titre: 'Livraison',
     Reference: 'Référence : {{ reference }} le {{ creation | datews : \'short\' }}',
@@ -673,6 +678,8 @@ var translations = {
     ActionClient: 'Client',
     ActionCarton: 'Carton',
     DetailCarton: '(carton N°{{ index }})',
+    TitreManuel: 'Numero d\'étiquette',
+    BtAnalyseManuelle: 'Analyser',
   },
   Configurations:
     {

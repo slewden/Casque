@@ -1017,3 +1017,565 @@ app.controller('commandePrintController', ['$scope', '$rootScope', '$noHttp', '$
     $scope.cle = $route.current.params.cle;
     $scope.getInfos(); // on fait tous le temps pour avoir les données satellites
   }]);
+
+
+app.controller('consultation2Controller', ['$scope', '$rootScope', 'webStorage', '$noHttp', 'NOCONFIG', '$translate', '$timeout', 'parameters',
+  function ($scope, $rootScope, webStorage, $noHttp, NOCONFIG, $translate, $timeout, parameters) {
+    $scope.pageCode = parameters.mode;                        // Type d'action attendue
+    $scope.user = new utilisateur(webStorage.get(userKey));   // le user qui as le jeton "utilisation poste"
+    $scope.messageBloquant = null;                            // bloque la page si pas utilisable (ex : y a pas de tag en bdd !)
+    $scope.postes = [];                                       // liste des postes de lecture possibles
+    $scope.poste = null;                                      // poste sélectionné
+    $scope.utilisationPosteCle = null;                        // la clé de l'utilisation poste
+    $scope.reader = {
+      statut: NOCONFIG.READER_STOPPED,                        // statut du lecteur stop / starting / started / stopping / ??
+      stopIsCancel: false,                                    // pour savoir qui demande l'arrêt (le user ou un problème)
+      messageOk: null,                                        // le dernier message ok du lecteur
+      messageKo: null,                                        // le dernier message ko du lecteur
+    };
+    $scope.tagManuel = null;                                  // N° demandé à la main par le user
+
+    var setMessageOk = function(msg)
+    {
+      $rootScope.error = null;
+      $scope.reader.messageOk = msg;
+      $scope.reader.messageKo = null;
+    }
+    var setMessageKo = function (msg) {
+      $rootScope.error = msg;
+      $scope.reader.messageOk = null;
+      $scope.reader.messageKo = msg;
+    }
+
+    //------------------------------------------------------------------------------------------------------
+    //-- Load la liste des postes possibles 
+    $scope.getPostes = function () {
+      $noHttp.get('/api/lecteursGet/', {
+        pageCode: $scope.pageCode,
+      }, function (data) {
+        $scope.messageBloquant = data.messageBloquant;
+        $scope.postes = data.postes;
+        $scope.loadFromSession();
+        if ($scope.postes && $scope.postes.length == 1) { // préselection
+          $scope.poste = $scope.postes[0];
+          $scope.startReception();
+        }
+        //if (data.cartons) { // on fournis aussi les cartons
+        //  $scope.cartons = data.cartons;
+        //  if ($scope.cartons && $scope.cartons.length == 1) {
+        //    $scope.carton = $scope.cartons[0];
+        //  }
+        //}
+      }, function (data, statusCode, headers, config, statusText) {
+        $scope.postes = null;
+      });
+    };
+    //------------------------------------------------------------------------------------------------------
+    //-- initialise l'analyseur de lectures
+    $scope.analyseurInit = function () {
+      $scope.tagInconnus = [];
+      $scope.tagConnus = [];
+      $scope.analyseur = {
+        lectures: [],
+        nbDemandeEnCours: 0,
+        commandes: [],
+        casques: [],
+      };
+    }
+    //------------------------------------------------------------------------------------------------------
+    //-- demarre une consultation
+    $scope.startReception = function () {
+      if ($scope.poste && $scope.poste.cle) {
+        $rootScope.roothub.message = '';
+        $noHttp.put('/api/utilisationPosteStart/', {
+          pageCode: $scope.pageCode,
+          posteCle: $scope.poste.cle,
+          utilisateurCle: $scope.user.cle,
+        }, function (data) { // on a l'autorisation
+          $scope.utilisationPosteCle = data.utilisationPosteCle;
+          $scope.analyseurInit();
+          $scope.saveToSession();
+          $scope.readerStart();
+        }, function (data, statusCode, headers, config, statusText) {
+          $scope.utilisationPosteCle = null;
+        });
+      }
+    }
+    //-- termine une réception == sauve le tout en bdd
+    $scope.stopReception = function () {
+      if (!$scope.utilisationPosteCle) {
+        return;
+      }
+      $translate('HubLecteur.Statut555').then(function (result) { setMessageOk(result); });
+      $scope.readerStop(false);
+    }
+    //-- Voir quels processus sont en cours
+    $scope.checkOtherProcess = function () {
+      $noHttp.get('/api/lecteursEnCours/', {
+        pageCode: $scope.pageCode,
+      }, function (data) {
+        $scope.postes = data.postes;
+        if ($scope.postes && $scope.postes.length == 1) {
+          $scope.poste = $scope.postes[0];
+          $scope.startReception();
+          return;
+        }
+        $scope.lecteursEnCours = data.lecteursEnCours;
+        $scope.noReaderFound = data.noReaderFound;
+      }, function (data, statusCode, headers, config, statusText) {
+        $scope.lecteursEnCours = null;
+        $scope.noReaderFound = true;
+      });
+    }
+    //-- supprime les sessions fantomes
+    $scope.deleteOtherProcess = function (cle) {
+      $translate('HubLecteur.ConfirmCancelSession').then(function (result) {
+        if (confirm(result)) {
+          $noHttp.delete('/api/utilisationPosteDelete/', {
+            pageCode: $scope.pageCode,
+            utilisationPosteCle: cle,
+          }, function (data) {
+            $scope.postes = data.postes;
+            if ($scope.postes && $scope.postes.length == 1) {
+              $scope.poste = $scope.postes[0];
+              $scope.startReception();
+              return;
+            }
+            $scope.lecteursEnCours = null;
+            $scope.noReaderFound = false;
+          }, function (data, statusCode, headers, config, statusText) {
+            $scope.lecteursEnCours = null;
+            $scope.noReaderFound = true;
+            $translate('HubLecteur.ErrorCancelSession', { code: statusCode, text: statusText }).then(function (result) {
+              setMessageKo(result)
+            });
+          });
+        }
+      });
+    }
+    //-- sauve en session les paramètres
+    $scope.saveToSession = function () {
+      webStorage.add($scope.pageCode + '2Controller', {
+          poste: $scope.poste,
+          utilisationPosteCle: $scope.utilisationPosteCle,
+          reader: { statut: $scope.reader.statut },
+          analyseur: $scope.analyseur,
+        });
+    }
+    //-- Recupère de la session les paramètres
+    $scope.loadFromSession = function () {
+      var key = webStorage.get($scope.pageCode + '2Controller');
+      if (key) {
+        if (key.poste) {
+          $scope.poste = key.poste;
+        }
+        if (key.utilisationPosteCle) {
+          $scope.utilisationPosteCle = key.utilisationPosteCle;
+        }
+        if (key.reader && key.reader.statut != null) {
+          $scope.reader.statut = key.reader.statut;
+        }
+        if (key.analyseur) {
+          $scope.analyseur = key.analyseur;
+        }
+
+        if ($scope.utilisationPosteCle) { // on a un n° d'utilisation c'est que le lecteur est peut être en route ?
+          setMessageOk(null);
+          $scope.reader.stopIsCancel = false;
+          $scope.readerQueryStatut();
+        }
+      }
+    }
+    //------------------------------------------------------------------------------------------------------
+    //-- Démarrer la lecture
+    $scope.readerStart = function () {
+      if ($rootScope.roothub.open) { // hub ouvert
+        $scope.reader.statut = NOCONFIG.READER_STATING;
+        $scope.saveToSession();
+        $rootScope.rootCasqueHub.server.piloteReader($rootScope.roothub.connectionId, NOCONFIG.ACTIONLECTEURSTART, $scope.poste.configurationTxt)
+        .done(function () {
+          $translate('HubLecteur.LecteurStarting').then(function (result) {
+            setMessageOk(result);
+          });
+        })
+        .fail(function (error) { // erreur lors de l'envoie
+          $translate('HubLecteur.LecteurStartFail', { msg: error }).then(function (result) {
+            setMessageKo(result);
+          });
+        });
+      } else {
+        $translate('HubLecteur.ErrorHubClosed').then(function (result) {
+          setMessageKo(result);
+        });
+      }
+    }
+    //-- Anule le démarrage
+    $scope.cancelStarting = function () {
+      $translate('HubLecteur.Statut5').then(function (result) {
+        setMessageOk(result);
+      });
+      $scope.readerStop(true);
+    }
+    //-- arret la lecture pour valider ou annuler
+    $scope.readerStop = function (cancel) {
+      if ($rootScope.roothub.open && $scope.poste) {
+        $scope.reader.stopIsCancel = cancel;
+        $scope.reader.statut = NOCONFIG.READER_STOPPING;
+        $scope.saveToSession();
+        $rootScope.rootCasqueHub.server.piloteReader($rootScope.roothub.connectionId, NOCONFIG.ACTIONLECTEURSTOP, $scope.poste.configurationTxt)
+        .done(function () {
+          $scope.annuleUtilisationPoste();
+        })
+        .fail(function (error) { // erreur lors de l'envoie
+          $translate('HubLecteur.LecteurStopFail', { msg: error }).then(function (result) {
+            setMessageKo(result);
+          });
+        });
+      } else { // au cas ou ?
+        $scope.annuleUtilisationPoste();
+      }
+    }
+    //--- demande au lecteur son état
+    $scope.readerQueryStatut = function () {
+      if ($rootScope.roothub.open) {
+        $scope.reader.statut = NOCONFIG.READER_UNKNOW;
+        $scope.saveToSession();
+        $rootScope.rootCasqueHub.server.piloteReader($rootScope.roothub.connectionId, NOCONFIG.ACTIONLECTEURQUERYSTATUT, $scope.poste.configurationTxt)
+        .done(function () { // nothing to do le lecteur répondra par un message de statut
+        })
+        .fail(function (error) { // erreur lors de l'envoie
+          $translate('HubLecteur.LecteurStopFail', { msg: error }).then(function (result) {
+            setMessageKo(result);
+          });
+        });
+      }
+    }
+    //--- traite un reset
+    $scope.readerReset = function () {
+      if ($rootScope.roothub.open) {
+        if ($scope.poste) {
+          $rootScope.rootCasqueHub.server.piloteReader($rootScope.roothub.connectionId, NOCONFIG.ACTIONLECTEURRESETLECTURES, $scope.poste.configurationTxt)
+          .done(function () { //nothing to do le lecteur répondra par un message de statut
+            $scope.analyseurInit();
+            $scope.saveToSession();
+          })
+          .fail(function (error) { // erreur lors de l'envoie
+            $translate('HubLecteur.ResetFail', { msg: error }).then(function (result) {
+              setMessageKo(result);
+            });
+          });
+        } else {
+          $scope.analyseurInit();
+          $scope.saveToSession();
+        }
+      } else {
+        $scope.analyseurInit();
+        $scope.saveToSession();
+      }
+    }
+    //------------------------------------------------------------------------------------------------------
+    //-- annule l'utilisation poste en cours == Delete de la bdd
+    $scope.annuleUtilisationPoste = function () {
+      if ($scope.utilisationPosteCle) {
+        $noHttp.delete('/api/utilisationPosteDelete/', {
+          pageCode: $scope.pageCode,
+          utilisationPosteCle: $scope.utilisationPosteCle
+        }, function (data) {
+          $scope.postes = data.postes;
+          if ($scope.postes && $scope.postes.length == 1) {
+            $scope.poste = $scope.postes[0];
+          }
+          $scope.termine();
+        }, function (data, statusCode, headers, config, statusText) {
+          $translate('HubLecteur.ErrorWhenCanceling', { code: statusCode, text: statusText }).then(function (result) {
+            setMessageKo(result);
+          });
+        });
+      } else {
+        $scope.termine();
+      }
+    }
+    //-- Après la fin d'une action : remet tout en ordre
+    $scope.termine = function () {
+      $scope.utilisationPosteCle = null;
+      $scope.reader.statut = NOCONFIG.READER_STOPPED;
+      $scope.saveToSession();
+      if ($scope.reader.stopIsCancel) {
+        $translate('HubLecteur.LecteurCanceled').then(function (result) {
+          setMessageOk(result);
+        });
+      } else {
+        $translate('HubLecteur.LecteurSaved').then(function (result) {
+          setMessageOk(result);
+        });
+      }
+      $scope.saveToSession();
+    }
+    //------------------------------------------------------------------------------------------------------
+    //-- ajoute le tag à la "commande" qui l'attend 
+    $scope.addTagToCommandes = function (tag) {
+      if ($scope.analyseur && $scope.analyseur.commandes && $scope.analyseur.commandes.length) {
+        for (var i = 0; i < $scope.analyseur.commandes.length; i++) {
+          if ($scope.addTagToCommande($scope.analyseur.commandes[i], tag)) {
+            return true;
+          }
+        }
+      }
+      return false;
+    }
+    //-- ajoute le tag à la commande qui l'attend 
+    $scope.addTagToCommande = function (cmd, tag) {
+      if (cmd.nombreLu == null) {
+        cmd.nombreLu = 0;
+      }
+      if (cmd && cmd.pieces && cmd.pieces.length) {
+        var res;
+        for (var i = 0; i < cmd.pieces.length; i++) {
+          res = $scope.addTagToCommandePiece(cmd.pieces[i], tag);
+          if (res == 1) { // tag reconnu et attendu 
+            cmd.nombreLu++;
+            return true;
+          } else if (res == 2) { // tag reconnu mais pas attendu
+            return true;
+          }
+        }
+      }
+      return false;
+    }
+    //-- ajoute le tag à la pièce de commande qui l'attend 
+    $scope.addTagToCommandePiece = function (piece, tag) {
+      if (piece && piece.tags && piece.tags.length) {
+        for (var i = 0; i < piece.tags.length; i++) {
+          if (piece.tags[i] && piece.tags[i].numero && piece.tags[i].numero == tag) { // trouvé !
+            if (piece.tags[i].statutInt == $scope.waitTagStatut) { // le tag est bien un tag attendu 
+              if (!piece.tagLus) {
+                piece.tagLus = [];
+              }
+              piece.tagLus.push(tag);
+              return 1; //-- Tag reconnu et attendu 
+            } else { // le tag ne devrait pas être lu !
+              if (!piece.tagNonAttendu) {
+                piece.tagNonAttendu = [];
+              }
+              piece.tagNonAttendu.push(tag);
+              return 2; //-- Tag reconnu mais pas attendu 
+            }
+
+          }
+        }
+      }
+      return 0; //-- tag non reconnu
+    }
+    //-- avec la commande fournie : trouve les tags qui la contiennent
+    $scope.analyseNouvelleCommande = function (cmd) {
+      if (cmd && $scope.analyseur.lectures && $scope.analyseur.lectures.length) {
+        if ($scope.pageCode == 'assemblage') {
+          for (var i = 0; i < $scope.analyseur.lectures.length; i++) {
+            $scope.addTagToCommande(cmd, $scope.analyseur.lectures[i]);
+          }
+        }
+        else { 
+          var i = 0
+          while (i < $scope.analyseur.lectures.length) {
+            if ($scope.addTagToCommande(cmd, $scope.analyseur.lectures[i])) { // le tag à trouvé sa commande
+              $scope.analyseur.lectures.splice(i, 1); // on retire le tag de la listes des tags inconnus
+            } else {
+              i++;
+            }
+          }
+        }
+        $scope.saveToSession();
+      }
+    }
+    //-- envoie une demande d'analyse des tags lus
+    $scope.faitUneDemande = function () {
+      if ($scope.analyseur.nbDemandeEnCours == 0) { // pas déjà une demande on peut y aller
+        $scope.saveToSession();
+        $scope.analyseur.nbDemandeEnCours++;
+        $noHttp.get('/api/analyseTag/', {
+          pageCode: $scope.pageCode,
+          utilisationPosteCle: $scope.utilisationPosteCle,
+          tags: $scope.analyseur.lectures,
+        }, function (data) {
+          $scope.analyseur.nbDemandeEnCours--;
+          $scope.checkTagInconnus(data.tagInconnus);
+          if (data.commandes != null) { // on a trouvé des commandes qui matchent avec les tags envoyés
+            $scope.waitTagStatut = 1;
+            for (var i = 0; i < data.commandes.length; i++) {
+              $scope.analyseur.commandes.push(data.commandes[i]);
+              $scope.analyseNouvelleCommande(data.commandes[i]);
+            }
+          }
+          else if (data.casques) { // on a trouvé des casques à constituer qui matchent avec les tags envoyés
+            $scope.waitTagStatut = 2;
+            $scope.analyseur.commandes = []; // Dans ce mode la dernière requette atoujours la liste complète
+            $scope.analyseur.nombreCasqueComplet = data.nombreCasqueComplet;
+            $scope.analyseur.nombreCasqueEligible = data.nombreCasqueEligible;
+            for (var i = 0; i < data.casques.length; i++) {
+              $scope.analyseur.commandes.push(data.casques[i]);
+              $scope.analyseNouvelleCommande(data.casques[i]);
+            }
+          }
+          else if (data.assemblages) { // on a trouvé des assemblages à livrer qui matchent avec les tags envoyés
+            $scope.waitTagStatut = 3;
+            $scope.cartons = data.cartons;
+            if ($scope.cartons && $scope.cartons.length == 1) {
+              $scope.carton = $scope.cartons[0];
+            }
+            for (var i = 0; i < data.assemblages.length; i++) {
+              $scope.analyseur.commandes.push(data.assemblages[i]);
+              $scope.analyseNouvelleCommande(data.assemblages[i]);
+              $scope.addCasque(data.assemblages[i]);
+            }
+          }
+          else if (data.tagConnus) { // on a trouvé des tags connus
+            if (!$scope.tagConnus) {
+              $scope.tagConnus = [];
+            }
+            for (var i = 0; i < data.tagConnus.length; i++) { // ajout des tags connus
+              $scope.tagConnus.unshift(data.tagConnus[i]);
+            }
+            if ($scope.tagConnus && $scope.tagConnus.length) {
+              for (var i = 0; i < $scope.tagConnus.length; i++) {
+                if ($scope.tagConnus[i] && $scope.tagConnus[i].numero) {
+                  $scope.removeTagInconnu($scope.tagConnus[i].numero);
+                }
+              }
+            }
+
+            $scope.removeTagInconnu($scope.tagConnus);
+          }
+        }, function (data, statusCode, headers, config, statusText) {
+          $scope.analyseur.nbDemandeEnCours--;
+        });
+      }
+    }
+    //--- s'assure que les tag inconnus sont mis à part
+    $scope.checkTagInconnus = function (ti) {
+      if (!$scope.tagInconnus) {
+        $scope.tagInconnus = [];
+      }
+      if (!ti || !ti.length) { // pas de tag pas de travail 
+        return;
+      }
+      for (var i = 0; i < ti.length; i++) {
+        $scope.tagInconnus.push(ti[i]);
+        $scope.removeTagInconnu(ti[i]);
+      }
+    }
+    //--- Retire de la liste des lecture les tag inconnus
+    $scope.removeTagInconnu = function (tag) {
+      if ($scope.analyseur && $scope.analyseur.lectures && $scope.analyseur.lectures.length) {
+        var i = 0
+        while (i < $scope.analyseur.lectures.length) {
+          if ($scope.analyseur.lectures[i] == tag) { // le tag trouvé
+            $scope.analyseur.lectures.splice(i, 1); // on retire le tag de la listes des tags inconnus
+          } else {
+            i++;
+          }
+        }
+      }
+    }
+    //-- Raz de la liste des tags inconnus
+    $scope.razInconnus = function () {
+      $scope.tagInconnus = [];
+      $scope.saveToSession();
+    }
+    //------- Spécifique consultation -------------------------------------------------------------------------
+    $scope.RemoveTagConnu = function (t) {
+      if (!t || !t.numero || !$scope.tagConnus || !$scope.tagConnus.length) {
+        return;
+      }
+      var i = 0;
+      while (i < $scope.tagConnus.length) {
+        if ($scope.tagConnus[i].numero == t.numero) { // le tag trouvé 
+          $scope.tagConnus.splice(i, 1); // on retire le tag de la listes
+          return;
+        }
+        i++;
+      } // not found !
+    }
+
+    $scope.queryManuel = function () {
+      if ($scope.tagManuel) { // nouveau tag arrivé
+        if ($scope.analyseur.lectures.indexOf($scope.tagManuel) == -1) {
+          $scope.analyseur.lectures.unshift($scope.tagManuel);
+          $scope.saveToSession();
+          $scope.faitUneDemande();
+          $scope.tagManuel = null;
+        }
+      }
+    }
+    //------------------------------------------------------------------------------------------------------
+    //------------------------------------------------------------------------------------------------------
+    //-- debut de la page
+    // surveillance de l'arrivée de TAGs
+    $scope.$watch('roothub.newTag', function (value) {
+      $timeout(function () {
+        if (value) { // nouveau tag arrivé
+          $scope.analyseur.lectures.unshift(value);
+          $scope.saveToSession();
+          $scope.faitUneDemande();
+        }
+      });
+    });
+    // surveillance de l'arrivée de message en provenance du lecteur
+    $scope.$watch('roothub.newMessage', function (value) {
+      $timeout(function () {
+        if (value) { // nouveau rapport du lecteur : on le traite
+          switch (value.action) {
+            case 1: // Démarrer
+              if (value.error) { // Erreur de démarrage : donc on stoppe le lecteur
+                //$scope.readerStop(true);
+                $scope.reader.statut = NOCONFIG.READER_STOPPED;
+                setMessageKo(value.msg);
+              } else { // on memorise que le lecteur a correctement démarré
+                $scope.reader.statut = NOCONFIG.READER_STARTED;
+                setMessageOk(value.msg);
+              }
+              $scope.saveToSession();
+              break;
+            case 2: // Arreter
+              if (value.error) { // Erreur lors du stop : on a pas la main sur le lecteur (c'est quelqu'un d'autre
+                $scope.reader.statut = NOCONFIG.READER_STOPPED;
+                setMessageKo(value.msg);
+              } else { // pas d'erreur le lecteur est bien stoppé
+                $scope.reader.statut = NOCONFIG.READER_STOPPED;
+                setMessageOk(value.msg);
+                $scope.annuleUtilisationPoste();
+              }
+              $scope.saveToSession();
+              break;
+            case 3: // Reset des lectures
+              if (value.error) { // erreur lors du reset des lectures
+                setMessageKo(value.msg);
+              } else { // Ok reset fini
+                setMessageOk(value.msg);
+                // TODO : vider les lectures
+              }
+              break;
+            case 4: // query statut
+              if (value.error) {
+                setMessageKo(value.msg);
+              } else {
+                if (value.action == NOCONFIG.ACTIONLECTEURSTART) { // le lecteur est en route
+                  $scope.reader.statut = NOCONFIG.READER_STARTED;
+                  setMessageOk(value.msg);
+                } else if (value.action == NOCONFIG.ACTIONLECTEURSTOP) { // le lecteur est stoppé
+                  $scope.reader.statut = NOCONFIG.READER_STOPPED;
+                  setMessageOk(value.msg);
+                }
+                $scope.saveToSession();
+              }
+              break;
+          }
+          // on efface le message on l'a traité
+          $rootScope.roothub.newMessage = null;
+        }
+      });
+    });
+    //------------------------------------------------------------------------------------------------------
+    $scope.analyseurInit();
+    $scope.getPostes();
+  }
+]);

@@ -26,7 +26,8 @@ app.config(['$routeProvider', function ($routeProvider) {
     .when('/livraisonList', { templateUrl: '/Partials/LivraisonList.html', controller: 'livraisonListController' })
     .when('/livraisonEdit', { templateUrl: '/Partials/LivraisonEdit.html', controller: 'receptionController', resolve: { parameters: function () { return { mode: 'livraison' }; } } })
     .when('/livraisonDetail', { templateUrl: '/Partials/LivraisonDetail.html', controller: 'livraisonDetailController' })
-    .when('/consultation', { templateUrl: '/Partials/Consultation.html', controller: 'receptionController', resolve: { parameters: function () { return { mode: 'consultation' }; } } })
+    .when('/consultation2', { templateUrl: '/Partials/Consultation.html', controller: 'receptionController', resolve: { parameters: function () { return { mode: 'consultation' }; } } })
+    .when('/consultation', { templateUrl: '/Partials/Consultation2.html', controller: 'consultation2Controller', resolve: { parameters: function () { return { mode: 'consultation' }; } } })
 
     //--- menu 6
     .when('/client', { templateUrl: '/Partials/ClientList.html', controller: 'clientListController' })
@@ -76,7 +77,7 @@ app.config(['$routeProvider', function ($routeProvider) {
 }]);
 
 //-- Application Run Verification que le user est authentifié ---------------------------------------------------------
-app.run(['$rootScope', '$location', 'webStorage', '$sce', function ($rootScope, $location, webStorage, $sce) {
+app.run(['$rootScope', '$location', 'webStorage', '$sce', '$timeout', function ($rootScope, $location, webStorage, $sce, $timeout) {
   // Hook sur le changement de page pour authentification
   $rootScope.$on("$locationChangeStart", function (event, next, current) {
     if ($location.path().indexOf("login") >= 0) {
@@ -113,49 +114,82 @@ app.run(['$rootScope', '$location', 'webStorage', '$sce', function ($rootScope, 
   $rootScope.encode = function (x) {
     return $sce.trustAsHtml(x);
   }
-
+  //-- gestion du hub de communication avec le matériel
   $rootScope.queryLeHub = function () {
     $rootScope.roothub = {
-      open: false,
-      message: '',
-      connectionId: '?'
+      open: false,              // hub ouvert
+      message: '',              // dernier message
+      connectionId: '?',        // id de connexion
+      newTag: null,             // remplit quand un tag est arrivé
+      newMessage: null,         // remplit quand un message d'un lecteur arrive
+      newReport: null,          // remplit quand un message d'un encodeur arrive
+      progression: null,        // informations de progression d'encodage
+      progressionFinie: null,   // d'encodage fini
+      actifLecteur: 0,          // y a t il un lecteur utilisable  0=non / 1=oui / 2=y en a au moins un d'occupé
+      actifEncodeur: 0,         // y a t il un encodeur utilisable 0=non / 1=oui / 2=y en a au moins un d'occupé
     };
     $rootScope.rootCasqueHub = $.connection.casqueHub; // nom de la classe hub c#
+    //-- A la réception d'un numéro de tag (nom de la méthode utilisée dans le hub c#)
+    $rootScope.rootCasqueHub.client.tag = function (tag) {
+      $timeout(function () {
+        $rootScope.roothub.newTag = tag.trim();
+      });
+    };
+    //-- A la réception d'un message de retour d'un lecteur
+    $rootScope.rootCasqueHub.client.message = function (error, action, msg) {
+      $timeout(function () {
+        $rootScope.roothub.newMessage = {
+        error: error,
+        action: action,
+        msg: msg
+      };
+      });
+    }
     //-- compte rendu d'un encodage
     $rootScope.rootCasqueHub.client.report = function (error, action, cle, msg) {
-      if (error) { // erreur de traitement
-        $rootScope.roothub.progression = {
-          message: msg,
-          action: action,
-          cle: cle,
-          index: 0,
-          total: 0
+      $timeout(function () {
+        $rootScope.roothub.newReport = {
+          error: error, 
+          action: action, 
+          cle : cle, 
+          msg: msg
         };
-      } else { // réception d'une fin d'impression
-        $rootScope.roothub.progression = null;
-        $rootScope.roothub.progressionFinie = {
-          action: action,
-          cle: cle,
-        };
-      }
-      $rootScope.$apply();
+
+        if (error) { // y a un erreur de traitement ==> on annule toute progression en cours
+          $rootScope.roothub.progression = {
+            message: msg,
+            action: action,
+            cle: cle,
+            index: 0,
+            total: 0
+          };
+        } else { // réception d'une fin d'impression ==> on annule toute progression en cours
+          $rootScope.roothub.progression = null;
+          $rootScope.roothub.progressionFinie = {
+            action: action,
+            cle: cle,
+          };
+        }
+      });
     }
     //-- A la réception compte rendu d'un encodage
     $rootScope.rootCasqueHub.client.progress = function (action, cle, index, total) {
-      $rootScope.roothub.progression = {
-        action: action,
-        cle: cle,
-        index: index,
-        total: total
-      };
-      $rootScope.$apply();
+      $timeout(function () {
+        $rootScope.roothub.progression = {
+          action: action,
+          cle: cle,
+          index: index,
+          total: total
+        };
+      });
     }
     //-- A la réception d'un hello changement des variables d'état des lecteurs
     $rootScope.rootCasqueHub.client.sayHello = function (values) {
-      $rootScope.roothub.actifLecteur = (values & 64) == 64 ? 2 : ((values & 2) == 2 ? 1 : 0);
-      $rootScope.roothub.actifEncodeur = (values & 32) == 32 ? 2 : ((values & 1) == 1 ? 1 : 0);
-      $rootScope.roothub.date = new Date();
-      $rootScope.$apply();
+      $timeout(function () {
+        $rootScope.roothub.actifLecteur = (values & 64) == 64 ? 2 : ((values & 2) == 2 ? 1 : 0);
+        $rootScope.roothub.actifEncodeur = (values & 32) == 32 ? 2 : ((values & 1) == 1 ? 1 : 0);
+        $rootScope.roothub.date = new Date();
+      });
     }
 
     $.connection.hub.start()

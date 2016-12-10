@@ -611,6 +611,7 @@ namespace CasqueLib.Services.Lectures
               Numero = x.Numero.Trim(),
               Etiquette = x.EtiquetteCle > 0 ? this.Db.Select<EtiquetteView>(y => y.Cle == x.EtiquetteCle).FirstOrDefault() : null,
               Commande = x.CommandeCle > 0 ? this.Db.Select<CommandeView>(y => y.Cle == x.CommandeCle).FirstOrDefault() : null,
+              Reference = x.Reference,
               ////TypePiece = x.TypePieceCle > 0 ? this.Db.Select<TypePieceView>(y => y.Cle == x.TypePieceCle).FirstOrDefault() : null,
               ////Casque = x.CasqueCle > 0 ? this.Db.Select<CasqueView>(y => y.Cle == x.CasqueCle).FirstOrDefault() : null,
               Assemblage = x.AssemblageCle > 0 ? this.Db.Select<AssemblageView>(y => y.Cle == x.AssemblageCle).FirstOrDefault() : null,
