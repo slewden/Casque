@@ -26,8 +26,7 @@ app.config(['$routeProvider', function ($routeProvider) {
     .when('/livraisonList', { templateUrl: '/Partials/LivraisonList.html', controller: 'livraisonListController' })
     .when('/livraisonEdit', { templateUrl: '/Partials/LivraisonEdit.html', controller: 'receptionController', resolve: { parameters: function () { return { mode: 'livraison' }; } } })
     .when('/livraisonDetail', { templateUrl: '/Partials/LivraisonDetail.html', controller: 'livraisonDetailController' })
-    .when('/consultation2', { templateUrl: '/Partials/Consultation.html', controller: 'receptionController', resolve: { parameters: function () { return { mode: 'consultation' }; } } })
-    .when('/consultation', { templateUrl: '/Partials/Consultation2.html', controller: 'consultation2Controller', resolve: { parameters: function () { return { mode: 'consultation' }; } } })
+    .when('/consultation', { templateUrl: '/Partials/Consultation.html', controller: 'consultationController', resolve: { parameters: function () { return { mode: 'consultation' }; } } })
 
     //--- menu 6
     .when('/client', { templateUrl: '/Partials/ClientList.html', controller: 'clientListController' })

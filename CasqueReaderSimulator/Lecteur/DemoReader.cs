@@ -207,7 +207,11 @@ namespace CasqueReaderSimulator.Lecteur
       }
 
       SimpleReaderEventArgs args = new SimpleReaderEventArgs(msg, ELogType.RapportOk, this.recuAction, SimpleReaderAntenneInfo.ALLPOSITION);
-      args.AdresseIP = this.Parameters.AdresseIP;
+      if (this.Parameters != null)
+      {
+        args.AdresseIP = this.Parameters.AdresseIP;
+      }
+
       this.OnNotifie(this, args);
 
       this.recuAction = EEtatLecteur.KeepAlive;
@@ -223,6 +227,7 @@ namespace CasqueReaderSimulator.Lecteur
     {
       SimpleReaderEventArgs args = new SimpleReaderEventArgs(this.txtRepondKo.Text, ELogType.Erreur, this.recuAction, SimpleReaderAntenneInfo.ALLPOSITION);
       args.AdresseIP = this.Parameters.AdresseIP;
+      this.ClientId = this.recuClientId;
       this.OnNotifie(this, args);
     
       this.recuAction = EEtatLecteur.KeepAlive;

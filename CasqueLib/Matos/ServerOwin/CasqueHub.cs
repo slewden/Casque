@@ -129,7 +129,14 @@ namespace CasqueLib.Matos.ServerOwin
     /// <param name="message">Message a afficher</param>
     public void Notity(string clientId, bool erreur, int action, string message)
     {
-      this.Clients.Client(clientId).message(erreur, action, message);
+      if (!string.IsNullOrWhiteSpace(clientId))
+      {
+        this.Clients.Client(clientId).message(erreur, action, message);
+      }
+      else
+      { // au cas ou on Broad cast à tous
+        this.Clients.All.message(erreur, action, message);
+      }
 
       // on met à jour l'état des lecteurs dans le hub
       if (TypeConnexionList.Lecteurs.ContainsKey(this.Context.ConnectionId))

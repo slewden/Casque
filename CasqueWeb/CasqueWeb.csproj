@@ -141,6 +141,7 @@
     <Content Include="Fonts\fontawesome-webfont.woff" />
     <Content Include="Fonts\fontawesome-webfont.woff2" />
     <Content Include="Fonts\FontAwesome.otf" />
+    <Content Include="Js\CasqueController3.js" />
     <Content Include="Js\CasqueController2.js" />
     <Content Include="Js\CasquePrint.js" />
     <Content Include="packages.config" />
@@ -212,7 +213,7 @@
     <Content Include="Partials\CommandeResume.html" />
     <Content Include="Partials\Configuration.html" />
     <Content Include="Partials\Configurations.html" />
-    <Content Include="Partials\Consultation2.html" />
+    <Content Include="Partials\Consultation.html" />
     <Content Include="Partials\CouleurRead.html" />
     <Content Include="Partials\CouleurEdit.html" />
     <Content Include="Partials\CouleurList.html" />
@@ -224,7 +225,6 @@
     <Content Include="Partials\HeaderMenu.html" />
     <Content Include="Partials\Home.html" />
     <Content Include="Partials\LivraisonDetail.html" />
-    <Content Include="Partials\Consultation.html" />
     <Content Include="Partials\LivraisonEdit.html" />
     <Content Include="Partials\LivraisonList.html" />
     <Content Include="Partials\LivraisonResume.html" />
