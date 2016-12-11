@@ -1,4 +1,5 @@
 ﻿using System.Linq;
+using System.Threading.Tasks;
 using CasqueLib.Buisness;
 using Microsoft.AspNet.SignalR;
 
@@ -13,6 +14,17 @@ namespace CasqueLib.Matos.ServerOwin
     /// Pour les verrouillages multi-thread
     /// </summary>
     private object thisLock = new object();
+
+    /// <summary>
+    /// Permet de détecter pour un lecteur en route que le client qui l'a allumé que celui ci est partit !
+    /// </summary>
+    /// <param name="stopCalled">La fonction stop a été appellée</param>
+    /// <returns>la tache qui va bien</returns>
+    public override Task OnDisconnected(bool stopCalled)
+    {
+      this.Clients.All.deconnexionClient(this.Context.ConnectionId);
+      return base.OnDisconnected(stopCalled);
+    }
 
     /// <summary>
     /// réinit le hub en cas de problème avec le cache lecteur

@@ -669,7 +669,8 @@ var translations = {
     WaitingList: 'Etiquettes lues en attente d\'analyse :',
     BadTagList: 'Etiquette non reconnues :',
     ConfirmCancel: 'Etes-vous certain de vouloir recommencer ?',
-    Reset: 'Réinitialiser',
+    ResetAll: 'Effacer tout',
+    Reset: 'Effacer',
     TypeTag: 'Casque',
     TypeEtiquette: 'Pièce détachée',
     ActionCommande: 'Commande',
@@ -680,6 +681,7 @@ var translations = {
     DetailCarton: '(carton N°{{ index }})',
     TitreManuel: 'Numero d\'étiquette',
     BtAnalyseManuelle: 'Analyser',
+    QueryStatutReader: 'Recherche de l\'état du lecteur...',
   },
   Configurations:
     {

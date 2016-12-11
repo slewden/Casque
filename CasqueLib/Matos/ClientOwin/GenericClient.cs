@@ -163,6 +163,7 @@ namespace CasqueLib.Matos.ClientOwin
       { // première fois qu'on appelle l'objet n'existe pas !
         this.connector = new HubConnector(this.Url, this.DriversFor);
         this.connector.OnConnectedChanged += this.Connector_OnConnectedChanged;
+        this.connector.OnDeconnexionClient += this.Connector_OnDeconnexionClient;
         this.connector.OnAction += this.Connector_OnAction;
         this.connector.OnEncode += this.Connector_OnEncode;
         this.LogInfo(
@@ -274,6 +275,35 @@ namespace CasqueLib.Matos.ClientOwin
     }
 
     #region Events en provenance du hub
+    /// <summary>
+    /// Réception d'une déconnexion d'un client
+    /// </summary>
+    /// <param name="sender">qui appelle</param>
+    /// <param name="e">Les paramètres de la demande</param>
+    private void Connector_OnDeconnexionClient(object sender, HubConnectorEventDeconnexionClient e)
+    {
+      if (e == null || string.IsNullOrWhiteSpace(e.ClientId))
+      {
+        return;
+      }
+
+      foreach (Lecteur rd in this.Readers.Values)
+      {
+        if (rd.ClientId == e.ClientId)
+        { // le lecteur doit être notifié que son client est parti
+          if (rd.CanStop)
+          { // si le lecteur était en route on le stoppe
+            rd.Stop();
+          }
+
+          // raz du client
+          rd.ClientId = null;
+        }
+      }
+
+      // on ne fait rien pour les encodeurs pour l'instant...
+    }
+
     /// <summary>
     /// Réception d'un changement de statut de connexion sur le hub
     /// </summary>
@@ -397,14 +427,20 @@ namespace CasqueLib.Matos.ClientOwin
       { // lecteur déjà en route !
         if (string.IsNullOrWhiteSpace(reader.ClientId) && !string.IsNullOrWhiteSpace(e.ClientId))
         { // il a démaré mais mal ==> on rattrape le coup par une réaffectation du lecteur au client
-          msg = "Réattribution d'un lecteur démarré";
+          msg = "Réattribution d'un lecteur démarré : démarrage Ok";
           this.LogInfo(msg);
           this.connector.Notify(e.ClientId, false, EActionLecteur.Demarre, msg);
           this.StartLecteur(e, reader);
         }
+        else if (reader.ClientId == e.ClientId)
+        { // le même client redemande un démarrage
+          msg = "Lecteur déjà démarré par le client : démarrage Ok";
+          this.LogInfo(msg);
+          this.connector.Notify(e.ClientId, false, EActionLecteur.Demarre, msg);
+        }
         else
         {
-          msg = "Erreur lecteur déjà démarré";
+          msg = "Erreur lecteur déjà démarré par un autre client";
           this.LogErreur(msg);
           this.connector.Notify(e.ClientId, true, EActionLecteur.Demarre, msg);
         }
@@ -571,6 +607,7 @@ namespace CasqueLib.Matos.ClientOwin
       if (reader != null)
       {
         this.LogInfo("Arrêt du lecteur {0}...", reader.AdresseIp);
+        reader.ClientId = null;
         reader.Stop();
       }
     }

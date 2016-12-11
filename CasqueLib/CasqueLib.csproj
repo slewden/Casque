@@ -210,6 +210,7 @@
     <Compile Include="Matos\ServerOwin\HubConnector.cs">
       <ExcludeFromStyleCop>False</ExcludeFromStyleCop>
     </Compile>
+    <Compile Include="Matos\ServerOwin\HubConnectorEventDeconnexionClient.cs" />
     <Compile Include="Matos\ServerOwin\HubConnectorEventEncodeur.cs" />
     <Compile Include="Matos\ServerOwin\HubConnectorEventLecteur.cs" />
     <Compile Include="Matos\ServerOwin\HubConnectorEventStatut.cs" />

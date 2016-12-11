@@ -30,6 +30,11 @@ namespace CasqueLib.Matos.ServerOwin
     private const string HUBMETHODENCODEACTION = "processCommande";
 
     /// <summary>
+    /// Nom de la méthode du hub pour les déconnexions clients
+    /// </summary>
+    private const string HUBMETHODENDECONNEXIONCLIENT = "deconnexionClient";
+
+    /// <summary>
     /// Le hub proxy
     /// </summary>
     private IHubProxy hubProxy;
@@ -72,8 +77,15 @@ namespace CasqueLib.Matos.ServerOwin
       ////this.hubProxy.On<string, string>(HubConnector.HUBMETHODSENDTAG, (client, tag) => this.ProcessReceiveTag(client, tag));
       this.hubProxy.On<HubConnectorEventLecteur>(HubConnector.HUBMETHODLECTEURACTION, (demande) => this.ProcessLecteurAction(demande));
       this.hubProxy.On<HubConnectorEventEncodeur>(HubConnector.HUBMETHODENCODEACTION, (demande) => this.ProcessEncodeAction(demande));
+      this.hubProxy.On<string>(HubConnector.HUBMETHODENDECONNEXIONCLIENT, (demande) => this.ProcessDeconnexionClient(demande));
       this.Connected = ConnectionState.Disconnected;
     }
+
+    /// <summary>
+    /// Pour notifier les déconnexions des clients
+    /// (Permet aux lecteur de voir s'il faut qu'il se stoppent tout seul)
+    /// </summary>
+    public event EventHandler<HubConnectorEventDeconnexionClient> OnDeconnexionClient;
 
     /// <summary>
     /// Pour notifier les changements dans l'état de connexion
@@ -414,6 +426,18 @@ namespace CasqueLib.Matos.ServerOwin
 
     #region Traitement des infos reçues à travers le hub
     /// <summary>
+    /// Propage l'information
+    /// </summary>
+    /// <param name="clientId">La clé du client</param>
+    private void ProcessDeconnexionClient(string clientId)
+    {
+      if (this.OnDeconnexionClient != null)
+      {
+        this.OnDeconnexionClient(this, new HubConnectorEventDeconnexionClient() { ClientId = clientId });
+      }
+    }
+
+    /// <summary>
     /// Envoie simplement la demande au parent
     /// </summary>
     /// <param name="demande">La demande d'action</param>
@@ -439,7 +463,6 @@ namespace CasqueLib.Matos.ServerOwin
         }
       }
     }
-
     #endregion
 
     /// <summary>

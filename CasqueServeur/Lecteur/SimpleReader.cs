@@ -89,7 +89,7 @@ namespace CasqueServeur.Lecteur
     {
       get
       {
-        return !string.IsNullOrWhiteSpace(this.ClientId) && this.reader == null && !this.Running;
+        return this.reader == null && !this.Running;
       }
     }
 

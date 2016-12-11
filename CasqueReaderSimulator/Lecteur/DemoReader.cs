@@ -20,7 +20,7 @@ namespace CasqueReaderSimulator.Lecteur
     private List<string> lectures;
 
     /// <summary>
-    /// la client demandé
+    /// le client demandé
     /// </summary>
     private string recuClientId;
 
@@ -93,7 +93,7 @@ namespace CasqueReaderSimulator.Lecteur
     {
       get
       {
-        return !string.IsNullOrWhiteSpace(this.ClientId) && !this.Running;
+        return !this.Running;
       }
     }
 
@@ -212,7 +212,10 @@ namespace CasqueReaderSimulator.Lecteur
         args.AdresseIP = this.Parameters.AdresseIP;
       }
 
-      this.OnNotifie(this, args);
+      if (this.OnNotifie != null)
+      {
+        this.OnNotifie(this, args);
+      }
 
       this.recuAction = EEtatLecteur.KeepAlive;
       this.GereBouton();
@@ -228,7 +231,10 @@ namespace CasqueReaderSimulator.Lecteur
       SimpleReaderEventArgs args = new SimpleReaderEventArgs(this.txtRepondKo.Text, ELogType.Erreur, this.recuAction, SimpleReaderAntenneInfo.ALLPOSITION);
       args.AdresseIP = this.Parameters.AdresseIP;
       this.ClientId = this.recuClientId;
-      this.OnNotifie(this, args);
+      if (this.OnNotifie != null)
+      {
+        this.OnNotifie(this, args);
+      }
     
       this.recuAction = EEtatLecteur.KeepAlive;
       this.GereBouton();
@@ -260,7 +266,11 @@ namespace CasqueReaderSimulator.Lecteur
           this.lectures.Add(tagNum);
           SimpleReaderEventArgs args = new SimpleReaderEventArgs(tagNum, ELogType.RapportOk, EEtatLecteur.Tag, 1);
           args.AdresseIP = this.Parameters.AdresseIP;
-          this.OnNotifie(this, args);
+          if (this.OnNotifie != null)
+          {
+            this.OnNotifie(this, args);
+          }
+
           this.GereBouton();
         }
       }

@@ -41,8 +41,7 @@ app.controller('consultationController', ['$scope', '$rootScope', 'webStorage', 
 
     //--------------------------------------------------------------------- Méthodes privées : utilitaires -
     //-- défini un message Ok
-    var setMessageOk = function(msg)
-    {
+    var setMessageOk = function (msg) {
       $rootScope.error = null;
       $scope.reader.messageOk = msg;
       $scope.reader.messageKo = null;
@@ -56,18 +55,18 @@ app.controller('consultationController', ['$scope', '$rootScope', 'webStorage', 
     //---------------------------------------------------------------- Bdd : Les postes / utilisationPoste -
     //-- Load la liste des postes possibles 
     var getPostes = function () {
+      loadFromSession();
       $noHttp.get('/api/lecteursGet/', {
         pageCode: $scope.pageCode,
+        UtilisationPosteCle: $scope.utilisationPosteCle,
       }, function (data) {
         $scope.messageBloquant = data.messageBloquant;
         $scope.postes = data.postes;
         if (!$scope.messageBloquant) { // pas de message : on a pas le droit de continuer
-          loadFromSession();
           if ($scope.utilisationPosteCle) { // on a un n° d'utilisation c'est que le lecteur est peut être en route ?
-            setMessageOk(null);
-            $scope.reader.stopIsCancel = false;
-            readerQueryStatut();
-            return;
+            $translate('Consultation.QueryStatutReader').then(function (result) {
+              setMessageOk(result);
+            });
           }
           if ($scope.postes && $scope.postes.length == 1) { // préselection et démarrage (si possible)
             $scope.poste = $scope.postes[0];
@@ -82,7 +81,7 @@ app.controller('consultationController', ['$scope', '$rootScope', 'webStorage', 
       });
     };
     //-- annule l'utilisation poste en cours == Delete de la bdd
-    var annuleUtilisationPoste = function () {
+    var annuleUtilisationPoste = function (withRestart) {
       if ($scope.utilisationPosteCle) { // y a une !
         $noHttp.delete('/api/utilisationPosteDelete/', {
           pageCode: $scope.pageCode,
@@ -93,6 +92,9 @@ app.controller('consultationController', ['$scope', '$rootScope', 'webStorage', 
           if ($scope.postes && $scope.postes.length == 1) {
             $scope.poste = $scope.postes[0];
             // ici on ne relance pas le lecteur : on vient de s'arreter !
+            if (withRestart) {
+              $scope.startReception();
+            }
           }
           termine();
         }, function (data, statusCode, headers, config, statusText) {
@@ -121,8 +123,6 @@ app.controller('consultationController', ['$scope', '$rootScope', 'webStorage', 
       $scope.analyseur = {
         lectures: [],
         nbDemandeEnCours: 0,
-        commandes: [],
-        casques: [],
       };
       if (!dontSave) {
         saveToSession();
@@ -205,6 +205,14 @@ app.controller('consultationController', ['$scope', '$rootScope', 'webStorage', 
         readerStop(false);
       }
     }
+    //-- essaie de nouveau de se connecter
+    $scope.retry = function () {
+      if ($scope.utilisationPosteCle) {
+        annuleUtilisationPoste(true);
+      } else {
+        $scope.startReception();
+      }
+    }
     //-- Voir quels processus sont en cours
     $scope.checkOtherProcess = function () {
       $noHttp.get('/api/lecteursEnCours/', {
@@ -257,11 +265,10 @@ app.controller('consultationController', ['$scope', '$rootScope', 'webStorage', 
     //-- sauve en session les paramètres
     var saveToSession = function () {
       webStorage.add($scope.pageCode + 'Controller', {
-          poste: $scope.poste,
-          utilisationPosteCle: $scope.utilisationPosteCle,
-          reader: { statut: $scope.reader.statut },
-          analyseur: $scope.analyseur,
-        });
+        poste: $scope.poste,
+        utilisationPosteCle: $scope.utilisationPosteCle,
+        analyseur: $scope.analyseur,
+      });
     }
     //-- Recupère de la session les paramètres
     var loadFromSession = function () {
@@ -272,9 +279,6 @@ app.controller('consultationController', ['$scope', '$rootScope', 'webStorage', 
         }
         if (key.utilisationPosteCle) {
           $scope.utilisationPosteCle = key.utilisationPosteCle;
-        }
-        if (key.reader && key.reader.statut != null) {
-          $scope.reader.statut = key.reader.statut;
         }
         if (key.analyseur) {
           $scope.analyseur = key.analyseur;
@@ -327,12 +331,13 @@ app.controller('consultationController', ['$scope', '$rootScope', 'webStorage', 
       }
     }
     //--- demande au lecteur son état
-    var readerQueryStatut = function () {
+    var readerQueryStatut = function (withAction) {
       if ($rootScope.roothub.open) {
         $scope.reader.statut = NOCONFIG.READER_UNKNOW;
         saveToSession();
         $rootScope.rootCasqueHub.server.piloteReader($rootScope.roothub.connectionId, NOCONFIG.ACTIONLECTEURQUERYSTATUT, $scope.poste.configurationTxt)
-        .done(function () { // nothing to do le lecteur répondra par un message de statut
+        .done(function (erreur, action, message) { // nothing to do le lecteur répondra par un message de statut
+          setMessageOk('err ' + erreur + ' Act ' + action + ' : ' + message );
         })
         .fail(function (error) { // erreur lors de l'envoie
           $translate('HubLecteur.LecteurStopFail', { msg: error }).then(function (result) {
@@ -341,72 +346,7 @@ app.controller('consultationController', ['$scope', '$rootScope', 'webStorage', 
         });
       }
     }
-
     //-------------------------------------------------------------------- Analyse des tags lus (ou saisi) -
-    //-- ajoute le tag à la commande qui l'attend 
-    var addTagToCommande = function (cmd, tag) {
-      if (cmd.nombreLu == null) {
-        cmd.nombreLu = 0;
-      }
-      if (cmd && cmd.pieces && cmd.pieces.length) {
-        var res;
-        for (var i = 0; i < cmd.pieces.length; i++) {
-          res = addTagToCommandePiece(cmd.pieces[i], tag);
-          if (res == 1) { // tag reconnu et attendu 
-            cmd.nombreLu++;
-            return true;
-          } else if (res == 2) { // tag reconnu mais pas attendu
-            return true;
-          }
-        }
-      }
-      return false;
-    }
-    //-- ajoute le tag à la pièce de commande qui l'attend 
-    var addTagToCommandePiece = function (piece, tag) {
-      if (piece && piece.tags && piece.tags.length) {
-        for (var i = 0; i < piece.tags.length; i++) {
-          if (piece.tags[i] && piece.tags[i].numero && piece.tags[i].numero == tag) { // trouvé !
-            if (piece.tags[i].statutInt == $scope.waitTagStatut) { // le tag est bien un tag attendu 
-              if (!piece.tagLus) {
-                piece.tagLus = [];
-              }
-              piece.tagLus.push(tag);
-              return 1; //-- Tag reconnu et attendu 
-            } else { // le tag ne devrait pas être lu !
-              if (!piece.tagNonAttendu) {
-                piece.tagNonAttendu = [];
-              }
-              piece.tagNonAttendu.push(tag);
-              return 2; //-- Tag reconnu mais pas attendu 
-            }
-
-          }
-        }
-      }
-      return 0; //-- tag non reconnu
-    }
-    //-- avec la commande fournie : trouve les tags qui la contiennent
-    var analyseNouvelleCommande = function (cmd) {
-      if (cmd && $scope.analyseur.lectures && $scope.analyseur.lectures.length) {
-        if ($scope.pageCode == 'assemblage') {
-          for (var i = 0; i < $scope.analyseur.lectures.length; i++) {
-            addTagToCommande(cmd, $scope.analyseur.lectures[i]);
-          }
-        }
-        else { 
-          var i = 0
-          while (i < $scope.analyseur.lectures.length) {
-            if (addTagToCommande(cmd, $scope.analyseur.lectures[i])) { // le tag à trouvé sa commande
-              $scope.analyseur.lectures.splice(i, 1); // on retire le tag de la listes des tags inconnus
-            } else {
-              i++;
-            }
-          }
-        }
-        saveToSession();
-      }
-    }
     //--- s'assure que les tag inconnus sont mis à part
     var checkTagInconnus = function (ti) {
       if (!$scope.tagInconnus) {
@@ -446,36 +386,7 @@ app.controller('consultationController', ['$scope', '$rootScope', 'webStorage', 
         }, function (data) {
           $scope.analyseur.nbDemandeEnCours--;
           checkTagInconnus(data.tagInconnus);
-          if (data.commandes != null) { // on a trouvé des commandes qui matchent avec les tags envoyés
-            $scope.waitTagStatut = 1;
-            for (var i = 0; i < data.commandes.length; i++) {
-              $scope.analyseur.commandes.push(data.commandes[i]);
-              analyseNouvelleCommande(data.commandes[i]);
-            }
-          }
-          else if (data.casques) { // on a trouvé des casques à constituer qui matchent avec les tags envoyés
-            $scope.waitTagStatut = 2;
-            $scope.analyseur.commandes = []; // Dans ce mode la dernière requette atoujours la liste complète
-            $scope.analyseur.nombreCasqueComplet = data.nombreCasqueComplet;
-            $scope.analyseur.nombreCasqueEligible = data.nombreCasqueEligible;
-            for (var i = 0; i < data.casques.length; i++) {
-              $scope.analyseur.commandes.push(data.casques[i]);
-              analyseNouvelleCommande(data.casques[i]);
-            }
-          }
-          else if (data.assemblages) { // on a trouvé des assemblages à livrer qui matchent avec les tags envoyés
-            $scope.waitTagStatut = 3;
-            $scope.cartons = data.cartons;
-            if ($scope.cartons && $scope.cartons.length == 1) {
-              $scope.carton = $scope.cartons[0];
-            }
-            for (var i = 0; i < data.assemblages.length; i++) {
-              $scope.analyseur.commandes.push(data.assemblages[i]);
-              analyseNouvelleCommande(data.assemblages[i]);
-              $scope.addCasque(data.assemblages[i]);
-            }
-          }
-          else if (data.tagConnus) { // on a trouvé des tags connus
+          if (data.tagConnus) { // on a trouvé des tags connus
             if (!$scope.tagConnus) {
               $scope.tagConnus = [];
             }
@@ -527,14 +438,21 @@ app.controller('consultationController', ['$scope', '$rootScope', 'webStorage', 
         }
       }
     }
+    //-- indique s'il y a plus d'une lecture fait (pour le bouton reset all)
+    $scope.canResetAll = function () {
+      var nt = $scope.tagInconnus ? $scope.tagInconnus.length : 0;
+      var lt = $scope.analyseur && $scope.analyseur.lectures ? $scope.analyseur.lectures.length : 0;
+      var tc = $scope.tagConnus ? $scope.tagConnus.length : 0;
+      return nt + lt + tc > 1;
+    }
     //-------------------------------------------------------------------------- Le events Hub et lecteurs -
     //-- surveille l'activation du hub
     $scope.$watch('roothub.actifLecteur', function (value) {
       // peut prendre 0 = aucun lecteur, 1 = dispo, 2 = occupé
       // pas de time out necessaire ici l'app a déjà fait le boulot
       if (value == 1) { // ca passe à dispo on relance le lecteur
-        if ($scope.reader.statut == NOCONFIG.READER_STOPPED && $scope.poste && !$scope.utilisationPosteCle && !$scope.manualStop) {
-          // le lecteur est arrété, on a un poste, pas d'utilisation cle et l'utilisateur n'a pas stoppé le lecteur
+        if ($scope.reader.statut == NOCONFIG.READER_STOPPED && $scope.poste && !$scope.manualStop) {
+          // le lecteur est arrété, on a un poste et l'utilisateur n'a pas stoppé le lecteur
           // ==> on peut démarrer automatiquement
           $timeout(function () {
             $scope.startReception();
@@ -553,7 +471,7 @@ app.controller('consultationController', ['$scope', '$rootScope', 'webStorage', 
           $scope.analyseur.lectures.unshift(value);
           saveToSession();
           $scope.faitUneDemande();
-        } 
+        }
       });
     });
     //-- surveille l'arrivée de message en provenance du lecteur

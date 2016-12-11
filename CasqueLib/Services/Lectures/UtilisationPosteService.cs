@@ -57,7 +57,9 @@ namespace CasqueLib.Services.Lectures
         rep.MessageBloquant = string.Empty;
       }
 
-      rep.Postes = this.Db.SqlList<Poste>("EXEC dbo.poste_disponible_liste @page_code", new { PageCode = request.PageCode });
+      rep.Postes = this.Db.SqlList<Poste>(
+        "EXEC dbo.poste_disponible_liste @pageCode, @utilisationPosteCle",
+        new { pageCode = request.PageCode, utilisationPosteCle = request.UtilisationPosteCle });
 
       if (request.PageCode == "livraison")
       {
