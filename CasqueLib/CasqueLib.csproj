@@ -126,6 +126,7 @@
     <Compile Include="Buisness\Encode\EncodeAssemblage.cs" />
     <Compile Include="Buisness\Encode\EncodeCommande.cs" />
     <Compile Include="Buisness\Encode\EncodeCommandeEtiquette.cs" />
+    <Compile Include="Buisness\FormatEtiquette.cs" />
     <Compile Include="Buisness\MailConfig.cs" />
     <Compile Include="Buisness\Report\CompteurAdministration.cs" />
     <Compile Include="Buisness\Report\CompteurBase.cs" />
@@ -135,6 +136,7 @@
     <Compile Include="Buisness\View\CasqueAssembleView.cs" />
     <Compile Include="Buisness\View\ClientLivraisonView.cs" />
     <Compile Include="Buisness\View\EtiquetteDebug.cs" />
+    <Compile Include="Buisness\View\EtiquetteReportInfo.cs" />
     <Compile Include="Buisness\View\EtiquetteView.cs" />
     <Compile Include="Buisness\View\LivraisonView.cs" />
     <Compile Include="Buisness\View\PosteCompteur.cs" />
@@ -221,6 +223,8 @@
     <Compile Include="Services\Administration\Configuration\ConfigurationRequest.cs" />
     <Compile Include="Services\Administration\Configuration\ConfigurationResponse.cs" />
     <Compile Include="Services\Administration\Configuration\ConfigurationService.cs" />
+    <Compile Include="Services\Lectures\AssemblageReportInfoRequest.cs" />
+    <Compile Include="Services\Lectures\AssemblageReportInfoResponse.cs" />
     <Compile Include="Services\Parametrage\CartonEdit\CartonEditRequest.cs" />
     <Compile Include="Services\Parametrage\CartonEdit\CartonEditResponse.cs" />
     <Compile Include="Services\Parametrage\CartonEdit\CartonEditService.cs" />

@@ -136,6 +136,7 @@
     <Content Include="Css\Print.min.css">
       <DependentUpon>Print.css</DependentUpon>
     </Content>
+    <Content Include="Excel.html" />
     <Content Include="Fonts\fontawesome-webfont.eot" />
     <Content Include="Fonts\fontawesome-webfont.ttf" />
     <Content Include="Fonts\fontawesome-webfont.woff" />
@@ -143,6 +144,7 @@
     <Content Include="Fonts\FontAwesome.otf" />
     <Content Include="Js\CasqueController3.js" />
     <Content Include="Js\CasqueController2.js" />
+    <Content Include="Js\CasqueExcel.js" />
     <Content Include="Js\CasquePrint.js" />
     <Content Include="packages.config" />
     <Content Include="Css\Print.less" />

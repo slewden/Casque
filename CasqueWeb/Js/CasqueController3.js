@@ -267,7 +267,6 @@ app.controller('consultationController', ['$scope', '$rootScope', 'webStorage', 
       webStorage.add($scope.pageCode + 'Controller', {
         poste: $scope.poste,
         utilisationPosteCle: $scope.utilisationPosteCle,
-        analyseur: $scope.analyseur,
       });
     }
     //-- Recupère de la session les paramètres
@@ -279,9 +278,6 @@ app.controller('consultationController', ['$scope', '$rootScope', 'webStorage', 
         }
         if (key.utilisationPosteCle) {
           $scope.utilisationPosteCle = key.utilisationPosteCle;
-        }
-        if (key.analyseur) {
-          $scope.analyseur = key.analyseur;
         }
       }
     }
@@ -362,11 +358,13 @@ app.controller('consultationController', ['$scope', '$rootScope', 'webStorage', 
     }
     //--- Retire de la liste des lecture les tag inconnus
     var removeTagInconnu = function (tag) {
-      if ($scope.analyseur && $scope.analyseur.lectures && $scope.analyseur.lectures.length) {
+      if ($scope.analyseur && $scope.analyseur.lectures && $scope.analyseur.lectures.length && tag) {
+        tag = tag.trim();
         var i = 0
         while (i < $scope.analyseur.lectures.length) {
           if ($scope.analyseur.lectures[i] == tag) { // le tag trouvé
             $scope.analyseur.lectures.splice(i, 1); // on retire le tag de la listes des tags inconnus
+            return;
           } else {
             i++;
           }
@@ -392,16 +390,8 @@ app.controller('consultationController', ['$scope', '$rootScope', 'webStorage', 
             }
             for (var i = 0; i < data.tagConnus.length; i++) { // ajout des tags connus
               $scope.tagConnus.unshift(data.tagConnus[i]);
+              removeTagInconnu(data.tagConnus[i].numero.trim());
             }
-            if ($scope.tagConnus && $scope.tagConnus.length) {
-              for (var i = 0; i < $scope.tagConnus.length; i++) {
-                if ($scope.tagConnus[i] && $scope.tagConnus[i].numero) {
-                  removeTagInconnu($scope.tagConnus[i].numero);
-                }
-              }
-            }
-
-            removeTagInconnu($scope.tagConnus);
           }
         }, function (data, statusCode, headers, config, statusText) {
           $scope.analyseur.nbDemandeEnCours--;
@@ -431,12 +421,15 @@ app.controller('consultationController', ['$scope', '$rootScope', 'webStorage', 
     $scope.queryManuel = function () {
       if ($scope.tagManuel) { // nouveau tag arrivé
         if ($scope.analyseur.lectures.indexOf($scope.tagManuel) == -1) {
-          $scope.analyseur.lectures.unshift($scope.tagManuel);
-          saveToSession();
-          $scope.faitUneDemande();
+          $scope.queryTag($scope.tagManuel.trim());
           $scope.tagManuel = null;
         }
       }
+    }
+    //-- interroge pour avoir le detail de tagNum
+    $scope.queryTag = function (tagNum) {
+      $scope.analyseur.lectures.unshift(tagNum.trim());
+      $scope.faitUneDemande();
     }
     //-- indique s'il y a plus d'une lecture fait (pour le bouton reset all)
     $scope.canResetAll = function () {
@@ -444,6 +437,25 @@ app.controller('consultationController', ['$scope', '$rootScope', 'webStorage', 
       var lt = $scope.analyseur && $scope.analyseur.lectures ? $scope.analyseur.lectures.length : 0;
       var tc = $scope.tagConnus ? $scope.tagConnus.length : 0;
       return nt + lt + tc > 1;
+    }
+    //-- Demane le détail d'un assemblage
+    $scope.showDetailAssemblage = function (taglu) {
+      if (taglu != null && taglu.assemblage && taglu.assemblage.cle) {
+        $noHttp.get('/api/analyseAssemblage/', {
+          cle: taglu.assemblage.cle,
+        }, function (data) {
+          if (data && data.pieces && data.pieces.length) {
+            taglu.assemblage.pieces = data.pieces;
+          }
+        }, function (data, statusCode, headers, config, statusText) {
+        });
+      }
+    }
+    //-- efface le détail d'un assemblage 
+    $scope.removeDetailAssemblage = function (taglu) {
+      if (taglu != null && taglu.assemblage && taglu.assemblage.pieces) {
+        taglu.assemblage.pieces = null;
+      }
     }
     //-------------------------------------------------------------------------- Le events Hub et lecteurs -
     //-- surveille l'activation du hub

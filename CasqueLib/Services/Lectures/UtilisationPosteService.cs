@@ -169,6 +169,29 @@ namespace CasqueLib.Services.Lectures
     }
 
     /// <summary>
+    /// Renvoie la liste des infos des pièces qui constituent un assemblage
+    /// </summary>
+    /// <param name="request">la demande</param>
+    /// <returns>la réponse</returns>
+    public object Get(AssemblageReportInfoRequest request)
+    {
+      HttpError err = this.Verification(request);
+      if (err != null)
+      {
+        return err;
+      }
+
+      if (request.Cle <= 0)
+      {
+        return new HttpError(System.Net.HttpStatusCode.BadRequest, "'Clé' Non valide");
+      }
+
+      AssemblageReportInfoResponse response = new AssemblageReportInfoResponse();
+      response.Pieces = this.Db.Select<EtiquetteReportInfo>(x => x.AssemblageCle == request.Cle);
+      return response;
+    }
+
+    /// <summary>
     /// Put : Crée l'utilisation de poste et renvoie les infos
     /// </summary>
     /// <param name="request">la demande</param>

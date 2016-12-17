@@ -1,4 +1,6 @@
 ﻿using System;
+using System.Collections.Generic;
+using System.IO;
 using System.Linq;
 using System.Net;
 using CasqueLib.Buisness;
@@ -6,6 +8,7 @@ using CasqueLib.Buisness.View;
 using CasqueLib.Common;
 using ServiceStack.Common.Web;
 using ServiceStack.OrmLite;
+using ServiceStack.Text;
 
 namespace CasqueLib.Services.Commande.Edit
 {
@@ -57,7 +60,24 @@ namespace CasqueLib.Services.Commande.Edit
         }
       }
 
-      if (!request.ModeRead)
+      if (request.Excel)
+      { // renvoie le flux excel
+        // Phase 1  : on complète les infos de la commande loadée
+        rep.Commande.Pieces = this.Db.SqlList<CommandeLigneView>("EXEC dbo.commande_ligne_liste @comdId", new { comdId = request.Cle });
+        if (rep.Commande.Pieces.Any())
+        {
+          // remplir les N° d'étiquettes
+          foreach (CommandeLigneView lg in rep.Commande.Pieces.Where(x => x.Quantite > 0))
+          {
+            lg.Etiquettes = this.Db.SqlList<NomCle>("EXEC dbo.commande_ligne_etiquette @colgId", new { colgId = lg.Cle }).Select(x => x.Nom).ToList();
+          }
+
+          Email.Commande cmd = new Email.Commande();
+          cmd.LaCommande = rep.Commande;
+          return new ExcelFileResult(cmd.GetPieceJointeData(), string.Format("Commande-{0}.xls", request.Cle));
+        }
+      }
+      else if (!request.ModeRead)
       { // on est pas en lecture ==> chargement des infos d'édition
         if (rep.Commande != null && rep.Commande.Validation != null && rep.Commande.ImpressionFinie == null)
         { // dans ce cas faut fournir la liste des postes possibles
@@ -174,7 +194,7 @@ namespace CasqueLib.Services.Commande.Edit
       }
 
       if (request.Cle <= 0)
-      { 
+      {
         return new HttpError(HttpStatusCode.BadRequest, "'clé' non valide");
       }
 
@@ -242,7 +262,7 @@ namespace CasqueLib.Services.Commande.Edit
         {
           cmd.EnvoieEmail = DateTime.Now;
           this.Db.UpdateOnly(cmd, x => new { x.EnvoieEmail }, u => u.Cle == cmd.Cle);
-         
+
           if (request.ProcessEnvoie)
           { // Envoyer par email la commande demandé
             this.EnvoieCommandeParEmail(cmd, request.EmailSuplementaire);
@@ -309,6 +329,52 @@ namespace CasqueLib.Services.Commande.Edit
       ligne.Reference = string.Format("{0:yyyy-MM}/{1:000000}/{2:000}", commande.Saisie, commande.Cle, index);
 
       this.Db.Insert<Buisness.CommandeLigne>(ligne);
+    }
+    
+    /// <summary>
+    /// classe pour renvoyer un excel
+    /// </summary>
+    public class ExcelFileResult : ServiceStack.ServiceHost.IHasOptions, ServiceStack.Service.IStreamWriter
+    {
+      /// <summary>
+      /// les données
+      /// </summary>
+      private readonly byte[] responseStream;
+
+      /// <summary>
+      /// Initialise une nouvelle instance de la classe <see cref="ExcelFileResult"/>
+      /// </summary>
+      /// <param name="responseStream">les données</param>
+      /// <param name="fileName">Nom du fichier</param>
+      public ExcelFileResult(byte[] responseStream, string fileName)
+      {
+        this.responseStream = responseStream;
+        this.Options = new Dictionary<string, string> 
+         {
+             { "Content-Type", "application/octet-stream" },
+             { "Content-Disposition", string.Format("attachment; filename=\"{0}\";", fileName) }
+         };
+      }
+
+      /// <summary>
+      /// Les options
+      /// </summary>
+      public IDictionary<string, string> Options { get; private set; }
+
+      /// <summary>
+      /// Ecrit les données dans la sortie
+      /// </summary>
+      /// <param name="responseStream">le flux de sortie</param>
+      public void WriteTo(Stream responseStream)
+      {
+        if (this.responseStream == null || this.responseStream.Length == 0)
+        {
+          return;
+        }
+
+        responseStream.Write(this.responseStream, 0, this.responseStream.Length);
+        responseStream.Flush();
+      }
     }
   }
 }

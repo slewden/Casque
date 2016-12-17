@@ -241,6 +241,18 @@ app.factory('$noHttp', ['$http', 'webStorage', '$rootScope', '$translate', funct
     var httpPromise = $http.delete(serviceUrl(url) + prepareQueryString(queryJson, true));
     return promiseThen(httpPromise, successcb, errorcb, resourceRespTransform, 'Common.ErrorDelete');
   };
+  Resource.download = function (url, queryJson, successcb, errorcb) {
+    $rootScope.processing = true;
+    var httpPromise = $http({
+      method: 'GET',
+      url: serviceUrl(url) + prepareQueryString(queryJson, true),
+      headers: {
+        'Content-type': 'application:json',
+        responseType:'arrayBuffer',
+      },
+    });
+    return promiseThen(httpPromise, successcb, errorcb, resourceRespTransform, 'Common.ErrorGet');
+  }
   // traite l'appel
   var promiseThen = function (httpPromise, successcb, errorcb, transformFn, errorKey) {
     return httpPromise.then(function (response) {

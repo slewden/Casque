@@ -47,5 +47,10 @@ namespace CasqueLib.Services.Commande.Edit
     /// Adresse email supplémentaire lors de l'envoie de la commande par email
     /// </summary>
     public string EmailSuplementaire { get; set; }
+
+    /// <summary>
+    /// Génère le fichier Excle des pièces ou pas
+    /// </summary>
+    public bool Excel { get; set; }
   }
 }

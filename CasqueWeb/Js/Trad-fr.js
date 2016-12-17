@@ -144,6 +144,7 @@ var translations = {
     LblEmailFini: 'Envoie au fournisseur fait le {{ date | datews: \'short\'}}',
     TipsEnvoieEmail: 'Envoyer la commande par email au fournisseur et imprimer le bon de commande',
     TipsNotEnvoieEmail: 'La commande est prête, mais n\'est pas envoyée au fournisseur',
+    TipsDownLoad: 'Télécharger le fichier des pièces',
     LivraisonAttendueLeOk: 'Livraison attendue le {{ date | datews: \'shortDate\' }} soit dans {{ jour | absolute }} j',
     LivraisonAttendueLeKo: 'Livraison attendue le {{ date | datews: \'shortDate\' }} en retard de {{ jour | absolute }} j',
     LivraisonAttendueToday: 'Livraison aujourd\'hui',
@@ -682,6 +683,8 @@ var translations = {
     TitreManuel: 'Numero d\'étiquette',
     BtAnalyseManuelle: 'Analyser',
     QueryStatutReader: 'Recherche de l\'état du lecteur...',
+    VoirDetailAssemblage: 'Voir le détail de cet assemblage',
+    DetailCasque:'Composition du casque',
   },
   Configurations:
     {

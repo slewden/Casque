@@ -69,6 +69,8 @@
               <span data-ng-show="commande.validation && commande.impressionFinie && commande.envoieEmail && commande.statutInt <= 4 && !readOnly">
                 <i class="fa fa-print btn" title="{{'Commande.TipsPrintBC'| translate }}" data-ng-click="printBC()"></i>
                 <i class="fa fa-envelope btn" data-ng-show="configEmailOk" data-ng-click="showEmailplus = !showEmailplus" title="{{ 'Commande.TipsSendAutreEmail' | translate }}"></i>
+
+                <i class="fa fa-download btn" data-ng-click="download()" title="{{ 'Commande.TipsDownLoad' | translate }}"></i>
               </span>
               &nbsp;
             </th>
@@ -147,7 +149,9 @@
                     <th style="width:100px;">{{ 'CasqueConstitue.LblCouleur' | translate }}</th>
                     <th style="width:130px;">{{ 'CasqueConstitue.LblTaille' | translate }}</th>
                     <th class="right" style="width:85px;" title="{{ 'FournisseurPiece.TipsPrix' | translate }}">{{ 'FournisseurPiece.LblPrix' | translate }}</th>
-                    <th class="right" style="width:85px;" title="{{ 'FournisseurPiece.TipsFrais' | translate }}">{{ 'FournisseurPiece.Lblfrais' | translate }}</th>
+                    <th class="right" style="width:85px;" title="{{ 'FournisseurPiece.TipsFrais' | translate }}">
+                      {{ 'FournisseurPiece.Lblfrais' | translate }}
+                    </th>
                   </tr>
                 </thead>
                 <tbody>
@@ -163,10 +167,11 @@
                     </td>
                     <td align="center">
                       <span data-ng-show="commande.validation || readOnly" class="info-readonly"> x <b>{{ p.quantite }}</b></span>
-                      <div data-ng-show="!commande.validation && !readOnly">
+                      <div data-ng-if="!commande.validation && !readOnly">
+                        <!-- data-ng-if ici : car data-ng-show efface l'info quantite en readonly -->
                         <input type="number" data-ng-model="p.quantite" id="quantite_{{ p.guid }}" name="quantite_{{ p.guid}}" min="0" max="{{ qteMax }}"
                                placeholder="{{ 'Commande.TipsQuantite' | translate }}" style="width:60px;" data-ng-change="computeTotaux()">
-                        
+
                     </td>
                     <td title="{{ p.typePieceDescription }}" align="left">
                       <i class="fa fa-tags green" title="{{ 'CasqueConstitue.TipsPieceEtiquette' | translate }}" data-ng-show="p.typePieceAvecTag"></i>
@@ -180,7 +185,7 @@
                     </td>
                     <td>
                       <span data-ng-show="commande.validation || readOnly" class="info-readonly">{{ p.tailleNom }}</span>
-                      <span data-ng-show="!commande.validation && !readOnly">
+                      <span data-ng-if="!commande.validation && !readOnly">
                         <select data-ng-model="p.taille" style="width:100px;" data-ng-show="p.quantite > 0 && p.tailleNombre"
                                 data-ng-options="t.nom for t in p.tailles track by t.cle"></select>
                         <a class="btn" data-ng-show="(p.quantite > 0 && p.quantite < qteMax && (p.couleurNombre || p.tailleNombre)) || p.quantite >= qteMax"
@@ -189,18 +194,18 @@
                     </td>
                     <td align="right">
                       <span data-ng-show="commande.validation || readOnly" class="info-readonly">{{ p.prixUnitaire | masquezero | currency }}</span>
-                      <span data-ng-show="!commande.validation && !readOnly">
+                      <span data-ng-if="!commande.validation && !readOnly">
                         <div data-ng-show="p.quantite > 0">
                           <input type="number" data-ng-model="p.prixUnitaire" id="prix_{{ p.guid }}" name="prix_{{ p.guid }}"
                                  placeholder="{{ 'FournisseurPiece.TipsPrix' | translate }}" style="width:60px;" data-ng-change="computeTotaux()">&nbsp;€
-                          
+
                         </div>
                       </span>
                     </td>
                     <td align="right">
                       <div data-ng-show="p.quantite > 0">
                         <span data-ng-show="commande.validation || readOnly" class="info-readonly">{{ p.frais | masquezero | currency }}</span>
-                        <span data-ng-show="!commande.validation  && !readOnly">
+                        <span data-ng-if="!commande.validation  && !readOnly">
                           <input type="number" data-ng-model="p.frais" id="frais_{{ p.guid }}" name="frais_{{ p.guid }}"
                                  placeholder="{{ 'FournisseurPiece.TipsFrais' | translate }}" style="width:60px;" data-ng-change="computeTotaux()">&nbsp;€
                         </span>

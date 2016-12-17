@@ -568,6 +568,7 @@ table.admin-list td.collapse {
 table.history {
   width: 100%;
   margin-bottom: 10px;
+  background-color: #ededed;
 }
 table.history,
 table.history th,
@@ -603,6 +604,11 @@ table.history th span.btn-close:hover,
 table.history th th span.btn-close:hover,
 table.history td th span.btn-close:hover {
   color: red;
+}
+table.history .bg-light,
+table.history th .bg-light,
+table.history td .bg-light {
+  background-color: #d6d6d6;
 }
 table.history td,
 table.history th td,

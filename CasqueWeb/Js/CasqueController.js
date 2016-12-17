@@ -2303,6 +2303,25 @@ app.controller('commandeEditController', ['$scope', '$noHttp', '$route', '$locat
           $scope.showEmailplus = false;
         });
     }
+    //--- renvoie le fichier Excel des pièces
+    $scope.download = function () {
+      $noHttp.download('/api/commandeGet/', {
+        cle: $scope.cle,
+        excel: true,
+      }, function (data, statusCode, headers, config, statusText) { // c'est ok 
+        //var blob = new Blob([data], { type: "application/vnd.ms-excel"});
+        //var objectUrl = URL.createObjectURL(blob);
+        ///window.open(objectUrl);
+        var link = angular.element("<a/>");
+        link.attr({
+          href: 'data:application/vnd.ms-excel;charset=utf-8,%EF%BB%BF' + encodeURI(data), //
+          target: '_blank',
+          download: 'Commande-' + $scope.cle + '.xls'
+        })[0].click();
+        //URL.revokeObjectURL(blob);
+      }, function (data, statusCode, headers, config, statusText) { // Erreur
+      });
+    }
     //-- Début de la page
     var user = new utilisateur(webStorage.get(userKey));
     $scope.validation = null;

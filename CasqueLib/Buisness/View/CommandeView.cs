@@ -38,7 +38,7 @@ namespace CasqueLib.Buisness.View
     }
     
     /// <summary>
-    /// email du client
+    /// Email du fournisseur de la commande
     /// </summary>
     [Alias("clfo_email")]
     public string FournisseurEmail { get; set; }

@@ -21,7 +21,7 @@ namespace CasqueLib.Email
     /// <summary>
     /// La commande
     /// </summary>
-    public CommandeView LaCommande { get; private set; }
+    public CommandeView LaCommande { get; set; }
 
     /// <summary>
     /// Le contenu du template d'une ligne de commande
@@ -85,7 +85,7 @@ namespace CasqueLib.Email
       }
 
       // remplir les N° d'étiquettes
-      foreach (CommandeLigneView lg in this.LaCommande.Pieces)
+      foreach (CommandeLigneView lg in this.LaCommande.Pieces.Where(x => x.Quantite > 0))
       {
         lg.Etiquettes = db.SqlList<NomCle>("EXEC dbo.commande_ligne_etiquette @colgId", new { colgId = lg.Cle }).Select(x => x.Nom).ToList();
       }
@@ -106,6 +106,68 @@ namespace CasqueLib.Email
 
       // Pas de soucis ça cruise !!
       return string.Empty;
+    }
+
+    /// <summary>
+    /// Renvoie les données pour la génération du fichier Excel en Pièce jointe à la commande
+    /// </summary>
+    /// <returns>les données</returns>
+    public byte[] GetPieceJointeData()
+    {
+      byte[] result;
+      using (var package = new ExcelPackage())
+      {
+        using (ExcelWorksheet worksheet = package.Workbook.Worksheets.Add("Etiquettes"))
+        {
+          // première ligne
+          worksheet.Cells[1, 1].Value = "Référence Lot";
+          worksheet.Cells[1, 2].Value = "Etiquette";
+          worksheet.Cells[1, 3].Value = "Pièce";
+          worksheet.Cells[1, 4].Value = "Ref. Pièce";
+          worksheet.Cells[1, 5].Value = "Couleur";
+          worksheet.Cells[1, 6].Value = "Taille";
+          using (var range = worksheet.Cells[1, 1, 1, 6])
+          {
+            range.Style.Font.Bold = true;
+            range.Style.Fill.PatternType = ExcelFillStyle.Solid;
+            range.Style.Fill.BackgroundColor.SetColor(Color.FromArgb(119, 119, 119));
+            range.Style.Font.Color.SetColor(Color.FromArgb(229, 229, 229));
+          }
+
+          // les suivantes
+          int row = 2;
+          foreach (CommandeLigneView cmdLigne in this.LaCommande.Pieces.Where(x => x.Quantite > 0))
+          {
+            if (cmdLigne.Etiquettes != null)
+            {
+              foreach (string etiquette in cmdLigne.Etiquettes)
+              {
+                worksheet.Cells[row, 1].Value = cmdLigne.Reference;
+                worksheet.Cells[row, 2].Value = etiquette;
+                worksheet.Cells[row, 3].Value = cmdLigne.TypePieceNom;
+                worksheet.Cells[row, 4].Value = cmdLigne.TypePieceCode;
+                worksheet.Cells[row, 5].Value = cmdLigne.CouleurNom;
+                worksheet.Cells[row, 6].Value = cmdLigne.TailleNom;
+                row++;
+              }
+            }
+          }
+
+          // Create an autofilter for the range
+          worksheet.Cells["A1:E" + row.ToString()].AutoFilter = true;
+
+          // Autofit columns for all cells
+          worksheet.Cells.AutoFitColumns(0);
+
+          package.Workbook.Properties.Title = string.Format("Détail des étiquettes de la commande {0}", this.LaCommande.Numero);
+          package.Workbook.Properties.Author = "Tracking Center";
+          package.Workbook.Properties.Company = "Tracking Center";
+
+          result = package.GetAsByteArray();
+        }
+      }
+
+      return result;
     }
 
     /// <summary>
@@ -150,53 +212,7 @@ namespace CasqueLib.Email
     {
       string fileName = Folder.FullPath(Folder.EFolder.Commande, string.Format("Commande-{0}-{1}.xlsx", this.LaCommande.Numero, Guid.NewGuid()));
 
-      byte[] result;
-      using (var package = new ExcelPackage())
-      {
-        using (ExcelWorksheet worksheet = package.Workbook.Worksheets.Add("Etiquettes"))
-        {
-          // première ligne
-          worksheet.Cells[1, 1].Value = "Etiquette";
-          worksheet.Cells[1, 2].Value = "Pièce";
-          worksheet.Cells[1, 3].Value = "Ref. Pièce";
-          worksheet.Cells[1, 4].Value = "Couleur";
-          worksheet.Cells[1, 5].Value = "Taille";
-          using (var range = worksheet.Cells[1, 1, 1, 5])
-          {
-            range.Style.Font.Bold = true;
-            range.Style.Fill.PatternType = ExcelFillStyle.Solid;
-            range.Style.Fill.BackgroundColor.SetColor(Color.FromArgb(119, 119, 119));
-            range.Style.Font.Color.SetColor(Color.FromArgb(229, 229, 229));
-          }
-
-          // les suivantes
-          int row = 2;
-          foreach (CommandeLigneView cmdLigne in this.LaCommande.Pieces)
-          {
-            foreach (string etiquette in cmdLigne.Etiquettes)
-            {
-              worksheet.Cells[row, 1].Value = etiquette;
-              worksheet.Cells[row, 2].Value = cmdLigne.TypePieceNom;
-              worksheet.Cells[row, 3].Value = cmdLigne.TypePieceCode;
-              worksheet.Cells[row, 4].Value = cmdLigne.CouleurNom;
-              worksheet.Cells[row, 5].Value = cmdLigne.TailleNom;
-              row++;
-            }
-          }
-
-          // Create an autofilter for the range
-          worksheet.Cells["A1:E" + row.ToString()].AutoFilter = true;
-
-          // Autofit columns for all cells
-          worksheet.Cells.AutoFitColumns(0);
-
-          package.Workbook.Properties.Title = string.Format("Détail des étiquettes de la commande {0}", this.LaCommande.Numero);
-          package.Workbook.Properties.Author = "Tracking Center";
-          package.Workbook.Properties.Company = "Tracking Center";
-
-          result = package.GetAsByteArray();
-        }
-      }
+      byte[] result = this.GetPieceJointeData();
 
       // save on disk
       FileInfo fi = new FileInfo(fileName);

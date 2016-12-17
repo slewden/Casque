@@ -44,6 +44,11 @@ namespace CasqueLib.Common
       /// Dossier qui contient les pièces jointes des livraisons
       /// </summary>
       Livraison,
+
+      /// <summary>
+      /// Dossier qui contient les templates des étiquettes à imprimer
+      /// </summary>
+      ModeleEtiquette,
     }
 
     /// <summary>

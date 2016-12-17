@@ -155,7 +155,11 @@
               <tr data-ng-show="t.nombreRowCommande">
                 <td rowspan="2"><i class="fa fa-shopping-basket fa-2x"></i></td>
                 <td>{{ 'Consultation.ActionCommande' | translate }}</td>
-                <td>{{ t.commande.numero }} <br /> <small>ref <b>{{ t.reference }}</b></small></td>
+                <td>
+                  {{ t.commande.numero }} <br /> <small>ref <b>{{ t.reference }}</b></small>
+                  <br/>
+                  <a href="#/commandeEdit?cle={{ t.commande.cle}}&r=1" target="_blank">{{ 'AssemblageResume.TipsShowcommande' | translate }}</a>
+                </td>
                 <td rowspan="2">
                   <table class="no-border">
                     <tr data-ng-repeat="e in t.evenements" data-ng-show="e.typeEvenement <= 6">
@@ -186,8 +190,11 @@
               <!-- Assemblage -->
               <tr data-ng-show="t.nombreRowAssemblage">
                 <td><i class="fa fa-puzzle-piece fa-2x"></i></td>
-                <td><span data-ng-show="t.assemblage.casquePhotoUrl"><img data-ng-src="{{ t.assemblage.casquePhotoUrl }}" style="width:50px;" /></span></td>
-                <td>{{ t.assemblage.casqueNom}} ({{ t.assemblage.casqueCode}})</td>
+                <td><span data-ng-show="t.assemblage.casquePhotoUrl && t.estUnTag"><img data-ng-src="{{ t.assemblage.casquePhotoUrl }}" style="width:50px;" /></span></td>
+                <td>
+                  {{ t.assemblage.casqueNom}} ({{ t.assemblage.casqueCode}}) <br/>
+                  <button data-ng-click="showDetailAssemblage(t)" data-ng-show="t.estUnTag && !processing">{{ 'Consultation.VoirDetailAssemblage' | translate }}</button><i class="fa fa-circle-o-notch fa-spin gray" data-ng-show="processing"></i>
+                </td>
                 <td>
                   <table class="no-border">
                     <tr data-ng-repeat="e in t.evenements" data-ng-show="e.typeEvenement > 7 && e.typeEvenement < 11">
@@ -197,6 +204,42 @@
                   </table>
                 </td>
               </tr>
+
+              <!-- détail des pièces -->
+              <tr data-ng-show="t.nombreRowAssemblage && t.assemblage && t.assemblage.pieces && t.assemblage.pieces.length">
+                <td class="bg-light"></td>
+                <td colspan="3" class="bg-light">
+                  <br />
+                  <table class="history">
+                    <thead>
+                      <tr>
+                        <td colspan="4">
+                          <span>{{ 'Consultation.DetailCasque' | translate }} {{ t.assemblage.casqueNom}}</span>
+                          <span class="btn-close pull-right" data-ng-click="removeDetailAssemblage(t)" title="{{ 'Consultation.Reset' | translate }}"><i class="fa fa-times"></i></span>
+                        </td>
+                      </tr>
+                    </thead>
+                    <tbody>
+                      <tr data-ng-repeat="p in t.assemblage.pieces">
+                        <td>
+                          <button data-ng-click="queryTag(p.etiquetteNumero)">{{ p.etiquetteNumero }}</button>
+                        </td>
+                        <td>
+                          {{ p.typePieceNom }}
+                        </td>
+                        <td>
+                          {{ p.commandeNumero }}
+                        </td>
+                        <td>
+                          <small>ref <b>{{ p.reference }}</b></small>
+                        </td>
+                      </tr>
+                    </tbody>
+                  </table>
+                  <br />
+                </td>
+              </tr>
+
               <!-- Livraison -->
               <tr data-ng-show="t.nombreRowLivraison">
                 <td rowspan="3"><i class="fa fa-archive fa-2x"></i></td>
