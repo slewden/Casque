@@ -223,6 +223,7 @@
     <Compile Include="Services\Administration\Configuration\ConfigurationRequest.cs" />
     <Compile Include="Services\Administration\Configuration\ConfigurationResponse.cs" />
     <Compile Include="Services\Administration\Configuration\ConfigurationService.cs" />
+    <Compile Include="Services\Commande\Edit\CommandeCorrigeRequest.cs" />
     <Compile Include="Services\Lectures\AssemblageReportInfoRequest.cs" />
     <Compile Include="Services\Lectures\AssemblageReportInfoResponse.cs" />
     <Compile Include="Services\Parametrage\CartonEdit\CartonEditRequest.cs" />

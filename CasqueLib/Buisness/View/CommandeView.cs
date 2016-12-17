@@ -214,6 +214,25 @@ namespace CasqueLib.Buisness.View
     }
 
     /// <summary>
+    /// le nombre de pièces imprimées
+    /// </summary>
+    [Ignore]
+    public int NombreProduitImprime
+    {
+      get
+      {
+        if (this.Pieces != null && this.Pieces.Any())
+        {
+          return this.Pieces.Select(x => x.QuantiteEtiquette).Sum();
+        }
+        else
+        {
+          return 0;
+        }
+      }
+    }
+
+    /// <summary>
     /// Montant total de la commande
     /// </summary>
     [Ignore]

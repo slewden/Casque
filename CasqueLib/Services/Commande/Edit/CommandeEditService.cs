@@ -98,6 +98,43 @@ namespace CasqueLib.Services.Commande.Edit
     }
 
     /// <summary>
+    /// Get : Corrige la commande fournie
+    /// </summary>
+    /// <param name="request">la demande</param>
+    /// <returns>La reponse</returns>
+    public object Get(CommandeCorrigeRequest request)
+    {
+      HttpError err = this.Verification(request);
+      if (err != null)
+      {
+        return err;
+      }
+
+      if (request.Cle <= 0)
+      {
+        return new HttpError(HttpStatusCode.BadRequest, "'Clé' non valide");
+      }
+
+      switch (request.Action)
+      {
+        case 1: // corrige les quantités des lignes de commande aux quantités d'étiquettes imprimées
+          CasqueLib.Buisness.Encode.EncodeCommande.AjusteQuantite(this.Db, request.Cle);
+          break;
+        case 2: // remet la commande en impression 
+          CasqueLib.Buisness.Encode.EncodeCommande.Restart(this.Db, request.Cle);
+          break;
+      }
+
+      // renvoie un Get classique
+      return this.Get(new CommandeEditRequest()
+      {
+        ApiKey = request.ApiKey,
+        ModeRead = request.ModeRead,
+        Cle = request.Cle
+      });
+    }
+
+    /// <summary>
     /// Delete : Supprime la commande demandée
     /// </summary>
     /// <param name="request">la demande</param>

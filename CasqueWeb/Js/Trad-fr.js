@@ -168,7 +168,10 @@ var translations = {
     ConfirmMailSend: 'Le bon de commande a été envoyé au fournisseur',
     TotalNBProduitEtiquette: 'Nombre total de produits étiquettés',
     TipsEmailFournisseurKo: 'L\'adresse email du fournisseur est vide. Aucun message ne sera envoyé.',
-    StatutRecuNonAcquitte:'Réception totale des pièces',
+    StatutRecuNonAcquitte: 'Réception totale des pièces',
+    TipsProblemeImpressionEtiquette: 'Le nombre d\'étiquettes imprimées n\'est pas cohérent avec la commande',
+    CorrigeQuantite: 'Corriger la commande',
+    RePrint: 'Imprimer les étiquettes manquantes',
   },
   Utilisateur: {
     SousTitre: 'Gestion des opérateurs',

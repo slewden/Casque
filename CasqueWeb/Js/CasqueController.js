@@ -2173,18 +2173,26 @@ app.controller('commandeEditController', ['$scope', '$noHttp', '$route', '$locat
     //-- recupère les infos de la commande
     $scope.getInfos = function () {
       $noHttp.get('/api/commandeGet/', { cle: $scope.cle, modeRead: $scope.readOnly }, function (data) {
-        $scope.commande = data.commande;
-        $scope.fournisseurs = data.fournisseurs;
-        $scope.acquittee = data.commande.acquittee != null;
-        $scope.configEmailOk = data.configEmailOk;
-        $scope.doPrintBC = !$scope.commande.pieceRecues;
-        $scope.qteMax = data.commandeLigneQuantiteMax;
+        getOk(data);
       }, function (data, statusCode, headers, config, statusText) {
-        $scope.commande = null;
-        $scope.fournisseurs = null;
-        $scope.acquittee = false;
+        getKo(data, statusCode, headers, config, statusText);
       });
     };
+    //--- traite le retour d'un Get OK
+    var getOk = function (data) {
+      $scope.commande = data.commande;
+      $scope.fournisseurs = data.fournisseurs;
+      $scope.acquittee = data.commande.acquittee != null;
+      $scope.configEmailOk = data.configEmailOk;
+      $scope.doPrintBC = !$scope.commande.pieceRecues;
+      $scope.qteMax = data.commandeLigneQuantiteMax;
+    }
+    //--- traite le retour d'un Get KO
+    var getKo = function (data, statusCode, headers, config, statusText) {
+      $scope.commande = null;
+      $scope.fournisseurs = null;
+      $scope.acquittee = false;
+    }
     //-- insert une commande en Bdd
     $scope.saveCommande = function () {
       $noHttp.put('/api/commandeInsert/',
@@ -2319,6 +2327,18 @@ app.controller('commandeEditController', ['$scope', '$noHttp', '$route', '$locat
           })[0].click();
         }
       }, function (data, statusCode, headers, config, statusText) { // Erreur
+      });
+    }
+    //--- Corrige la commande : action donne le type de correction
+    $scope.corrigeCommande = function (action) {
+      $noHttp.get('/api/commandeCorrige/', {
+        cle: $scope.cle,
+        modeRead: $scope.readOnly,
+        action: action
+      }, function (data) {
+        getOk(data);
+      }, function (data, statusCode, headers, config, statusText) {
+        getKo(data, statusCode, headers, config, statusText);
       });
     }
     //-- Début de la page

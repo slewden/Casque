@@ -167,7 +167,9 @@
                       <span class="info-readonly">{{ p.typePieceCode }}</span>
                     </td>
                     <td align="center">
-                      <span data-ng-show="commande.validation || readOnly" class="info-readonly"> x <b>{{ p.quantite }}</b></span>
+                      <span data-ng-show="commande.validation || readOnly" class="info-readonly">
+                        x <b>{{ p.quantite }}</b>
+                      </span>
                       <div data-ng-if="!commande.validation && !readOnly">
                         <!-- data-ng-if ici : car data-ng-show efface l'info quantite en readonly -->
                         <input type="number" data-ng-model="p.quantite" id="quantite_{{ p.guid }}" name="quantite_{{ p.guid}}" min="0" max="{{ qteMax }}"
@@ -175,7 +177,11 @@
 
                     </td>
                     <td title="{{ p.typePieceDescription }}" align="left">
-                      <i class="fa fa-tags green" title="{{ 'CasqueConstitue.TipsPieceEtiquette' | translate }}" data-ng-show="p.typePieceAvecTag"></i>
+                      <i class="fa fa-tags green" title="{{ 'CasqueConstitue.TipsPieceEtiquette' | translate }}" data-ng-show="p.typePieceAvecTag && (p.quantite == p.quantiteEtiquette && commande.impressionFinie || ! commande.impressionFinie)"></i>
+                      <span data-ng-show="commande.impressionFinie && p.quantite != p.quantiteEtiquette" class="error-message">
+                        <i class="fa fa-tags red" title="{{ 'Commande.TipsProblemeImpressionEtiquette' | translate }}"></i>
+                        {{ p.quantiteEtiquette }} !!
+                      </span>
                     </td>
                     <td>
                       <span data-ng-show="commande.validation || readOnly" class="info-readonly">{{ p.couleurNom }}</span>
@@ -337,14 +343,21 @@
           <tr data-ng-show="commande.validation">
             <td colspan="2">
               <label for="LblImpression">{{ 'Commande.LblImpression' | translate }}</label><br />
-              <!-- pas commencer -->
+              <!-- pas commencé -->
               <span data-ng-show="!commande.debutImpression">
                 <span class="orange">{{ 'Commande.LblWaitValidation' | translate }}</span>
               </span>
-              <span data-ng-show="commande.debutImpression && !commande.impressionFinie" class="red">
+              <span data-ng-show="commande.debutImpression && !commande.impressionFinie" class="orange">
                 {{ 'Commande.LblImpressionEncours' | translate  }}
               </span>
-              <span data-ng-show="commande.impressionFinie" class="info-readonly">
+              <!---problème lors de l'impression -->
+              <span data-ng-show="commande.impressionFinie && commande.nombreProduitEtiquette != commande.nombreProduitImprime" class="error-message">
+                {{ 'Commande.TipsProblemeImpressionEtiquette' | translate  }}<br/>
+                <button data-ng-click="corrigeCommande(1)">{{ 'Commande.CorrigeQuantite' | translate }}</button>
+                <button data-ng-click="corrigeCommande(2)">{{ 'Commande.RePrint' | translate }}</button>
+              </span>
+
+              <span data-ng-show="commande.impressionFinie && commande.nombreProduitEtiquette == commande.nombreProduitImprime" class="info-readonly">
                 <i class="fa fa-check green"></i> {{ 'Commande.LblImpressionFini' | translate :  {date: commande.impressionFinie} }}
               </span>
             </td>

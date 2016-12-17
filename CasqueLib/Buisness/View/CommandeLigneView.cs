@@ -159,6 +159,12 @@ namespace CasqueLib.Buisness.View
     public int TailleNombre { get; set; }
 
     /// <summary>
+    /// Le nombre d'étiquette imprimées
+    /// </summary>
+    [Alias("nb_print")]
+    public int QuantiteEtiquette { get; set; }
+
+    /// <summary>
     /// La liste des tailles possibles pour cette pièce
     /// </summary>
     [Ignore]

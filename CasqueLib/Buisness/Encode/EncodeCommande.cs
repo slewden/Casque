@@ -86,5 +86,27 @@ namespace CasqueLib.Buisness.Encode
     {
       cnn.ExecuteNonQuery("EXEC dbo.commande_encode_finie @comdId", new { comdId = commandeCle });
     }
+
+    /// <summary>
+    /// Corrige les quantités des lignes d'une commande par rapport aux quantités d'étiquettes imprimées
+    /// (quand y a eu un problème)
+    /// </summary>
+    /// <param name="cnn">La connexion à la base de données</param>
+    /// <param name="commandeCle">La clé de la commande</param>
+    public static void AjusteQuantite(IDbConnection cnn, int commandeCle)
+    {
+      cnn.ExecuteNonQuery("EXEC dbo.commande_encode_ajuste_quantite @comdId", new { comdId = commandeCle });
+    }
+
+    /// <summary>
+    /// Redémarre l'encodage d'une commande 
+    /// (quand y a eu un problème)
+    /// </summary>
+    /// <param name="cnn">La connexion à la base de données</param>
+    /// <param name="commandeCle">La clé de la commande</param>
+    public static void Restart(IDbConnection cnn, int commandeCle)
+    {
+      cnn.ExecuteNonQuery("EXEC dbo.commande_encode_restart @comdId", new { comdId = commandeCle });
+    }
   }
 }
