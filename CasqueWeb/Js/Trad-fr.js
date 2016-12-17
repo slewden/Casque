@@ -107,7 +107,7 @@ var translations = {
   },
   Commande: {
     SousTitre: 'Gestion des commandes',
-    SearchText: 'Numéro, fournisseur, opérateur',
+    SearchText: 'Numéro, Référence, fournisseur, opérateur',
     TitreEdit: 'Modification d\'une commande',
     TitreAdd: 'Ajout d\'une commande',
     TitrePrint: 'Impression des étiquettes d\'une commande',
@@ -571,7 +571,7 @@ var translations = {
     AssemblageListStatut3: 'Les assemblages livrés',
     CasqueListAll: '[Tous les casques]',
     CRUDList: 'Voir ce type d\'assemblage',
-    SearchText: 'Casque, tag, opérateur',
+    SearchText: 'Casque, Référence, opérateur',
     LblCasqueNom: 'Casque',
     LblUtilisateurAssemble: 'Opérateur',
     LblCreation: 'Création',

@@ -90,7 +90,11 @@
                   <td>{{ e.couleurNom }}</td>
                   <td>{{ e.tailleNom }}</td>
                   <td>
-                    {{ e.numero }}
+                    {{ e.numero }} <br />
+                    <span class="info-readonly">
+                      <small>{{ e.commandeLigneReference }}</small>
+                    </span>
+
                   </td>
                   <td>
                     {{ e.creation | datews : 'short' }}
