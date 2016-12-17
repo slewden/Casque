@@ -61,7 +61,7 @@ namespace CasqueLib.Common
       Folder.racineSite = racine;
       foreach (EFolder fld in Enum.GetValues(typeof(EFolder)))
       { // on parcours tous les dossiers et on les vérifie
-        Folder.EnsureExists(fld);
+        Folder.EnsureExists(fld, true);
       }
     }
 
@@ -94,6 +94,7 @@ namespace CasqueLib.Common
     {
       if (!string.IsNullOrWhiteSpace(fileName))
       {
+        Folder.EnsureExists(fld, false);
         return Path.Combine(Folder.FullPath(fld), fileName);
       }
       else
@@ -143,17 +144,46 @@ namespace CasqueLib.Common
     /// S'assure que le folder existe
     /// </summary>
     /// <param name="fld">Le dossier à checker</param>
-    private static void EnsureExists(EFolder fld)
+    /// <param name="clearFolderIfExists">vide le dossier s'il existe</param>
+    private static void EnsureExists(EFolder fld, bool clearFolderIfExists)
     {
       string folder = Folder.FullPath(fld);
 
-      switch (fld)
+      try
       {
-        case EFolder.Commande:
-        case EFolder.Livraison:
+        if (clearFolderIfExists)
+        { // on purge ces dossiers
+          switch (fld)
+          {
+            case EFolder.Commande:
+            case EFolder.Livraison:
+              if (Directory.Exists(folder))
+              { 
+                try
+                {
+                  Directory.Delete(folder, true);
+                }
+                catch
+                { //// (Exception ex)
+                  ////using (FConnexion cnn = new FConnexion())
+                  ////{
+                  ////  Log.Save(cnn.Db, string.Format("EnsureExists('{0}')", folder), ex.ToString());
+                  ////}
+                }
+              }
+
+              break;
+          }
+        }
+      }
+      finally
+      { 
+        // on s'assure que tous les dossiers existent
+        if (!Directory.Exists(folder))
+        {
           try
           {
-            Directory.Delete(folder, true);
+            Directory.CreateDirectory(folder);
           }
           catch
           { //// (Exception ex)
@@ -162,22 +192,6 @@ namespace CasqueLib.Common
             ////  Log.Save(cnn.Db, string.Format("EnsureExists('{0}')", folder), ex.ToString());
             ////}
           }
-
-          break;
-      }
-
-      if (!Directory.Exists(folder))
-      {
-        try
-        {
-          Directory.CreateDirectory(folder);
-        }
-        catch
-        { //// (Exception ex)
-          ////using (FConnexion cnn = new FConnexion())
-          ////{
-          ////  Log.Save(cnn.Db, string.Format("EnsureExists('{0}')", folder), ex.ToString());
-          ////}
         }
       }
     }

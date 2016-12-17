@@ -69,8 +69,9 @@
               <span data-ng-show="commande.validation && commande.impressionFinie && commande.envoieEmail && commande.statutInt <= 4 && !readOnly">
                 <i class="fa fa-print btn" title="{{'Commande.TipsPrintBC'| translate }}" data-ng-click="printBC()"></i>
                 <i class="fa fa-envelope btn" data-ng-show="configEmailOk" data-ng-click="showEmailplus = !showEmailplus" title="{{ 'Commande.TipsSendAutreEmail' | translate }}"></i>
-
-                <i class="fa fa-download btn" data-ng-click="download()" title="{{ 'Commande.TipsDownLoad' | translate }}"></i>
+              </span>
+              <span data-ng-show="commande.nombreProduitEtiquette && commande.validation">
+                <i class=" fa fa-download btn" data-ng-click="download()" title="{{ 'Commande.TipsDownLoad' | translate }}"></i>
               </span>
               &nbsp;
             </th>
@@ -243,12 +244,12 @@
                   <tr><td colspan="9"></td></tr>
                 </tbody>
                 <tfoot>
-                  <tr>
+                  <tr data-ng-show="commande.nombreProduit">
                     <td colspan="3" align="right">
                       {{ 'Commande.TipsNombrePiece' | translate }}
                     </td>
                     <td align="center">
-                      x <b>{{ commande.nombreProduit | masquezero }}</b>
+                        x <b>{{ commande.nombreProduit | masquezero }}</b>
                     </td>
                     <td>
                       &nbsp;
@@ -263,7 +264,7 @@
                       &nbsp;
                     </td>
                     <td align="center">
-                      <span data-ng-show="commande.nombreProduitEtiquette">
+                      <span data-ng-show="commande.nombreProduitEtiquette > 0">
                         <i class="fa fa-tags green" title="{{ 'CasqueConstitue.TipsPieceEtiquette' | translate }}"></i>
                         x <b>{{ commande.nombreProduitEtiquette | masquezero }}</b>
                       </span>

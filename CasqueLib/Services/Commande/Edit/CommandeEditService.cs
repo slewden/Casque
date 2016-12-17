@@ -62,19 +62,11 @@ namespace CasqueLib.Services.Commande.Edit
 
       if (request.Excel)
       { // renvoie le flux excel
-        // Phase 1  : on complète les infos de la commande loadée
-        rep.Commande.Pieces = this.Db.SqlList<CommandeLigneView>("EXEC dbo.commande_ligne_liste @comdId", new { comdId = request.Cle });
-        if (rep.Commande.Pieces.Any())
-        {
-          // remplir les N° d'étiquettes
-          foreach (CommandeLigneView lg in rep.Commande.Pieces.Where(x => x.Quantite > 0))
-          {
-            lg.Etiquettes = this.Db.SqlList<NomCle>("EXEC dbo.commande_ligne_etiquette @colgId", new { colgId = lg.Cle }).Select(x => x.Nom).ToList();
-          }
-
-          Email.Commande cmd = new Email.Commande();
-          cmd.LaCommande = rep.Commande;
-          return new ExcelFileResult(cmd.GetPieceJointeData(), string.Format("Commande-{0}.xls", request.Cle));
+        Email.Commande cmd = new Email.Commande();
+        if (cmd.Load(this.Db, rep.Commande) > 0)
+        { // la commande à des pièces ==> on peut générer le fichier joint
+          cmd.GenerePieceJointe();
+          rep.ExcelFileUrl = cmd.PieceJointeUrl;
         }
       }
       else if (!request.ModeRead)
@@ -329,52 +321,6 @@ namespace CasqueLib.Services.Commande.Edit
       ligne.Reference = string.Format("{0:yyyy-MM}/{1:000000}/{2:000}", commande.Saisie, commande.Cle, index);
 
       this.Db.Insert<Buisness.CommandeLigne>(ligne);
-    }
-    
-    /// <summary>
-    /// classe pour renvoyer un excel
-    /// </summary>
-    public class ExcelFileResult : ServiceStack.ServiceHost.IHasOptions, ServiceStack.Service.IStreamWriter
-    {
-      /// <summary>
-      /// les données
-      /// </summary>
-      private readonly byte[] responseStream;
-
-      /// <summary>
-      /// Initialise une nouvelle instance de la classe <see cref="ExcelFileResult"/>
-      /// </summary>
-      /// <param name="responseStream">les données</param>
-      /// <param name="fileName">Nom du fichier</param>
-      public ExcelFileResult(byte[] responseStream, string fileName)
-      {
-        this.responseStream = responseStream;
-        this.Options = new Dictionary<string, string> 
-         {
-             { "Content-Type", "application/octet-stream" },
-             { "Content-Disposition", string.Format("attachment; filename=\"{0}\";", fileName) }
-         };
-      }
-
-      /// <summary>
-      /// Les options
-      /// </summary>
-      public IDictionary<string, string> Options { get; private set; }
-
-      /// <summary>
-      /// Ecrit les données dans la sortie
-      /// </summary>
-      /// <param name="responseStream">le flux de sortie</param>
-      public void WriteTo(Stream responseStream)
-      {
-        if (this.responseStream == null || this.responseStream.Length == 0)
-        {
-          return;
-        }
-
-        responseStream.Write(this.responseStream, 0, this.responseStream.Length);
-        responseStream.Flush();
-      }
     }
   }
 }

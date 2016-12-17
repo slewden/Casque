@@ -1,14 +1,26 @@
 ﻿using System.Data;
 using System.IO;
+using System.Linq;
 using CasqueLib.Buisness;
+using CasqueLib.Common;
 
 namespace CasqueLib.Email
 {
   /// <summary>
   /// Classe de base pour la composition et l'envoie d'email
+  /// Cette classe génère aussi la pièce jointe à l'email
   /// </summary>
   public abstract class EmailComposer
   {
+    /// <summary>
+    /// Initialise une nouvelle instance de la classe <see cref="EmailComposer"/>
+    /// </summary>
+    /// <param name="fld">le dossier</param>
+    public EmailComposer(Folder.EFolder fld)
+    {
+      this.PieceJointeFolder = fld;
+    }
+
     /// <summary>
     /// La configuration d'expédition
     /// </summary>
@@ -30,9 +42,24 @@ namespace CasqueLib.Email
     public string PieceJointe { get; protected set; }
 
     /// <summary>
+    /// L'URL de la pièce jointe
+    /// </summary>
+    public string PieceJointeUrl { get; protected set; }
+
+    /// <summary>
     /// Le contenu du template principal
     /// </summary>
     public string Template { get; protected set; }
+    
+    /// <summary>
+    /// Le nom de la pièce jointe
+    /// </summary>
+    protected string PieceJointeName { get; set; }
+
+    /// <summary>
+    /// Le dossier d'enregistrement de la pièce jointe
+    /// </summary>
+    protected Folder.EFolder PieceJointeFolder { get; set; }
 
     /// <summary>
     /// Load l'objet et indique si tout est ok
@@ -60,6 +87,49 @@ namespace CasqueLib.Email
       return this.Config.SendEmail(this.DestinataireEmail, emailSuplementaire, leSujet, contenu, this.PieceJointe);
     }
 
+    /// <summary>
+    /// Génère le fichier en picèe jointe
+    /// A la sortie de cette procédure si un fichier doit être joint la propertie "PieceJointe" contient le fullPath du fichier
+    /// Sinon si aucun fichier n'est à joindre la propertie "PieceJointe" doit être vide 
+    /// </summary>
+    public virtual void GenerePieceJointe()
+    {
+      // génère les données
+      byte[] result = this.GetPieceJointeData();
+
+      if (result != null && result.Any())
+      {
+        this.PieceJointeUrl = Folder.RelativeUrl(this.PieceJointeFolder, this.PieceJointeName);
+        string fullFileName = Folder.FullPath(this.PieceJointeFolder, this.PieceJointeName);
+
+        // save on disk
+        FileInfo fi = new FileInfo(fullFileName);
+        if (fi.Exists)
+        { // on remplace systématiquement le fichier existant
+          fi.Delete();
+        }
+
+        using (var stream = File.Create(fullFileName))
+        {
+          stream.Write(result, 0, result.Length);
+          ////stream.Close();
+        }
+
+        this.PieceJointe = fullFileName;
+      }
+      else
+      {
+        this.PieceJointeUrl = null;
+        this.PieceJointe = null;
+      }
+    }
+
+    /// <summary>
+    /// Génère les données du fichier en pièce jointe
+    /// </summary>
+    /// <returns>les données</returns>
+    protected abstract byte[] GetPieceJointeData();
+    
     /// <summary>
     /// Charge un template et renvoie le contenu
     /// </summary>
@@ -89,12 +159,5 @@ namespace CasqueLib.Email
     /// <param name="isSujet">est pour le sujet du email</param>
     /// <returns>le texte formatté</returns>
     protected abstract string Replace(string texte, bool isSujet);
-
-    /// <summary>
-    /// Génère le fichier en picèe jointe
-    /// A la sortie de cette procédure si un fichier doit être joint la propertie "PieceJointe" contient le fullPath du fichier
-    /// Sinon si aucun fichier n'est à joindre la propertie "PieceJointe" doit être vide 
-    /// </summary>
-    protected abstract void GenerePieceJointe();
   }
 }

@@ -19,6 +19,14 @@ namespace CasqueLib.Email
   public class Livraison : EmailComposer
   {
     /// <summary>
+    /// Initialise une nouvelle instance de la classe <see cref="Livraison"/>
+    /// </summary>
+    public Livraison() :
+      base(Folder.EFolder.Livraison)
+    {
+    }
+
+    /// <summary>
     /// Les infos de la livraison
     /// </summary>
     public LivraisonDetailResponse Reponse { get; private set; }
@@ -129,10 +137,20 @@ namespace CasqueLib.Email
     /// A la sortie de cette procédure si un fichier doit être joint la propertie "PieceJointe" contient le fullPath du fichier
     /// Sinon si aucun fichier n'est à joindre la propertie "PieceJointe" doit être vide 
     /// </summary>
-    protected override void GenerePieceJointe()
+    public override void GenerePieceJointe()
     {
-      string fileName = Folder.FullPath(Folder.EFolder.Livraison, string.Format("Livraison-{0}-{1}.xlsx", this.Reponse.Livraison.Reference, Guid.NewGuid()));
+      // on n'oublie pas de générer le nom de la pièce jointe
+      this.PieceJointeName = string.Format("Livraison-{0}-{1}.xlsx", this.Reponse.Livraison.Reference, Guid.NewGuid());
 
+      base.GenerePieceJointe();
+    }
+
+    /// <summary>
+    /// Génère les datas du fichier Excel
+    /// </summary>
+    /// <returns>les datas</returns>
+    protected override byte[] GetPieceJointeData()
+    {
       byte[] result;
       using (var package = new ExcelPackage())
       {
@@ -182,20 +200,7 @@ namespace CasqueLib.Email
         }
       }
 
-      // save on disk
-      FileInfo fi = new FileInfo(fileName);
-      if (fi.Exists)
-      { // on remplace systématiquement le fichier existant
-        fi.Delete();
-      }
-
-      using (var stream = File.Create(fileName)) 
-      {
-        stream.Write(result, 0, result.Length);
-        ////stream.Close();
-      }
-
-      this.PieceJointe = fileName;
+      return result;
     }
 
     /// <summary>

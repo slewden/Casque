@@ -19,9 +19,17 @@ namespace CasqueLib.Email
   public class Commande : EmailComposer
   {
     /// <summary>
+    /// Initialise une nouvelle instance de la classe <see cref="Commande"/>
+    /// </summary>
+    public Commande() :
+      base(Folder.EFolder.Commande)
+    { 
+    }
+
+    /// <summary>
     /// La commande
     /// </summary>
-    public CommandeView LaCommande { get; set; }
+    public CommandeView LaCommande { get; private set; }
 
     /// <summary>
     /// Le contenu du template d'une ligne de commande
@@ -109,10 +117,47 @@ namespace CasqueLib.Email
     }
 
     /// <summary>
+    /// Load l'objet pour génération de la pièce jointe uniquement
+    /// (pas de config email loadée
+    /// </summary>
+    /// <param name="db">La connexion à la base de données</param>
+    /// <param name="cmd">La commande</param>
+    /// <returns>le nombre de pièces</returns>
+    public int Load(IDbConnection db, CommandeView cmd)
+    {
+      this.LaCommande = cmd;
+
+      // a ce stade la commande est incomplète on complète
+      this.LaCommande.Pieces = db.SqlList<CommandeLigneView>("EXEC dbo.commande_ligne_liste @comdId", new { comdId = this.LaCommande.Cle });
+      if (this.LaCommande.Pieces.Any())
+      { // y a des pièce on complète les infos
+        foreach (CommandeLigneView lg in this.LaCommande.Pieces.Where(x => x.Quantite > 0))
+        { // remplir les N° d'étiquettes
+          lg.Etiquettes = db.SqlList<NomCle>("EXEC dbo.commande_ligne_etiquette @colgId", new { colgId = lg.Cle }).Select(x => x.Nom).ToList();
+        }
+      }
+
+      return this.LaCommande != null && this.LaCommande.Pieces != null ? this.LaCommande.Pieces.Count : 0;
+    }
+
+    /// <summary>
+    /// Génère le fichier en picèe jointe
+    /// A la sortie de cette procédure si un fichier doit être joint la propertie "PieceJointe" contient le fullPath du fichier
+    /// Sinon si aucun fichier n'est à joindre la propertie "PieceJointe" doit être vide 
+    /// </summary>
+    public override void GenerePieceJointe()
+    {
+      // on n'oublie pas de générer le nom de la pièce jointe
+      this.PieceJointeName = string.Format("Commande-{0}-{1}.xlsx", this.LaCommande.Numero, Guid.NewGuid());
+
+      base.GenerePieceJointe();
+    }
+
+    /// <summary>
     /// Renvoie les données pour la génération du fichier Excel en Pièce jointe à la commande
     /// </summary>
     /// <returns>les données</returns>
-    public byte[] GetPieceJointeData()
+    protected override byte[] GetPieceJointeData()
     {
       byte[] result;
       using (var package = new ExcelPackage())
@@ -154,7 +199,10 @@ namespace CasqueLib.Email
           }
 
           // Create an autofilter for the range
-          worksheet.Cells["A1:E" + row.ToString()].AutoFilter = true;
+          if (row > 1)
+          {
+            worksheet.Cells["A1:E" + (row - 1).ToString()].AutoFilter = true;
+          }
 
           // Autofit columns for all cells
           worksheet.Cells.AutoFitColumns(0);
@@ -201,33 +249,6 @@ namespace CasqueLib.Email
       }
       
       return sujet;
-    }
-
-    /// <summary>
-    /// Génère le fichier en picèe jointe
-    /// A la sortie de cette procédure si un fichier doit être joint la propertie "PieceJointe" contient le fullPath du fichier
-    /// Sinon si aucun fichier n'est à joindre la propertie "PieceJointe" doit être vide 
-    /// </summary>
-    protected override void GenerePieceJointe()
-    {
-      string fileName = Folder.FullPath(Folder.EFolder.Commande, string.Format("Commande-{0}-{1}.xlsx", this.LaCommande.Numero, Guid.NewGuid()));
-
-      byte[] result = this.GetPieceJointeData();
-
-      // save on disk
-      FileInfo fi = new FileInfo(fileName);
-      if (fi.Exists)
-      { // on remplace systématiquement le fichier existant
-        fi.Delete();
-      }
-
-      using (var stream = File.Create(fileName))
-      {
-        stream.Write(result, 0, result.Length);
-        ////stream.Close();
-      }
-
-      this.PieceJointe = fileName;
     }
 
     /// <summary>

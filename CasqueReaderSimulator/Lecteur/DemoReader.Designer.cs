@@ -49,29 +49,36 @@
       this.tabControl1 = new System.Windows.Forms.TabControl();
       this.tab1 = new System.Windows.Forms.TabPage();
       this.lst1 = new System.Windows.Forms.CheckedListBox();
-      this.tab7 = new System.Windows.Forms.TabPage();
-      this.lst7 = new System.Windows.Forms.CheckedListBox();
-      this.tab3 = new System.Windows.Forms.TabPage();
-      this.lst3 = new System.Windows.Forms.CheckedListBox();
       this.tab6 = new System.Windows.Forms.TabPage();
       this.lst6 = new System.Windows.Forms.CheckedListBox();
+      this.tab3 = new System.Windows.Forms.TabPage();
+      this.lst3 = new System.Windows.Forms.CheckedListBox();
+      this.tab5 = new System.Windows.Forms.TabPage();
+      this.lst5 = new System.Windows.Forms.CheckedListBox();
       this.tab4 = new System.Windows.Forms.TabPage();
       this.lst4 = new System.Windows.Forms.CheckedListBox();
-      this.tab8 = new System.Windows.Forms.TabPage();
-      this.lst5 = new System.Windows.Forms.CheckedListBox();
+      this.tab7 = new System.Windows.Forms.TabPage();
+      this.lst7 = new System.Windows.Forms.CheckedListBox();
       this.tab0 = new System.Windows.Forms.TabPage();
       this.lst0 = new System.Windows.Forms.CheckedListBox();
+      this.panel3 = new System.Windows.Forms.Panel();
+      this.btRead = new System.Windows.Forms.Button();
+      this.label5 = new System.Windows.Forms.Label();
+      this.readTagNombre = new System.Windows.Forms.NumericUpDown();
+      this.label2 = new System.Windows.Forms.Label();
       this.panel2.SuspendLayout();
       this.panel1.SuspendLayout();
       this.grpReception.SuspendLayout();
       this.tabControl1.SuspendLayout();
       this.tab1.SuspendLayout();
-      this.tab7.SuspendLayout();
-      this.tab3.SuspendLayout();
       this.tab6.SuspendLayout();
+      this.tab3.SuspendLayout();
+      this.tab5.SuspendLayout();
       this.tab4.SuspendLayout();
-      this.tab8.SuspendLayout();
+      this.tab7.SuspendLayout();
       this.tab0.SuspendLayout();
+      this.panel3.SuspendLayout();
+      ((System.ComponentModel.ISupportInitialize)(this.readTagNombre)).BeginInit();
       this.SuspendLayout();
       // 
       // panel2
@@ -266,16 +273,16 @@
       this.tabControl1.Controls.Add(this.tab1);
       this.tabControl1.Controls.Add(this.tab6);
       this.tabControl1.Controls.Add(this.tab3);
-      this.tabControl1.Controls.Add(this.tab8);
+      this.tabControl1.Controls.Add(this.tab5);
       this.tabControl1.Controls.Add(this.tab4);
       this.tabControl1.Controls.Add(this.tab7);
       this.tabControl1.Controls.Add(this.tab0);
       this.tabControl1.Dock = System.Windows.Forms.DockStyle.Fill;
       this.tabControl1.ItemSize = new System.Drawing.Size(58, 25);
-      this.tabControl1.Location = new System.Drawing.Point(0, 162);
+      this.tabControl1.Location = new System.Drawing.Point(0, 192);
       this.tabControl1.Name = "tabControl1";
       this.tabControl1.SelectedIndex = 0;
-      this.tabControl1.Size = new System.Drawing.Size(610, 386);
+      this.tabControl1.Size = new System.Drawing.Size(610, 356);
       this.tabControl1.TabIndex = 13;
       // 
       // tab1
@@ -284,7 +291,7 @@
       this.tab1.Location = new System.Drawing.Point(4, 29);
       this.tab1.Name = "tab1";
       this.tab1.Padding = new System.Windows.Forms.Padding(3);
-      this.tab1.Size = new System.Drawing.Size(602, 353);
+      this.tab1.Size = new System.Drawing.Size(602, 323);
       this.tab1.TabIndex = 0;
       this.tab1.Text = "Commandés";
       this.tab1.UseVisualStyleBackColor = true;
@@ -298,63 +305,16 @@
       this.lst1.IntegralHeight = false;
       this.lst1.Location = new System.Drawing.Point(3, 3);
       this.lst1.Name = "lst1";
-      this.lst1.Size = new System.Drawing.Size(596, 347);
+      this.lst1.Size = new System.Drawing.Size(596, 317);
       this.lst1.TabIndex = 0;
       this.lst1.ItemCheck += new System.Windows.Forms.ItemCheckEventHandler(this.TagRead);
-      // 
-      // tab7
-      // 
-      this.tab7.Controls.Add(this.lst7);
-      this.tab7.Location = new System.Drawing.Point(4, 29);
-      this.tab7.Name = "tab7";
-      this.tab7.Padding = new System.Windows.Forms.Padding(3);
-      this.tab7.Size = new System.Drawing.Size(602, 353);
-      this.tab7.TabIndex = 1;
-      this.tab7.Text = "Casques livrés";
-      this.tab7.UseVisualStyleBackColor = true;
-      // 
-      // lst7
-      // 
-      this.lst7.CheckOnClick = true;
-      this.lst7.Dock = System.Windows.Forms.DockStyle.Fill;
-      this.lst7.Font = new System.Drawing.Font("Courier New", 8.25F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
-      this.lst7.FormattingEnabled = true;
-      this.lst7.IntegralHeight = false;
-      this.lst7.Location = new System.Drawing.Point(3, 3);
-      this.lst7.Name = "lst7";
-      this.lst7.Size = new System.Drawing.Size(596, 347);
-      this.lst7.TabIndex = 1;
-      this.lst7.ItemCheck += new System.Windows.Forms.ItemCheckEventHandler(this.TagRead);
-      // 
-      // tab3
-      // 
-      this.tab3.Controls.Add(this.lst3);
-      this.tab3.Location = new System.Drawing.Point(4, 29);
-      this.tab3.Name = "tab3";
-      this.tab3.Size = new System.Drawing.Size(602, 353);
-      this.tab3.TabIndex = 2;
-      this.tab3.Text = "Assemblés";
-      this.tab3.UseVisualStyleBackColor = true;
-      // 
-      // lst3
-      // 
-      this.lst3.CheckOnClick = true;
-      this.lst3.Dock = System.Windows.Forms.DockStyle.Fill;
-      this.lst3.Font = new System.Drawing.Font("Courier New", 8.25F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
-      this.lst3.FormattingEnabled = true;
-      this.lst3.IntegralHeight = false;
-      this.lst3.Location = new System.Drawing.Point(0, 0);
-      this.lst3.Name = "lst3";
-      this.lst3.Size = new System.Drawing.Size(602, 353);
-      this.lst3.TabIndex = 1;
-      this.lst3.ItemCheck += new System.Windows.Forms.ItemCheckEventHandler(this.TagRead);
       // 
       // tab6
       // 
       this.tab6.Controls.Add(this.lst6);
       this.tab6.Location = new System.Drawing.Point(4, 29);
       this.tab6.Name = "tab6";
-      this.tab6.Size = new System.Drawing.Size(602, 353);
+      this.tab6.Size = new System.Drawing.Size(602, 323);
       this.tab6.TabIndex = 3;
       this.tab6.Text = "Assemblages possibles";
       this.tab6.UseVisualStyleBackColor = true;
@@ -368,16 +328,62 @@
       this.lst6.IntegralHeight = false;
       this.lst6.Location = new System.Drawing.Point(0, 0);
       this.lst6.Name = "lst6";
-      this.lst6.Size = new System.Drawing.Size(602, 353);
+      this.lst6.Size = new System.Drawing.Size(602, 323);
       this.lst6.TabIndex = 1;
       this.lst6.ItemCheck += new System.Windows.Forms.ItemCheckEventHandler(this.TagRead);
+      // 
+      // tab3
+      // 
+      this.tab3.Controls.Add(this.lst3);
+      this.tab3.Location = new System.Drawing.Point(4, 29);
+      this.tab3.Name = "tab3";
+      this.tab3.Size = new System.Drawing.Size(602, 323);
+      this.tab3.TabIndex = 2;
+      this.tab3.Text = "Assemblés";
+      this.tab3.UseVisualStyleBackColor = true;
+      // 
+      // lst3
+      // 
+      this.lst3.CheckOnClick = true;
+      this.lst3.Dock = System.Windows.Forms.DockStyle.Fill;
+      this.lst3.Font = new System.Drawing.Font("Courier New", 8.25F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
+      this.lst3.FormattingEnabled = true;
+      this.lst3.IntegralHeight = false;
+      this.lst3.Location = new System.Drawing.Point(0, 0);
+      this.lst3.Name = "lst3";
+      this.lst3.Size = new System.Drawing.Size(602, 323);
+      this.lst3.TabIndex = 1;
+      this.lst3.ItemCheck += new System.Windows.Forms.ItemCheckEventHandler(this.TagRead);
+      // 
+      // tab5
+      // 
+      this.tab5.Controls.Add(this.lst5);
+      this.tab5.Location = new System.Drawing.Point(4, 29);
+      this.tab5.Name = "tab5";
+      this.tab5.Size = new System.Drawing.Size(602, 323);
+      this.tab5.TabIndex = 5;
+      this.tab5.Text = "Casques assemblés";
+      this.tab5.UseVisualStyleBackColor = true;
+      // 
+      // lst5
+      // 
+      this.lst5.CheckOnClick = true;
+      this.lst5.Dock = System.Windows.Forms.DockStyle.Fill;
+      this.lst5.Font = new System.Drawing.Font("Courier New", 8.25F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
+      this.lst5.FormattingEnabled = true;
+      this.lst5.IntegralHeight = false;
+      this.lst5.Location = new System.Drawing.Point(0, 0);
+      this.lst5.Name = "lst5";
+      this.lst5.Size = new System.Drawing.Size(602, 323);
+      this.lst5.TabIndex = 1;
+      this.lst5.ItemCheck += new System.Windows.Forms.ItemCheckEventHandler(this.TagRead);
       // 
       // tab4
       // 
       this.tab4.Controls.Add(this.lst4);
       this.tab4.Location = new System.Drawing.Point(4, 29);
       this.tab4.Name = "tab4";
-      this.tab4.Size = new System.Drawing.Size(602, 353);
+      this.tab4.Size = new System.Drawing.Size(602, 323);
       this.tab4.TabIndex = 4;
       this.tab4.Text = "Livrés";
       this.tab4.UseVisualStyleBackColor = true;
@@ -391,39 +397,40 @@
       this.lst4.IntegralHeight = false;
       this.lst4.Location = new System.Drawing.Point(0, 0);
       this.lst4.Name = "lst4";
-      this.lst4.Size = new System.Drawing.Size(602, 353);
+      this.lst4.Size = new System.Drawing.Size(602, 323);
       this.lst4.TabIndex = 1;
       this.lst4.ItemCheck += new System.Windows.Forms.ItemCheckEventHandler(this.TagRead);
       // 
-      // tab8
+      // tab7
       // 
-      this.tab8.Controls.Add(this.lst5);
-      this.tab8.Location = new System.Drawing.Point(4, 29);
-      this.tab8.Name = "tab8";
-      this.tab8.Size = new System.Drawing.Size(602, 353);
-      this.tab8.TabIndex = 5;
-      this.tab8.Text = "Casques assemblés";
-      this.tab8.UseVisualStyleBackColor = true;
+      this.tab7.Controls.Add(this.lst7);
+      this.tab7.Location = new System.Drawing.Point(4, 29);
+      this.tab7.Name = "tab7";
+      this.tab7.Padding = new System.Windows.Forms.Padding(3);
+      this.tab7.Size = new System.Drawing.Size(602, 323);
+      this.tab7.TabIndex = 1;
+      this.tab7.Text = "Casques livrés";
+      this.tab7.UseVisualStyleBackColor = true;
       // 
-      // lst5
+      // lst7
       // 
-      this.lst5.CheckOnClick = true;
-      this.lst5.Dock = System.Windows.Forms.DockStyle.Fill;
-      this.lst5.Font = new System.Drawing.Font("Courier New", 8.25F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
-      this.lst5.FormattingEnabled = true;
-      this.lst5.IntegralHeight = false;
-      this.lst5.Location = new System.Drawing.Point(0, 0);
-      this.lst5.Name = "lst5";
-      this.lst5.Size = new System.Drawing.Size(602, 353);
-      this.lst5.TabIndex = 1;
-      this.lst5.ItemCheck += new System.Windows.Forms.ItemCheckEventHandler(this.TagRead);
+      this.lst7.CheckOnClick = true;
+      this.lst7.Dock = System.Windows.Forms.DockStyle.Fill;
+      this.lst7.Font = new System.Drawing.Font("Courier New", 8.25F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
+      this.lst7.FormattingEnabled = true;
+      this.lst7.IntegralHeight = false;
+      this.lst7.Location = new System.Drawing.Point(3, 3);
+      this.lst7.Name = "lst7";
+      this.lst7.Size = new System.Drawing.Size(596, 317);
+      this.lst7.TabIndex = 1;
+      this.lst7.ItemCheck += new System.Windows.Forms.ItemCheckEventHandler(this.TagRead);
       // 
       // tab0
       // 
       this.tab0.Controls.Add(this.lst0);
       this.tab0.Location = new System.Drawing.Point(4, 29);
       this.tab0.Name = "tab0";
-      this.tab0.Size = new System.Drawing.Size(602, 353);
+      this.tab0.Size = new System.Drawing.Size(602, 323);
       this.tab0.TabIndex = 6;
       this.tab0.Text = "Inconnus";
       this.tab0.UseVisualStyleBackColor = true;
@@ -437,15 +444,68 @@
       this.lst0.IntegralHeight = false;
       this.lst0.Location = new System.Drawing.Point(0, 0);
       this.lst0.Name = "lst0";
-      this.lst0.Size = new System.Drawing.Size(602, 353);
+      this.lst0.Size = new System.Drawing.Size(602, 323);
       this.lst0.TabIndex = 1;
       this.lst0.ItemCheck += new System.Windows.Forms.ItemCheckEventHandler(this.TagRead);
+      // 
+      // panel3
+      // 
+      this.panel3.Controls.Add(this.btRead);
+      this.panel3.Controls.Add(this.label5);
+      this.panel3.Controls.Add(this.readTagNombre);
+      this.panel3.Controls.Add(this.label2);
+      this.panel3.Dock = System.Windows.Forms.DockStyle.Top;
+      this.panel3.Location = new System.Drawing.Point(0, 162);
+      this.panel3.Name = "panel3";
+      this.panel3.Size = new System.Drawing.Size(610, 30);
+      this.panel3.TabIndex = 1;
+      // 
+      // btRead
+      // 
+      this.btRead.Location = new System.Drawing.Point(315, 2);
+      this.btRead.Name = "btRead";
+      this.btRead.Size = new System.Drawing.Size(75, 23);
+      this.btRead.TabIndex = 4;
+      this.btRead.Text = "Go";
+      this.btRead.UseVisualStyleBackColor = true;
+      this.btRead.Click += new System.EventHandler(this.BtRead_Click);
+      // 
+      // label5
+      // 
+      this.label5.AutoSize = true;
+      this.label5.Location = new System.Drawing.Point(187, 7);
+      this.label5.Name = "label5";
+      this.label5.Size = new System.Drawing.Size(122, 13);
+      this.label5.TabIndex = 3;
+      this.label5.Text = "étiquette de l\'onglet actif";
+      // 
+      // readTagNombre
+      // 
+      this.readTagNombre.Location = new System.Drawing.Point(129, 5);
+      this.readTagNombre.Name = "readTagNombre";
+      this.readTagNombre.Size = new System.Drawing.Size(52, 20);
+      this.readTagNombre.TabIndex = 2;
+      this.readTagNombre.Value = new decimal(new int[] {
+            20,
+            0,
+            0,
+            0});
+      // 
+      // label2
+      // 
+      this.label2.AutoSize = true;
+      this.label2.Location = new System.Drawing.Point(12, 7);
+      this.label2.Name = "label2";
+      this.label2.Size = new System.Drawing.Size(111, 13);
+      this.label2.TabIndex = 0;
+      this.label2.Text = "Lire automatiquement ";
       // 
       // DemoReader
       // 
       this.AutoScaleDimensions = new System.Drawing.SizeF(6F, 13F);
       this.AutoScaleMode = System.Windows.Forms.AutoScaleMode.Font;
       this.Controls.Add(this.tabControl1);
+      this.Controls.Add(this.panel3);
       this.Controls.Add(this.grpReception);
       this.Controls.Add(this.panel2);
       this.Controls.Add(this.panel1);
@@ -459,12 +519,15 @@
       this.grpReception.PerformLayout();
       this.tabControl1.ResumeLayout(false);
       this.tab1.ResumeLayout(false);
-      this.tab7.ResumeLayout(false);
-      this.tab3.ResumeLayout(false);
       this.tab6.ResumeLayout(false);
+      this.tab3.ResumeLayout(false);
+      this.tab5.ResumeLayout(false);
       this.tab4.ResumeLayout(false);
-      this.tab8.ResumeLayout(false);
+      this.tab7.ResumeLayout(false);
       this.tab0.ResumeLayout(false);
+      this.panel3.ResumeLayout(false);
+      this.panel3.PerformLayout();
+      ((System.ComponentModel.ISupportInitialize)(this.readTagNombre)).EndInit();
       this.ResumeLayout(false);
 
     }
@@ -491,7 +554,7 @@
     private System.Windows.Forms.TabPage tab3;
     private System.Windows.Forms.TabPage tab6;
     private System.Windows.Forms.TabPage tab4;
-    private System.Windows.Forms.TabPage tab8;
+    private System.Windows.Forms.TabPage tab5;
     private System.Windows.Forms.TabPage tab0;
     private System.Windows.Forms.CheckedListBox lst1;
     private System.Windows.Forms.CheckedListBox lst7;
@@ -504,5 +567,10 @@
     private System.Windows.Forms.Label lblNombreLectureTitre;
     private System.Windows.Forms.Label label3;
     private System.Windows.Forms.CheckBox chkReponseAuto;
+    private System.Windows.Forms.Panel panel3;
+    private System.Windows.Forms.Button btRead;
+    private System.Windows.Forms.Label label5;
+    private System.Windows.Forms.NumericUpDown readTagNombre;
+    private System.Windows.Forms.Label label2;
   }
 }

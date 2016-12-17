@@ -235,7 +235,7 @@ namespace CasqueReaderSimulator.Lecteur
       {
         this.OnNotifie(this, args);
       }
-    
+
       this.recuAction = EEtatLecteur.KeepAlive;
       this.GereBouton();
     }
@@ -250,29 +250,48 @@ namespace CasqueReaderSimulator.Lecteur
       CheckedListBox lst = sender as CheckedListBox;
       if (lst != null)
       {
-        string tagNum;
-        CasqueLib.Buisness.View.EtiquetteDebug et = lst.Items[e.Index] as CasqueLib.Buisness.View.EtiquetteDebug;
-        if (et == null)
+        string tagNum = this.GetTagNum(lst, e.Index);
+        if (this.ReadTag(tagNum))
         {
-          tagNum = lst.Items[e.Index].ToString().Trim();
-        }
-        else
-        {
-          tagNum = et.Numero;
-        }
-
-        if (!this.lectures.Contains(tagNum))
-        {
-          this.lectures.Add(tagNum);
-          SimpleReaderEventArgs args = new SimpleReaderEventArgs(tagNum, ELogType.RapportOk, EEtatLecteur.Tag, 1);
-          args.AdresseIP = this.Parameters.AdresseIP;
-          if (this.OnNotifie != null)
-          {
-            this.OnNotifie(this, args);
-          }
-
           this.GereBouton();
         }
+      }
+    }
+
+    /// <summary>
+    /// Lit automatiquement les X tag de l'onglet en cours
+    /// </summary>
+    /// <param name="sender">qui appelle</param>
+    /// <param name="e">Paramètre inutile</param>
+    private void BtRead_Click(object sender, EventArgs e)
+    {
+      if (this.tabControl1.SelectedTab == this.tab1)
+      {
+        this.ReadTags(this.lst1, this.lst1.SelectedIndex);
+      }
+      else if (this.tabControl1.SelectedTab == this.tab6)
+      {
+        this.ReadTags(this.lst6, this.lst6.SelectedIndex);
+      }
+      else if (this.tabControl1.SelectedTab == this.tab3)
+      {
+        this.ReadTags(this.lst3, this.lst3.SelectedIndex);
+      }
+      else if (this.tabControl1.SelectedTab == this.tab5)
+      {
+        this.ReadTags(this.lst5, this.lst5.SelectedIndex);
+      }
+      else if (this.tabControl1.SelectedTab == this.tab4)
+      {
+        this.ReadTags(this.lst4, this.lst4.SelectedIndex);
+      }
+      else if (this.tabControl1.SelectedTab == this.tab7)
+      {
+        this.ReadTags(this.lst7, this.lst7.SelectedIndex);
+      }
+      else if (this.tabControl1.SelectedTab == this.tab0)
+      {
+        this.ReadTags(this.lst0, this.lst0.SelectedIndex);
       }
     }
     #endregion
@@ -345,7 +364,7 @@ namespace CasqueReaderSimulator.Lecteur
 
       this.tabControl1.Visible = this.Running;
     }
-    
+
     /// <summary>
     /// Remplit la liste des tag de démos
     /// </summary>
@@ -436,6 +455,74 @@ namespace CasqueReaderSimulator.Lecteur
       string i = Guid.NewGuid().ToString().Substring(0, 1);
       string j = Guid.NewGuid().ToString().Substring(0, 1);
       return string.Format("{0}{1} {2}{3} {4}{5} {6}{7} {8}{9}", a, b, c, d, e, f, g, h, i, j);
+    }
+
+    /// <summary>
+    /// Fait ce qu'il faut pour lire un tag
+    /// </summary>
+    /// <param name="tagNum">numéro du tag</param>
+    /// <returns>true si le tag n'est pas déjà lu</returns>
+    private bool ReadTag(string tagNum)
+    {
+      if (!this.lectures.Contains(tagNum))
+      {
+        this.lectures.Add(tagNum);
+        SimpleReaderEventArgs args = new SimpleReaderEventArgs(tagNum, ELogType.RapportOk, EEtatLecteur.Tag, 1);
+        args.AdresseIP = this.Parameters.AdresseIP;
+        if (this.OnNotifie != null)
+        {
+          this.OnNotifie(this, args);
+        }
+
+        return true;
+      }
+      else
+      {
+        return false;
+      }
+    }
+
+    /// <summary>
+    /// Extrait le n° de tag d'un élémént de la liste
+    /// </summary>
+    /// <param name="lst">La liste</param>
+    /// <param name="index">la position</param>
+    /// <returns>le N° du tag</returns>
+    private string GetTagNum(CheckedListBox lst, int index)
+    {
+      string tagNum;
+      CasqueLib.Buisness.View.EtiquetteDebug et = lst.Items[index] as CasqueLib.Buisness.View.EtiquetteDebug;
+      if (et == null)
+      {
+        tagNum = lst.Items[index].ToString().Trim();
+      }
+      else
+      {
+        tagNum = et.Numero;
+      }
+
+      return tagNum;
+    }
+
+    /// <summary>
+    /// Lit les X premiers tags de la liste sélectionnée
+    /// </summary>
+    /// <param name="lst">La liste</param>
+    /// <param name="fromIndex">L'index de départ</param>
+    private void ReadTags(CheckedListBox lst, int fromIndex)
+    {
+      int nb = Convert.ToInt32(this.readTagNombre.Value);
+      int index = fromIndex < 0 ? 0 : fromIndex;
+      while (nb > 0 && index < lst.Items.Count)
+      {
+        if (!lst.GetItemChecked(index))
+        {
+          lst.SetItemChecked(index, true);
+          nb--;
+        }
+
+        index++;
+      }
     }
   }
 }

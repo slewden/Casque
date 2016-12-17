@@ -34,5 +34,10 @@ namespace CasqueLib.Services.Commande.Edit
     /// renvoie la configuration qui donne la quantité maxi par ligne
     /// </summary>
     public int CommandeLigneQuantiteMax { get; set; }
+
+    /// <summary>
+    /// Le nom du fichier Excel associé à la commande (remplit ssi la demande contient Excel=1)
+    /// </summary>
+    public string ExcelFileUrl { get; set; }
   }
 }

@@ -2305,20 +2305,19 @@ app.controller('commandeEditController', ['$scope', '$noHttp', '$route', '$locat
     }
     //--- renvoie le fichier Excel des pièces
     $scope.download = function () {
-      $noHttp.download('/api/commandeGet/', {
+      $noHttp.get('/api/commandeGet/', {
         cle: $scope.cle,
         excel: true,
       }, function (data, statusCode, headers, config, statusText) { // c'est ok 
-        //var blob = new Blob([data], { type: "application/vnd.ms-excel"});
-        //var objectUrl = URL.createObjectURL(blob);
-        ///window.open(objectUrl);
-        var link = angular.element("<a/>");
-        link.attr({
-          href: 'data:application/vnd.ms-excel;charset=utf-8,%EF%BB%BF' + encodeURI(data), //
-          target: '_blank',
-          download: 'Commande-' + $scope.cle + '.xls'
-        })[0].click();
-        //URL.revokeObjectURL(blob);
+        if (data && data.excelFileUrl) {
+          // y a une réponse et le fichier est dispo
+          var link = angular.element("<a/>");
+          link.attr({
+            href: data.excelFileUrl,
+            target: '_blank',
+            download: data.excelFileUrl
+          })[0].click();
+        }
       }, function (data, statusCode, headers, config, statusText) { // Erreur
       });
     }
