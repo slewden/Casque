@@ -42,7 +42,6 @@ var translations = {
     TipsInitSearch: 'Initialiser la recherche',
     TipsSort: 'Changer de tri',
     LblTotal: 'Total',
-    Aucun: '[Aucun]',
     Aucune: '[Aucune]',
     NoEmail: '[Aucun email]',
     NoAdresse: '[Aucune adresse]',
@@ -79,7 +78,6 @@ var translations = {
     BtValid: 'Entrer',
     ErrorLogin1: 'Erreur d\'authentification, Réessayez',
     ErrorLogin2: 'Erreur d\'authentification, Réessayez',
-    ErrorLogin3: 'L\'authentification n\'est plus valide veuillez vous identifier de nouveau',
   },
   Home: {
     Bienvenu: 'Bienvenue dans Tracking Center,  {{ user }}',
@@ -97,9 +95,7 @@ var translations = {
     Statut5: 'Commandes reçues partiellement',
     Statut6: 'Commandes reçues partiellement, mais acquittées',
     Statut7: 'Commandes entièrement reçues',
-    CRUDAdd: 'Ajouter une nouvelle commande',
     CRUDList: 'Voir la liste',
-    CRUDListTotal: 'Voir toutes les commandes',
     BtAcquitte: 'Acquitter la commande',
     TipsNombreCommande: 'Nombre de commandes dans ce statut',
     TipsNombrePiece: 'Nombre de pièces dans les commandes de ce statut',
@@ -116,7 +112,6 @@ var translations = {
     MaxLenghtNumero: 'Le numéro de commande ne peut dépasser les 20 caractères',
     LblFournisseur: 'Fournisseur',
     RequisFournisseur: 'Le fournisseur est obligatoire',
-    LblUtilisateur: 'Opérateur',
     LblValidation: 'Validation',
     LblWaitValidation: 'Attente du début d\'impression des étiquettes...',
     LblReference:'Référence',
@@ -125,6 +120,8 @@ var translations = {
     TipsValider: 'La commande est valide : démarrer l\'édition des étiquettes',
     TipsNotValider: 'La commande n\'est pas encore définitive',
     CommandeAcquittee: 'Commande acquittée le {{ date | datews: \'short\'}}',
+    LivraisonAttendueDans: 'Commande attendue dans {{ jour }}J',
+    LivraisonAttendueDepuis: 'Commande attendue depuis {{ jour }}J',
     LblCreation: 'Création',
     LblQuiQaund: 'Par {{ user}} le {{ date |datews: \'short\'}}',
     TipsQuantite: 'Nombre de pièces commandées',
@@ -393,7 +390,6 @@ var translations = {
     UnitGain: 'db',
     LblSeuil: 'Seuil lecture',
     TipsSeuil: 'Nombre de lectures effectuées par le lecteur avant de diffuser le numéro de l\'étiquette',
-    LblNombre: 'Nombre',
   },
   Reception: {
     SousTitre: 'Réception de commandes',
@@ -404,13 +400,10 @@ var translations = {
     BtReset: 'Recommencer',
     ConfirmCancel: 'Etes-vous certain de vouloir annuler la réception en cours ? Toutes les données pré enregistrées seront perdues',
     ReceptionEnCours: 'Lecture des pièces en cours...',
-
     BtMasquerCommandeFinie: 'Masquer cette commande',
     BtMasquerInconnus: 'Effacer la liste',
     BtValideCommandePartielle: 'Valider la réception partielle de cette commande',
     BtValideCommandeTotale: 'Valider la réception complète de cette commande',
-    CommandeSaved: 'Réception commande enregistrée',
-
     Commande: 'Commande :',
     CommandeComplete: ': Déjà reçue et complète',
     Fournisseur: 'Fournisseur',
@@ -429,8 +422,6 @@ var translations = {
   },
 
   HubLecteur: {
-    HubClosed: 'Non connecté au lecteur',
-    HubOpen: 'Connecté au lecteur',
     StatutUnknow: 'Inconnu (la connexion au lecteur n\'est pas établie)',
     Statut0: 'Stoppé',
     Statut1: 'Démarrage en cours',
@@ -440,14 +431,12 @@ var translations = {
     Statut5: 'Annulation...',
     Statut555: 'Finalisation...',
 
-    StatutConnecte: 'Connecté au lecteur. Identifiant : ',
     StatutConnectionFail: 'Impossible d\'établir la connexion; Réessayez.',
     LecteurStartFail: 'Impossible de démarrer le lecteur : {{ msg }}',
 
     ConfirmReset: 'Etes vous certain de vouloir recommencer le lot de lecture ? Toutes les lectures déjà effectuées seront perdues',
     LecteurQuering: 'Analyse du statut du lecteur...',
     LecteurStarting: 'Lecteur en cours de démarrage...',
-    LecteurStarted: 'Lecteur en cours d\'acquisitions...',
     LecteurStopping: 'Lecteur en cours d\'arrêt...',
     LecteurStopped: 'Lecteur stoppé.',
     LecteurStopFail: 'Impossible de stopper le lecteur : {{ msg }}',
@@ -457,7 +446,6 @@ var translations = {
     HubError: 'Erreur : {{ msg }}',
     HubNotify: 'Message : {{ msg }}',
     LecturesReseting: 'Initialisation des lectures...',
-    LecturesReseted: 'Lectures ré-initialisées',
     ResetFail: 'Impossible d\'effectuer une ré-initialisation des lectures {{ msg }}',
     RestartConnection: 'Se connecter au lecteur',
     HubNoDriverForReader: 'Le pilote des lecteurs n\'est pas en route.',
@@ -498,8 +486,6 @@ var translations = {
   Assemblage: {
     SousTitre: 'Assemblage de pièces',
     ConfirmCancel: 'Etes-vous certain de vouloir annuler cet assemblage en cours ? Toutes les données pré enregistrées seront perdues',
-    CommandeSaved: 'Assemblage enregistré, impression de l\'étiquette du casque',
-    ErrorCmdPrint: 'Impossible d\'envoyer la demande d\'impression de l\'étiquette : {{ text }}',
     ConfirmCancelAssemblage: 'Etes vous certain de vouloir annuler l\'assemblage en cours ?',
     ErrorCancelAssemblage: 'Annulation de l\'assemblage impossible. Erreur {{ code }} : {{ text }}',
     Saved: 'Assemblage enregistré',
@@ -522,11 +508,8 @@ var translations = {
   Livraison: {
     SousTitre: 'Livraison aux clients',
     ConfirmCancel: 'Etes-vous certain de vouloir annuler cette livraison ? Toutes les données pré enregistrées seront perdues',
-    CommandeSaved: 'Livraison enregistrée',
     ErrorSaveCarton: 'Sauvegarde du carton livré impossible. Erreur {{ code }} : {{ text }}',
     ConfirmCancelLivraison: 'Etes vous certain de vouloir annuler la livraison en cours ? Tous les cartons constitués seront perdus',
-    ErrorCancelLivraison: 'Annulation de la livraison impossible. Erreur {{ code }} : {{ text }}',
-    ErrorSaveLivraison: 'Sauvegarde de la livraison impossible. Erreur {{ code }} : {{ text }}',
     CartonIndex: 'Carton N° {{ numero }}',
     WaitingRead: 'Attente des lectures...',
     SaveAndContinue: 'Enregistrer et suivant',
@@ -576,7 +559,6 @@ var translations = {
     LblUtilisateurAssemble: 'Opérateur',
     LblCreation: 'Création',
     LblStatut: 'Etat',
-    LblNombre: 'Nombre',
     NotFound: 'Aucun assemblage pour l\'instant',
   },
   AssemblageDetail: {
@@ -586,7 +568,6 @@ var translations = {
     SousTitre: 'Les livraisons',
     Titre0: 'Top 10 des livraisons clients',
     Titre1: 'Les 10 dernières livraisons',
-    LivraisonResume: 'Aucune livraison pour l\'instant',
     NotFound: 'Aucune livraison',
     TipsNombre: 'Nombre de livraison pour ce client',
     TipsNombrePiece: 'Nombre de casques livrées à ce client',
@@ -618,7 +599,6 @@ var translations = {
     TipsAdresse: 'Addresse postale du client',
     PrintBL: 'Imprimer le bon de livraison',
     MailBL: 'Envoyer le BL par email au client',
-    MailSend: 'Le Bl a été envoyé par email au client',
   },
   LivraisonPrint: {
     Titre: 'Bon de livraison',
@@ -637,10 +617,6 @@ var translations = {
     LblCreation: 'Toulon le {{ date | datews : \'short\' }}',
     LblClient: 'Destinataire',
     LblAdresse: 'Adresse',
-    LblTotal: 'Nombre de pièces commandées au total : ',
-    ColQuantite: 'Qte',
-    ColEtiquette: 'Etiquettes',
-    EtiquetteTitre: 'Ref {{ index }}',
   },
   MailConfig: {
     SousTitre: 'Configuration des emails',
@@ -666,7 +642,7 @@ var translations = {
     RequisSubjetClient: 'Le sujet des emails de livraisons clients est requis',
     HelpSubjectFournisseur: 'Liste des marqueurs possibles pour le sujet des emails de commandes fournisseurs',
     HelpSubjectClient: 'Liste des marqueurs possibles pour le sujet des emails de livraisons clients',
-    HelpBCCEMails: 'Liste d\'adresses email séparées par des virgules'
+    HelpBCCEMails: 'Liste d\'adresses email séparées par des virgules',
   },
   Consultation: {
     SousTitre: 'Consultation de pièces',
@@ -693,7 +669,7 @@ var translations = {
     {
       SousTitre: 'Définition des constantes',
       Titre: 'Ajustez les constantes',
-    }
+    },
 };
 
 
